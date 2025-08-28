@@ -1,0 +1,18 @@
+/* styles.css or App.css */
+.header_navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 999;
+  transition: background-color 0.3s ease;
+  background-color: transparent;
+}
+
+.header_navbar.scrolled {
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header_navbar.scrolled .nav-link {
+  color: #333;
+}
