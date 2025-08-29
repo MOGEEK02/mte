@@ -2,10 +2,26 @@ import React, { useState, useEffect } from "react";
 
 const HomePage: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
+
+      // Detect active section
+      const sections = ["home", "about", "services", "contact"];
+      const scrollPos = window.scrollY + 200;
+
+      for (let sec of sections) {
+        const el = document.getElementById(sec);
+        if (el) {
+          const { offsetTop, offsetHeight } = el;
+          if (scrollPos >= offsetTop && scrollPos < offsetTop + offsetHeight) {
+            setActiveSection(sec);
+            break;
+          }
+        }
+      }
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -15,6 +31,7 @@ const HomePage: React.FC = () => {
   return (
     <>
       <section className="header_area">
+        {/* Navbar */}
         <div className={`header_navbar ${isScrolled ? "scrolled" : ""}`}>
           <div className="container">
             <div className="row align-items-center">
@@ -25,8 +42,8 @@ const HomePage: React.FC = () => {
                     <img
                       src={
                         isScrolled
-                          ? "/images/logo.png"
-                          : "/images/logo white.png"
+                          ? "mte/images/logo.png"
+                          : "mte/images/logo white.png"
                       }
                       alt="Logo"
                     />
@@ -49,28 +66,24 @@ const HomePage: React.FC = () => {
                     <span className="navbar-toggler-icon"></span>
                   </button>
 
-                  <div id="navbarNav" className="font-bold">
+                  <div className="" id="navbarNav">
                     <ul className="navbar-nav ms-auto">
-                      <li className="nav-item">
-                        <a className="nav-link active" href="#home">
-                          Home
-                        </a>
-                      </li>
-                      <li className="nav-item">
-                        <a className="nav-link" href="#about">
-                          About Me
-                        </a>
-                      </li>
-                      <li className="nav-item">
-                        <a className="nav-link" href="#services">
-                          Services
-                        </a>
-                      </li>
-                      <li className="nav-item">
-                        <a className="nav-link" href="#contact">
-                          Contact
-                        </a>
-                      </li>
+                      {["home", "about", "services", "contact"].map((sec) => (
+                        <li className="nav-item" key={sec}>
+                          <a
+                            className={`nav-link ${
+                              activeSection === sec
+                                ? "text-warning fw-bold" // active link yellow
+                                : isScrolled
+                                ? "text-dark"
+                                : "text-white"
+                            }`}
+                            href={`#${sec}`}
+                          >
+                            {sec.charAt(0).toUpperCase() + sec.slice(1)}
+                          </a>
+                        </li>
+                      ))}
                     </ul>
                   </div>
                 </nav>
@@ -83,7 +96,7 @@ const HomePage: React.FC = () => {
         <div id="home" className="header_slider">
           <div
             className="single_slider bg_cover d-flex align-items-center"
-            style={{ backgroundImage: "url(/images/backg.png)" }}
+            style={{ backgroundImage: "url(mte/images/backg.png)" }}
           >
             <div className="container">
               <div className="row">
