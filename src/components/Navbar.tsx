@@ -42,8 +42,8 @@ const HomePage: React.FC = () => {
                     <img
                       src={
                         isScrolled
-                          ? "mte/images/logo.png"
-                          : "mte/images/logo white.png"
+                          ? "images/logo.png"
+                          : "images/logo white.png"
                       }
                       alt="Logo"
                     />
@@ -96,7 +96,7 @@ const HomePage: React.FC = () => {
         <div id="home" className="header_slider">
           <div
             className="single_slider bg_cover d-flex align-items-center"
-            style={{ backgroundImage: "url(mte/images/backg.png)" }}
+            style={{ backgroundImage: "url(images/backg.png)" }}
           >
             <div className="container">
               <div className="row">
