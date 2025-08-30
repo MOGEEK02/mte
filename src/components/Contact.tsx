@@ -4,7 +4,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 
 const Contact: React.FC = () => {
   return (
-    <section id="contact" className="bg-light py-5">
+    <section id="contact" className="py-5" style={{ background: 'linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%)' }}>
       <div className="container">
         {/* Section Header */}
         <div className="text-center mb-5">
@@ -12,65 +12,87 @@ const Contact: React.FC = () => {
             Contact <span className="text-warning">Us</span>
           </h3>
           <p className="lead text-muted mt-3">
-            Reach us easily via phone, WhatsApp.
+            Reach us easily via phone, WhatsApp, or visit our location.
           </p>
         </div>
 
-        {/* Contact Info */}
-        <div className="row justify-content-center text-center">
-          <div className="col-md-8 col-lg-6">
-            <div className="bg-white p-4 rounded shadow">
-              {/* WhatsApp */}
-              <div className="mb-4">
-                <a
-                  href="https://wa.me/213778461682"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="d-flex align-items-center justify-content-center text-success mb-2"
-                  style={{ fontSize: '3rem', textDecoration: 'none' }}
-                >
-                  <i className="fab fa-whatsapp"></i>
+        {/* Contact Cards */}
+        <div className="row justify-content-center g-4">
+          {/* WhatsApp */}
+          <div className="col-md-6 col-lg-4">
+            <div className="text-center bg-white p-4 rounded-4 shadow-sm hover-shadow">
+              <a
+                href="https://wa.me/213778461682"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-success d-inline-block mb-3"
+                style={{ fontSize: '3rem' }}
+              >
+                <i className="fab fa-whatsapp"></i>
+              </a>
+              <h4 className="mb-1">
+                <a href="https://wa.me/213778461682" className="text-success text-decoration-none" style={{ fontSize: '1.5rem' }}>
+                  +213 778 461 682
                 </a>
-                <h4 className="mb-1">
-                  <a href="https://wa.me/213778461682" className="text-success" style={{ fontSize: '1.8rem', textDecoration: 'none' }}>
-                    +213 778 461 682
-                  </a>
-                </h4>
-                <p className="text-muted">Chat with us on WhatsApp</p>
-              </div>
+              </h4>
+              <p className="text-muted">Chat with us on WhatsApp</p>
+            </div>
+          </div>
 
-              {/* Call */}
-              <div className="mb-4">
-                <a
-                  href="tel:+213778461682"
-                  className="d-flex align-items-center justify-content-center text-primary mb-2"
-                  style={{ fontSize: '2.5rem', textDecoration: 'none' }}
-                >
-                  <i className="fas fa-phone-alt"></i>
+          {/* Call */}
+          <div className="col-md-6 col-lg-4">
+            <div className="text-center bg-white p-4 rounded-4 shadow-sm hover-shadow">
+              <a
+                href="tel:+213778461682"
+                className="text-primary d-inline-block mb-3"
+                style={{ fontSize: '3rem' }}
+              >
+                <i className="fas fa-phone-alt"></i>
+              </a>
+              <h4 className="mb-1">
+                <a href="tel:+213778461682" className="text-primary text-decoration-none" style={{ fontSize: '1.5rem' }}>
+                  +213 778 461 682
                 </a>
-                <h5 className="mb-1">
-                  <a href="tel:+213778461682" className="text-primary" style={{ fontSize: '1.5rem', textDecoration: 'none' }}>
-                    +213 778 461 682
-                  </a>
-                </h5>
-                <p className="text-muted">Give us a call</p>
-              </div>
+              </h4>
+              <p className="text-muted">Give us a call</p>
+            </div>
+          </div>
 
-              {/* Address */}
-              <div>
-                <i className="fas fa-map-marker-alt text-danger" style={{ fontSize: '2rem' }}></i>
-                <p className="mt-2 mb-0" style={{ fontSize: '1.2rem' }}>
+          {/* Address */}
+          <div className="col-md-6 col-lg-4">
+            <div className="text-center bg-white p-4 rounded-4 shadow-sm hover-shadow">
+              <a
+                href="https://maps.app.goo.gl/o5DLijMqhsTaiac19"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-danger d-inline-block mb-3"
+                style={{ fontSize: '3rem' }}
+              >
+                <i className="fas fa-map-marker-alt"></i>
+              </a>
+              <h4 className="mb-1">
+                <a target="_blank"  
+                href="https://maps.app.goo.gl/o5DLijMqhsTaiac19"
+              
+                
+                className="text-dark text-decoration-none" style={{ fontSize: '1.2rem' }}>
                   Medea, Aindhab, Algeria
-                </p>
-              </div>
+                </a>
+              </h4>
+              <p className="text-muted">Visit our location</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Optional: Hover animation */}
+      {/* Hover shadow effect */}
       <style>
         {`
+          .hover-shadow:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px rgba(0,0,0,0.2);
+            transition: 0.3s;
+          }
           a:hover {
             transform: scale(1.1);
           }
