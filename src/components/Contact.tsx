@@ -71,7 +71,9 @@ const Contact: React.FC = () => {
                 <i className="fas fa-map-marker-alt"></i>
               </a>
               <h4 className="mb-1">
-                <a target="_blank"  
+                <a 
+                target="_blank"
+                rel="noopener noreferrer"
                 href="https://maps.app.goo.gl/o5DLijMqhsTaiac19"
               
                 
