@@ -5,7 +5,7 @@ import CompanyLogosShowcase from "./components/company";
 import AboutUs from "./components/about";
 import ExpertiseSection from "./components/ExpertiseSection";
 import Preloader from "./components/Preloader";
-
+import Contact from "./components/contact";
 import '@fortawesome/fontawesome-free/css/all.min.css';
 function App() {
   return (
@@ -14,7 +14,8 @@ function App() {
       <Preloader/>
       
       <Navbar/>
-     
+    <Contact/>
+    
       <AboutUs/>
        <CompanyLogosShowcase/>
  <MarqueeDemo/> 
