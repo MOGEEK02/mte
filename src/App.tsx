@@ -6,7 +6,6 @@ import ExpertiseSection from "./components/ExpertiseSection";
 import Contact from "./components/Contact";
 import Footer from "./components/footer"
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import { Analytics } from "@vercel/analytics/next"
 
 
 function App() {
