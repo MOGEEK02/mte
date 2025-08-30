@@ -6,7 +6,10 @@ import AboutUs from "./components/about";
 import ExpertiseSection from "./components/ExpertiseSection";
 import Preloader from "./components/Preloader";
 import Contact from "./components/contact";
+import Footer from "./components/footer"
 import '@fortawesome/fontawesome-free/css/all.min.css';
+
+
 function App() {
   return (
     <div> 
@@ -14,13 +17,15 @@ function App() {
       <Preloader/>
       
       <Navbar/>
-    <Contact/>
+   
     
       <AboutUs/>
        <CompanyLogosShowcase/>
- <MarqueeDemo/> 
- <ExpertiseSection/>
 
+ <ExpertiseSection/>
+  <MarqueeDemo/> 
+ <Contact/>
+<Footer/>
      </div>
   );
 }
