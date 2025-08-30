@@ -29,19 +29,17 @@ const Footer: React.FC = () => {
           <div className="col-md-4 mb-4 text-center text-md-start">
             <h5 className="text-uppercase fw-bold mb-3">Connect</h5>
             <div className="d-flex gap-3 mb-3 justify-content-center justify-content-md-start">
-              <a href="https://github.com/yourusername" target="_blank" rel="noopener noreferrer" className="text-light fs-5">
+              <a href="https://github.com/MOGEEK02" target="_blank" rel="noopener noreferrer" className="text-light fs-5">
                 <i className="fab fa-github"></i>
               </a>
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-light fs-5">
+              <a href="https://facebook.com/mogeek02" target="_blank" rel="noopener noreferrer" className="text-light fs-5">
                 <i className="fab fa-facebook"></i>
               </a>
-              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-light fs-5">
-                <i className="fab fa-twitter"></i>
-              </a>
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-light fs-5">
+
+              <a href="https://instagram.com/mooutiem" target="_blank" rel="noopener noreferrer" className="text-light fs-5">
                 <i className="fab fa-instagram"></i>
               </a>
-              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-light fs-5">
+              <a href="https://www.linkedin.com/in/moutie/" target="_blank" rel="noopener noreferrer" className="text-light fs-5">
                 <i className="fab fa-linkedin"></i>
               </a>
               <a href="https://wa.me/213778461682" target="_blank" rel="noopener noreferrer" className="text-success fs-5">
@@ -62,7 +60,7 @@ const Footer: React.FC = () => {
 
         {/* Copyright */}
         <div className="text-center mt-3">
-          <p className="mb-0">&copy; {new Date().getFullYear()} Your Company Name. All rights reserved.</p>
+          <p className="mb-0">&copy; {new Date().getFullYear()} MTE. All rights reserved.</p>
         </div>
       </div>
 

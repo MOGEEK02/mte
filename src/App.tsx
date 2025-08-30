@@ -23,7 +23,6 @@ function App() {
        <CompanyLogosShowcase/>
 
  <ExpertiseSection/>
-  <MarqueeDemo/> 
  <Contact/>
 <Footer/>
      </div>

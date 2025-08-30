@@ -1,12 +1,12 @@
 const cards = [
   {
-    title: "AC & DC Drives",
-    description: "Repair, maintenance, and replacement of industrial motor drives.",
+    title: "Variable Frequency Drives (VFD) & Motor Drives",
+    description: "Repair, calibration, and replacement of AC/DC drives and industrial motor controllers.",
     image: "/images/vfd.jpeg"
   },
   {
-    title: "PLC & I/O Modules",
-    description: "Troubleshooting, programming, and repairing PLC systems and I/O cards.",
+    title: "PLC & Controller Repair",
+    description: "Troubleshooting, programming, and maintenance of industrial PLCs and controllers.",
     image: "/images/plcprogram.jpg"
   },
   {
@@ -15,9 +15,9 @@ const cards = [
     image: "/images/pcb.jpeg"
   },
   {
-    title: "Industrial PCs & HMIs",
-    description: "Maintenance and repair of industrial PCs, touchscreens, and HMI devices.",
-    image: "/images/plcprogram"
+    title: "HMI & Control Panels",
+    description: "Installation, repair, and configuration of Human-Machine Interfaces and operator panels.",
+    image: "/images/hmipanel.jpeg"
   },
   {
     title: "Power Supplies",
@@ -25,9 +25,9 @@ const cards = [
     image: "/images/powersupply.png"
   },
   {
-    title: "Valves & Actuators",
-    description: "Servicing industrial valves, pneumatic and electric actuators.",
-    image: "https://via.placeholder.com/300x200?text=Valves+Actuators"
+    title: "Sensors & Transducers Maintenance",
+    description: "Diagnosis and repair of industrial sensors, temperature probes, pressure, and flow transducers.",
+    image: "/images/sensor.avif"
   },
 
 ];
