@@ -9,7 +9,7 @@ const Footer: React.FC = () => {
         <div className="row">
           {/* About / Company */}
           <div className="col-md-4 mb-4">
-            <h5 className="text-uppercase fw-bold mb-3">About Us</h5>
+            <h5 className="text-uppercase fw-bold mb-3 text-warning">About Us</h5>
             <p>
               We provide professional electronics, automation, and industrial solutions. Connect with us for high-quality service.
             </p>
@@ -17,7 +17,7 @@ const Footer: React.FC = () => {
 
           {/* Quick Links */}
           <div className="col-md-4 mb-4">
-            <h5 className="text-uppercase fw-bold mb-3">Quick Links</h5>
+            <h5 className="text-uppercase fw-bold mb-3 text-warning">Quick Links</h5>
             <ul className="list-unstyled">
               <li><a href="#contact" className="text-light text-decoration-none">Contact</a></li>
               <li><a href="#services" className="text-light text-decoration-none">Services</a></li>
@@ -27,8 +27,8 @@ const Footer: React.FC = () => {
 
           {/* Social & Contact */}
           <div className="col-md-4 mb-4 text-center text-md-start">
-            <h5 className="text-uppercase fw-bold mb-3">Connect</h5>
-            <div className="d-flex gap-3 mb-3 justify-content-center justify-content-md-start">
+            <h5 className="text-uppercase fw-bold mb-3 text-warning">Connect</h5>
+            <div className="d-flex gap-3 mb-3 justify-content-center justify-content-md-start pl-90">
               <a href="https://github.com/MOGEEK02" target="_blank" rel="noopener noreferrer" className="text-light fs-5">
                 <i className="fab fa-github"></i>
               </a>
@@ -42,7 +42,7 @@ const Footer: React.FC = () => {
               <a href="https://www.linkedin.com/in/moutie/" target="_blank" rel="noopener noreferrer" className="text-light fs-5">
                 <i className="fab fa-linkedin"></i>
               </a>
-              <a href="https://wa.me/213778461682" target="_blank" rel="noopener noreferrer" className="text-success fs-5">
+              <a href="https://wa.me/213778461682" target="_blank" rel="noopener noreferrer" className="text-light fs-5">
                 <i className="fab fa-whatsapp"></i>
               </a>
             </div>

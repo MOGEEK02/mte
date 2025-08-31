@@ -34,10 +34,10 @@ const cards = [
 
 export default function ExpertiseSection() {
   return (
-    <section id="services" className="bg-gray-100 lg:px-800 pt-5"> 
+    <section id="services" className="bg-gray-100 lg:px-800 pt-5 "> 
       {/* Section Title */}
 
-       <div className="section_title pl-100">
+       <div className="section_title pl-100 pb-50">
                     <h3  className="title "> Services ­<br/>
                         <span>  What We Do </span>
                     </h3>
