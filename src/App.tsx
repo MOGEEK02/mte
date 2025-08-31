@@ -17,10 +17,9 @@ function App() {
    
     
       <AboutUs/>
-
+       <CompanyLogosShowcase/>
 
  <ExpertiseSection/>
- 
  <Contact/>
 <Footer/>
      </div>
