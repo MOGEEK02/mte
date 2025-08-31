@@ -5,7 +5,7 @@ const AboutUs: React.FC = () => {
     <>
 
 {/* ABOUT */}
-      <section alt="moutie fekhar in sonatrach algerie " id="about" className="about_area pt-120 30 bg-gray-50">
+      <section id="about" className="about_area pt-120 30 bg-gray-50">
         <div className="about_wrapper">
           <div
             className="about_image bg_cover"
@@ -20,7 +20,7 @@ const AboutUs: React.FC = () => {
                       ABOUT ME  <br />   <span> Who I Am & What I Do</span>
                     </h3>
                     <p>
-                     My name is Fekhar Moutie, I’m 24 years old, and I run a specialized business in industrial electronics repair in Algeria. With a strong background in electronics and automation engineering, I have years of experience repairing and maintaining PLCs, industrial control boards, automation systems, and electronic controls.
+                     My name is Fekhar Moutie, Im 24 years old, and I run a specialized business in industrial electronics repair in Algeria. With a strong background in electronics and automation engineering, I have years of experience repairing and maintaining PLCs, industrial control boards, automation systems, and electronic controls.
 
 I work independently, providing personalized attention, honest service, and practical solutions at competitive prices. Every repair is important to me, because I understand that when your machines stop, your business stops too. Whether it’s troubleshooting industrial drives, sensors, or operator panels, I ensure reliable solutions that keep your operations running smoothly. </p>
 <div className="flex gap-5 mt-50  justify-center ">
