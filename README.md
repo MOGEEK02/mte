@@ -1,69 +1,64 @@
-# React + TypeScript + Vite
+# MTE – Réparation Électronique Industrielle
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![MTE Banner](https://moutie.vercel.app/images/logo.png)
 
-Currently, two official plugins are available:
+MTE is a professional industrial electronics repair service based in Médéa, Algeria. This repository contains the source code for the official MTE website and portfolio.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+**Live Website:** [https://moutie.vercel.app/](https://moutie.vercel.app/)
 
-## Expanding the ESLint configuration
+## 🚀 Features
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+* **Modern SPA Architecture:** Built with React and Vite for blazing fast performance.
+* **Dynamic Portfolio:** Supabase-powered backend for showcasing industrial repair projects (images, descriptions, categories).
+* **Responsive Design:** Fully responsive UI crafted with Tailwind CSS v4, providing an excellent experience on mobile and desktop.
+* **SEO Optimized:** Structured metadata (JSON-LD), highly optimized performance, semantic HTML, and proper XML sitemap configuration.
+* **Bilingual Support:** Ready for French (fr-DZ) and Arabic to serve the local Algerian market.
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🛠️ Tech Stack
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+* **Frontend Framework:** React 19
+* **Build Tool:** Vite
+* **Styling:** Tailwind CSS v4 + Bootstrap (legacy support components)
+* **Language:** TypeScript
+* **Routing:** React Router v7
+* **Database/Backend:** Supabase (PostgreSQL)
+* **Deployment:** Vercel
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 📦 Local Development
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/MOGEEK02/mte.git
+   cd mte
+   ```
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+2. **Install dependencies:**
+   Make sure to use `yarn` as the package manager for this project.
+   ```bash
+   yarn install
+   ```
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+3. **Environment Variables:**
+   Create a `.env` file in the root directory and add your Supabase credentials:
+   ```env
+   VITE_SUPABASE_URL=your_supabase_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
+
+4. **Start the development server:**
+   ```bash
+   yarn dev
+   ```
+   The application will be available at `http://localhost:5173`.
+
+5. **Build for production:**
+   ```bash
+   yarn build
+   ```
+
+## 📄 License
+
+This project is licensed under the GPL-3.0 License. See the [package.json](package.json) for details.
+
+---
+*Developed by [Fekhar Moutie](https://github.com/MOGEEK02)*
