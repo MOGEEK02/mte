@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://moutie.vercel.app/sitemap.xml
