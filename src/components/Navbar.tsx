@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from "react";
 
-const navLabels: Record<string, string> = {
-  home: "Accueil | الرئيسية",
-  about: "À Propos | من نحن",
-  services: "Services | خدماتنا",
-  contact: "Contact | اتصل بنا",
-};
-
 const HomePage: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
@@ -15,6 +8,7 @@ const HomePage: React.FC = () => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
 
+      // Detect active section
       const sections = ["home", "about", "services", "contact"];
       const scrollPos = window.scrollY + 200;
 
@@ -51,7 +45,7 @@ const HomePage: React.FC = () => {
                           ? "images/logo.png"
                           : "images/logo white.png"
                       }
-                      alt="MTE Logo – Réparation électronique industrielle"
+                      alt="Logo"
                     />
                   </a>
                 </nav>
@@ -67,26 +61,26 @@ const HomePage: React.FC = () => {
                     data-bs-target="#navbarNav"
                     aria-controls="navbarNav"
                     aria-expanded="false"
-                    aria-label="Navigation"
+                    aria-label="Toggle navigation"
                   >
                     <span className="navbar-toggler-icon"></span>
                   </button>
 
                   <div className="" id="navbarNav">
                     <ul className="navbar-nav ms-auto">
-                      {Object.entries(navLabels).map(([sec, label]) => (
+                      {["home", "about", "services", "contact"].map((sec) => (
                         <li className="nav-item" key={sec}>
                           <a
                             className={`nav-link ${
                               activeSection === sec
-                                ? "text-warning fw-bold"
+                                ? "text-warning fw-bold" // active link yellow
                                 : isScrolled
                                 ? "text-dark"
                                 : "text-white"
                             }`}
                             href={`#${sec}`}
                           >
-                            {label}
+                            {sec.charAt(0).toUpperCase() + sec.slice(1)}
                           </a>
                         </li>
                       ))}
@@ -113,23 +107,14 @@ const HomePage: React.FC = () => {
                       data-wow-duration="1.3s"
                       data-wow-delay="0.2s"
                     >
-                      Réparation Électronique <span>Industrielle</span>
+                      Industrial Electronic repair <span>Service</span>
                     </h2>
-                    <p
-                      className="wow fadeInLeftBig"
-                      data-wow-duration="1.3s"
-                      data-wow-delay="0.4s"
-                      dir="rtl"
-                      style={{ fontSize: "1.3rem", marginBottom: "0.5rem" }}
-                    >
-                      إصلاح الإلكترونيات الصناعية
-                    </p>
                     <p
                       className="wow fadeInLeftBig"
                       data-wow-duration="1.3s"
                       data-wow-delay="0.5s"
                     >
-                      Les meilleures solutions pour votre entreprise | أفضل الحلول لمشروعك
+                      We provide the best solutions for your business
                     </p>
                     <a
                       href="#contact"
@@ -137,7 +122,7 @@ const HomePage: React.FC = () => {
                       data-wow-duration="1.3s"
                       data-wow-delay="0.8s"
                     >
-                      Contactez-nous | اتصل بنا
+                      Contact Us
                     </a>
                   </div>
                 </div>

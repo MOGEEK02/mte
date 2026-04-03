@@ -4,7 +4,7 @@ const AboutUs: React.FC = () => {
   return (
     <>
 
-{/* ABOUT */}
+      {/* ABOUT */}
       <section id="about" className="about_area pt-120 30 bg-gray-50">
         <div className="about_wrapper">
           <div
@@ -17,70 +17,58 @@ const AboutUs: React.FC = () => {
                 <div className="about_content">
                   <div className="section_title">
                     <h3 className="title">
-                      À PROPOS  <br />   <span> Qui suis-je | من أنا</span>
+                      ABOUT ME  <br />   <span> Who I Am & What I Do</span>
                     </h3>
                     <p className="mt-4 text-justify">
-                      Je suis <strong>Fekhar Moutie</strong>, ingénieur en automatisme et électronique basé en Algérie. Spécialisé dans la programmation PLC, le diagnostic de pannes industrielles et la réparation au niveau composant, je propose des solutions complètes de maintenance pour les cartes de contrôle industriel, les systèmes d'automatisation et les réseaux électroniques.
+                      Hello! I'm <strong>Fekhar Moutie</strong>, an Automation and Electronics Engineer based in Algeria. Specializing in PLC programming, industrial fault diagnosis, and component-level repair, I deliver comprehensive maintenance solutions for industrial control boards, automation systems, and electronic networks.
                       <br /><br />
-                      En tant que technicien indépendant, j'ai développé une expertise approfondie en théorie de contrôle, automatisation des processus et intégration de systèmes. Je m'engage à résoudre les pannes complexes directement au niveau PCB, en assurant un temps d'arrêt minimal. Je comprends que lorsque vos machines s'arrêtent, votre activité s'arrête aussi.
+                      Running a specialized business as an independent field technician, I have developed a deep expertise in control theory, process automation, and system integration. I pride myself on resolving complex faults right down to the PCB level, ensuring minimal downtime. I understand that when your machines stop, your business stops too.
                       <br /><br />
-                      Qu'il s'agisse de mettre en service des systèmes SCADA, de configurer des variateurs de vitesse ou de dépanner des entraînements industriels, je fournis des solutions techniques personnalisées, honnêtes et fiables pour maintenir vos opérations à leur efficacité maximale.
+                      Whether it involves commissioning SCADA systems, configuring VFDs, or troubleshooting legacy industrial drives, I provide customized, honest, and highly reliable technical solutions to keep your operations running at peak efficiency.
                     </p>
+                    <div className="flex gap-5 mt-50  justify-center ">
+                      <a href="https://github.com/your-username"
+                        target="_blank"
+                        rel="noopener noreferrer"
 
-                    {/* Arabic version */}
-                    <div dir="rtl" className="mt-4 text-justify" style={{ fontFamily: "inherit", lineHeight: "1.9" }}>
-                      <p>
-                        أنا <strong>فخار موتي</strong>، مهندس أتمتة وإلكترونيات في الجزائر. متخصص في برمجة PLC، تشخيص الأعطال الصناعية، وإصلاح البطاقات الإلكترونية على مستوى المكونات.
-                        <br /><br />
-                        كفني مستقل، طوّرت خبرة عميقة في نظرية التحكم، أتمتة العمليات، وتكامل الأنظمة. أضمن حل الأعطال المعقدة مباشرة على مستوى الـPCB مع تقليل وقت التوقف إلى أدنى حد. أفهم جيداً أنه عندما تتوقف آلاتكم، يتوقف نشاطكم التجاري.
-                        <br /><br />
-                        سواء تعلق الأمر بتشغيل أنظمة SCADA، ضبط محولات التردد، أو إصلاح المحركات الصناعية، أقدم حلولاً تقنية مخصصة وموثوقة للحفاظ على كفاءة عملياتكم.
-                      </p>
+                        className="text-primary hover:text-secondary" >
+                        <i className="fab fa-linkedin fa-2x"></i>
+                      </a>
+                      <a href="https://github.com/your-username"
+                        target="_blank"
+                        rel="noopener noreferrer"
+
+                        className="text-primary hover:text-secondary">
+                        <i className="fab fa-facebook fa-2x"></i>
+                      </a>
+                      <a href="https://github.com/your-username"
+                        target="_blank"
+                        rel="noopener noreferrer"
+
+                        className="text-primary hover:text-secondary">
+                        <i className="fab fa-github fa-2x"></i>
+                      </a>
+                      <a href="www.w.app/213778461682" className="text-primary hover:text-secondary">
+                        <i className="fab fa-whatsapp fa-2x"></i>
+                      </a>
+
                     </div>
 
-<div className="flex gap-5 mt-50  justify-center ">
-  <a href="https://www.linkedin.com/in/moutie/"
-    target="_blank"
-    rel="noopener noreferrer"
-
-className="text-primary hover:text-secondary" >
-    <i className="fab fa-linkedin fa-2x"></i>
-  </a>
-  <a href="https://facebook.com/mogeek02"
-    target="_blank"
-    rel="noopener noreferrer"
-
-className="text-primary hover:text-secondary">
-    <i className="fab fa-facebook fa-2x"></i>
-  </a>
-  <a href="https://github.com/MOGEEK02"
-    target="_blank"
-    rel="noopener noreferrer"
-
-className="text-primary hover:text-secondary">
-    <i className="fab fa-github fa-2x"></i>
-  </a>
-  <a href="https://wa.me/213778461682" className="text-primary hover:text-secondary">
-    <i className="fab fa-whatsapp fa-2x"></i>
-  </a>
-  
-</div>
-
                   </div>
-                 
+
                 </div>
 
                 <div>
-                  
+
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        </section>
+      </section>
 
     </>
-    );
+  );
 }
 export default AboutUs;
