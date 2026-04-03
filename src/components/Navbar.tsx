@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 const navLabels: Record<string, string> = {
   home: "Accueil",
@@ -90,6 +91,14 @@ const HomePage: React.FC = () => {
                           </a>
                         </li>
                       ))}
+                      <li className="nav-item">
+                        <Link
+                          className={`nav-link ${isScrolled ? "text-dark" : "text-white"}`}
+                          to="/portfolio"
+                        >
+                          Portfolio
+                        </Link>
+                      </li>
                     </ul>
                   </div>
                 </nav>
