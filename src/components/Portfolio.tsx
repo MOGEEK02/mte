@@ -156,7 +156,8 @@ const Portfolio: React.FC = () => {
                         <div
                           id={`carousel-${item.id}`}
                           className="carousel slide"
-                          data-bs-ride="false"
+                          data-bs-ride="carousel"
+                          data-bs-interval="3000"
                         >
                           <div className="carousel-inner" style={{ backgroundColor: "#000" }}>
                             {sortedMedia.map((media, idx) => (
