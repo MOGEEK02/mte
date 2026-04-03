@@ -9,10 +9,14 @@ const Contact: React.FC = () => {
         {/* Section Header */}
         <div className="text-center mb-5">
           <h3 className="display-5 fw-bold">
-            Contact <span className="text-warning">Us</span>
+            Contactez-<span className="text-warning">nous</span>
           </h3>
+          <p className="lead text-muted mt-2" dir="rtl">اتصل بنا</p>
           <p className="lead text-muted mt-3">
-            Reach us easily via phone, WhatsApp, or visit our location.
+            Contactez-nous facilement par téléphone, WhatsApp ou visitez notre emplacement.
+          </p>
+          <p className="text-muted" dir="rtl">
+            تواصل معنا بسهولة عبر الهاتف، واتساب أو قم بزيارة موقعنا.
           </p>
         </div>
 
@@ -35,7 +39,8 @@ const Contact: React.FC = () => {
                   +213 778 461 682
                 </a>
               </h4>
-              <p className="text-muted">Chat with us on WhatsApp</p>
+              <p className="text-muted">Discutez avec nous sur WhatsApp</p>
+              <p className="text-muted small" dir="rtl">تواصل معنا عبر واتساب</p>
             </div>
           </div>
 
@@ -54,7 +59,8 @@ const Contact: React.FC = () => {
                   +213 778 461 682
                 </a>
               </h4>
-              <p className="text-muted">Give us a call</p>
+              <p className="text-muted">Appelez-nous directement</p>
+              <p className="text-muted small" dir="rtl">اتصل بنا مباشرة</p>
             </div>
           </div>
 
@@ -75,13 +81,12 @@ const Contact: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://maps.app.goo.gl/o5DLijMqhsTaiac19"
-              
-                
                 className="text-dark text-decoration-none" style={{ fontSize: '1.2rem' }}>
-                  Medea, Aindhab, Algeria
+                  Médéa, Ain Dhab, Algérie
                 </a>
               </h4>
-              <p className="text-muted">Visit our location</p>
+              <p className="text-muted">Visitez notre emplacement</p>
+              <p className="text-muted small" dir="rtl">المدية، عين الذهب، الجزائر</p>
             </div>
           </div>
         </div>
