@@ -4,7 +4,7 @@ const AboutUs: React.FC = () => {
   return (
     <>
 
-{/* ABOUT */}
+{/* À PROPOS */}
       <section id="about" className="about_area pt-120 30 bg-gray-50">
         <div className="about_wrapper">
           <div
@@ -17,35 +17,35 @@ const AboutUs: React.FC = () => {
                 <div className="about_content">
                   <div className="section_title">
                     <h3 className="title">
-                      ABOUT ME  <br />   <span> Who I Am & What I Do</span>
+                      À PROPOS  <br />   <span> Qui suis-je et ce que je fais</span>
                     </h3>
                     <p>
-                     My name is Fekhar Moutie, Im 24 years old, and I run a specialized business in industrial electronics repair in Algeria. With a strong background in electronics and automation engineering, I have years of experience repairing and maintaining PLCs, industrial control boards, automation systems, and electronic controls.
+                     Je m'appelle Fekhar Moutie, j'ai 24 ans et je dirige une entreprise spécialisée dans la réparation d'électronique industrielle en Algérie. Fort d'une solide formation en électronique et en ingénierie d'automatisation, j'ai des années d'expérience dans la réparation et la maintenance d'automates PLC, de cartes de contrôle industriel, de systèmes d'automatisation et de commandes électroniques.
 
-I work independently, providing personalized attention, honest service, and practical solutions at competitive prices. Every repair is important to me, because I understand that when your machines stop, your business stops too. Whether it’s troubleshooting industrial drives, sensors, or operator panels, I ensure reliable solutions that keep your operations running smoothly. </p>
+Je travaille de manière indépendante, en offrant une attention personnalisée, un service honnête et des solutions pratiques à des prix compétitifs. Chaque réparation compte pour moi, car je comprends que lorsque vos machines s'arrêtent, votre activité s'arrête aussi. Qu'il s'agisse de dépanner des variateurs industriels, des capteurs ou des panneaux opérateur, j'assure des solutions fiables qui maintiennent vos opérations en marche. </p>
 <div className="flex gap-5 mt-50  justify-center ">
-  <a href="https://github.com/your-username"
+  <a href="https://www.linkedin.com/in/moutie/"
     target="_blank"
     rel="noopener noreferrer"
 
 className="text-primary hover:text-secondary" >
     <i className="fab fa-linkedin fa-2x"></i>
   </a>
-  <a href="https://github.com/your-username"
+  <a href="https://facebook.com/mogeek02"
     target="_blank"
     rel="noopener noreferrer"
 
 className="text-primary hover:text-secondary">
     <i className="fab fa-facebook fa-2x"></i>
   </a>
-  <a href="https://github.com/your-username"
+  <a href="https://github.com/MOGEEK02"
     target="_blank"
     rel="noopener noreferrer"
 
 className="text-primary hover:text-secondary">
     <i className="fab fa-github fa-2x"></i>
   </a>
-  <a href="www.w.app/213778461682" className="text-primary hover:text-secondary">
+  <a href="https://wa.me/213778461682" className="text-primary hover:text-secondary">
     <i className="fab fa-whatsapp fa-2x"></i>
   </a>
   

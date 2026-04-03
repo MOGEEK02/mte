@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
 
+const navLabels: Record<string, string> = {
+  home: "Accueil",
+  about: "À Propos",
+  services: "Services",
+  contact: "Contact",
+};
+
 const HomePage: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
@@ -8,7 +15,6 @@ const HomePage: React.FC = () => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
 
-      // Detect active section
       const sections = ["home", "about", "services", "contact"];
       const scrollPos = window.scrollY + 200;
 
@@ -45,13 +51,13 @@ const HomePage: React.FC = () => {
                           ? "images/logo.png"
                           : "images/logo white.png"
                       }
-                      alt="Logo"
+                      alt="MTE – Réparation électronique industrielle en Algérie"
                     />
                   </a>
                 </nav>
               </div>
 
-              {/* Navigation Menu */}
+              {/* Menu de navigation */}
               <div className="col-lg-10 col-6">
                 <nav className="navbar navbar-expand-lg justify-content-end">
                   <button
@@ -61,26 +67,26 @@ const HomePage: React.FC = () => {
                     data-bs-target="#navbarNav"
                     aria-controls="navbarNav"
                     aria-expanded="false"
-                    aria-label="Toggle navigation"
+                    aria-label="Ouvrir le menu"
                   >
                     <span className="navbar-toggler-icon"></span>
                   </button>
 
                   <div className="" id="navbarNav">
                     <ul className="navbar-nav ms-auto">
-                      {["home", "about", "services", "contact"].map((sec) => (
+                      {Object.entries(navLabels).map(([sec, label]) => (
                         <li className="nav-item" key={sec}>
                           <a
                             className={`nav-link ${
                               activeSection === sec
-                                ? "text-warning fw-bold" // active link yellow
+                                ? "text-warning fw-bold"
                                 : isScrolled
                                 ? "text-dark"
                                 : "text-white"
                             }`}
                             href={`#${sec}`}
                           >
-                            {sec.charAt(0).toUpperCase() + sec.slice(1)}
+                            {label}
                           </a>
                         </li>
                       ))}
@@ -92,7 +98,7 @@ const HomePage: React.FC = () => {
           </div>
         </div>
 
-        {/* Header Slider */}
+        {/* Slider d'en-tête */}
         <div id="home" className="header_slider">
           <div
             className="single_slider bg_cover d-flex align-items-center"
@@ -107,14 +113,14 @@ const HomePage: React.FC = () => {
                       data-wow-duration="1.3s"
                       data-wow-delay="0.2s"
                     >
-                      Industrial Electronic repair <span>Service</span>
+                      Réparation Électronique <span>Industrielle</span>
                     </h2>
                     <p
                       className="wow fadeInLeftBig"
                       data-wow-duration="1.3s"
                       data-wow-delay="0.5s"
                     >
-                      We provide the best solutions for your business
+                      Nous offrons les meilleures solutions pour votre entreprise
                     </p>
                     <a
                       href="#contact"
@@ -122,7 +128,7 @@ const HomePage: React.FC = () => {
                       data-wow-duration="1.3s"
                       data-wow-delay="0.8s"
                     >
-                      Contact Us
+                      Contactez-nous
                     </a>
                   </div>
                 </div>

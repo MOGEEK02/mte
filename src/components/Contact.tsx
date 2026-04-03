@@ -6,17 +6,17 @@ const Contact: React.FC = () => {
   return (
     <section id="contact" className="py-5" style={{ background: 'linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%)' }}>
       <div className="container">
-        {/* Section Header */}
+        {/* En-tête de section */}
         <div className="text-center mb-5">
           <h3 className="display-5 fw-bold">
-            Contact <span className="text-warning">Us</span>
+            Contactez-<span className="text-warning">nous</span>
           </h3>
           <p className="lead text-muted mt-3">
-            Reach us easily via phone, WhatsApp, or visit our location.
+            Contactez-nous facilement par téléphone, WhatsApp ou visitez notre emplacement.
           </p>
         </div>
 
-        {/* Contact Cards */}
+        {/* Cartes de contact */}
         <div className="row justify-content-center g-4">
           {/* WhatsApp */}
           <div className="col-md-6 col-lg-4">
@@ -35,11 +35,11 @@ const Contact: React.FC = () => {
                   +213 778 461 682
                 </a>
               </h4>
-              <p className="text-muted">Chat with us on WhatsApp</p>
+              <p className="text-muted">Discutez avec nous sur WhatsApp</p>
             </div>
           </div>
 
-          {/* Call */}
+          {/* Appel */}
           <div className="col-md-6 col-lg-4">
             <div className="text-center bg-white p-4 rounded-4 shadow-sm hover-shadow">
               <a
@@ -54,11 +54,11 @@ const Contact: React.FC = () => {
                   +213 778 461 682
                 </a>
               </h4>
-              <p className="text-muted">Give us a call</p>
+              <p className="text-muted">Appelez-nous directement</p>
             </div>
           </div>
 
-          {/* Address */}
+          {/* Adresse */}
           <div className="col-md-6 col-lg-4">
             <div className="text-center bg-white p-4 rounded-4 shadow-sm hover-shadow">
               <a
@@ -78,16 +78,16 @@ const Contact: React.FC = () => {
               
                 
                 className="text-dark text-decoration-none" style={{ fontSize: '1.2rem' }}>
-                  Medea, Aindhab, Algeria
+                  Médéa, Ain Dhab, Algérie
                 </a>
               </h4>
-              <p className="text-muted">Visit our location</p>
+              <p className="text-muted">Visitez notre emplacement</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Hover shadow effect */}
+      {/* Effet hover */}
       <style>
         {`
           .hover-shadow:hover {
