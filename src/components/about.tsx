@@ -20,9 +20,12 @@ const AboutUs: React.FC = () => {
                       À PROPOS  <br />   <span> Qui suis-je et ce que je fais</span>
                     </h3>
                     <p>
-                     Je m'appelle Fekhar Moutie, j'ai 24 ans et je dirige une entreprise spécialisée dans la réparation d'électronique industrielle en Algérie. Fort d'une solide formation en électronique et en ingénierie d'automatisation, j'ai des années d'expérience dans la réparation et la maintenance d'automates PLC, de cartes de contrôle industriel, de systèmes d'automatisation et de commandes électroniques.
-
-Je travaille de manière indépendante, en offrant une attention personnalisée, un service honnête et des solutions pratiques à des prix compétitifs. Chaque réparation compte pour moi, car je comprends que lorsque vos machines s'arrêtent, votre activité s'arrête aussi. Qu'il s'agisse de dépanner des variateurs industriels, des capteurs ou des panneaux opérateur, j'assure des solutions fiables qui maintiennent vos opérations en marche. </p>
+                      Bonjour ! Je suis <strong>Fekhar Moutie</strong>, ingénieur en automatisme et électronique basé en Algérie. Spécialisé dans la programmation PLC, le diagnostic de pannes industrielles et la réparation au niveau composant, je propose des solutions de maintenance complètes pour les cartes de contrôle industriel, les systèmes d'automatisation et les réseaux électroniques.
+                      <br /><br />
+                      En tant que technicien de terrain indépendant dirigeant une entreprise spécialisée, j'ai développé une expertise approfondie en théorie du contrôle, automatisation des processus et intégration de systèmes. Je m'engage à résoudre les pannes complexes jusqu'au niveau PCB, en garantissant un temps d'arrêt minimal. Je comprends que lorsque vos machines s'arrêtent, votre activité s'arrête aussi.
+                      <br /><br />
+                      Qu'il s'agisse de mettre en service des systèmes SCADA, de configurer des variateurs de vitesse (VFD) ou de dépanner des entraînements industriels anciens, je fournis des solutions techniques personnalisées, honnêtes et hautement fiables pour maintenir vos opérations à leur efficacité maximale.
+                    </p>
 <div className="flex gap-5 mt-50  justify-center ">
   <a href="https://www.linkedin.com/in/moutie/"
     target="_blank"
