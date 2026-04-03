@@ -28,7 +28,6 @@ function getYouTubeId(url: string): string | null {
 const Portfolio: React.FC = () => {
   const [items, setItems] = useState<PortfolioItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<"all" | "image" | "video">("all");
   const [lightbox, setLightbox] = useState<{ url: string; type: string } | null>(null);
 
   useEffect(() => {
@@ -50,14 +49,6 @@ const Portfolio: React.FC = () => {
     }
     fetchPortfolio();
   }, []);
-
-  // Filter items that have at least one media of the selected type
-  const filteredItems =
-    filter === "all"
-      ? items
-      : items.filter((item) =>
-          item.portfolio_media?.some((m) => m.media_type === filter)
-        );
 
   return (
     <>
@@ -115,78 +106,49 @@ const Portfolio: React.FC = () => {
         </div>
       </section>
 
-      {/* Filter Tabs */}
-      <section className="py-4" style={{ background: "#f8f9fa" }}>
-        <div className="container text-center">
-          <div className="btn-group" role="group">
-            {[
-              { key: "all", label: "Tout" },
-              { key: "image", label: "Photos" },
-              { key: "video", label: "Vidéos" },
-            ].map((tab) => (
-              <button
-                key={tab.key}
-                className={`btn ${
-                  filter === tab.key
-                    ? "btn-warning text-dark fw-bold"
-                    : "btn-outline-secondary"
-                }`}
-                onClick={() => setFilter(tab.key as typeof filter)}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Portfolio Grid */}
-      <section className="py-5" style={{ background: "#f8f9fa", minHeight: "60vh" }}>
+      <section className="py-5" style={{ background: "#f8f9fa", minHeight: "70vh" }}>
         <div className="container">
           {loading ? (
             <div className="text-center py-5">
-              <div className="spinner-border text-warning" role="status">
+              <div className="spinner-border text-warning" role="status" style={{ width: "3rem", height: "3rem" }}>
                 <span className="visually-hidden">Chargement...</span>
               </div>
-              <p className="mt-3 text-muted">Chargement du portfolio...</p>
+              <p className="mt-3 text-muted fw-bold">Chargement de nos projets...</p>
             </div>
-          ) : filteredItems.length === 0 ? (
+          ) : items.length === 0 ? (
             <div className="text-center py-5">
               <i
-                className="fas fa-folder-open"
-                style={{ fontSize: "4rem", color: "#ccc" }}
+                className="fas fa-folder-open mb-3"
+                style={{ fontSize: "5rem", color: "#dcdde1" }}
               ></i>
-              <p className="mt-3 text-muted fs-5">
-                Aucun projet trouvé pour le moment.
-              </p>
+              <h4 className="text-muted fw-bold">Aucun projet trouvé</h4>
+              <p className="text-muted">Revenez bientôt pour découvrir nos dernières réparations.</p>
             </div>
           ) : (
-            <div className="row g-4">
-              {filteredItems.map((item) => {
+            <div className="row g-5">
+              {items.map((item) => {
                 const sortedMedia = [
                   ...(item.portfolio_media || []),
                 ].sort((a, b) => a.sort_order - b.sort_order);
 
                 return (
-                  <div key={item.id} className="col-md-6 col-lg-4">
+                  <div key={item.id} className="col-12 col-lg-6">
                     <div
-                      className="card h-100 border-0 shadow-sm"
+                      className="card h-100 border-0 shadow"
                       style={{
-                        borderRadius: "16px",
+                        borderRadius: "20px",
                         overflow: "hidden",
-                        transition: "transform 0.3s, box-shadow 0.3s",
+                        backgroundColor: "#fff",
+                        transition: "all 0.3s ease-in-out",
                       }}
                       onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLElement).style.transform =
-                          "translateY(-8px)";
-                        (e.currentTarget as HTMLElement).style.boxShadow =
-                          "0 20px 40px rgba(0,0,0,0.15)";
+                        (e.currentTarget as HTMLElement).style.transform = "translateY(-5px)";
+                        (e.currentTarget as HTMLElement).style.boxShadow = "0 1rem 3rem rgba(0,0,0,0.15)";
                       }}
                       onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLElement).style.transform =
-                          "translateY(0)";
-                        (e.currentTarget as HTMLElement).style.boxShadow =
-                          "0 2px 8px rgba(0,0,0,0.08)";
+                        (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
+                        (e.currentTarget as HTMLElement).style.boxShadow = "0 .5rem 1rem rgba(0,0,0,0.15)";
                       }}
                     >
                       {/* Media Carousel */}
@@ -196,53 +158,46 @@ const Portfolio: React.FC = () => {
                           className="carousel slide"
                           data-bs-ride="false"
                         >
-                          <div className="carousel-inner">
+                          <div className="carousel-inner" style={{ backgroundColor: "#000" }}>
                             {sortedMedia.map((media, idx) => (
                               <div
                                 key={media.id}
-                                className={`carousel-item ${
-                                  idx === 0 ? "active" : ""
-                                }`}
+                                className={`carousel-item ${idx === 0 ? "active" : ""}`}
                               >
                                 {media.media_type === "image" ? (
-                                  <img
-                                    src={media.media_url}
-                                    alt={`${item.title} – photo ${idx + 1}`}
-                                    className="d-block w-100"
-                                    style={{
-                                      height: "260px",
-                                      objectFit: "cover",
-                                      cursor: "pointer",
-                                    }}
-                                    onClick={() =>
-                                      setLightbox({
-                                        url: media.media_url,
-                                        type: "image",
-                                      })
-                                    }
-                                  />
+                                  <div style={{ paddingBottom: "65%", position: "relative" }}>
+                                    <img
+                                      src={media.media_url}
+                                      alt={`${item.title} – photo ${idx + 1}`}
+                                      className="position-absolute top-0 start-0 w-100 h-100"
+                                      style={{
+                                        objectFit: "contain",
+                                        backgroundColor: "#f8f9fa",
+                                        cursor: "pointer",
+                                      }}
+                                      onClick={() =>
+                                        setLightbox({
+                                          url: media.media_url,
+                                          type: "image",
+                                        })
+                                      }
+                                    />
+                                  </div>
                                 ) : (
-                                  <div
-                                    style={{
-                                      height: "260px",
-                                      background: "#000",
-                                    }}
-                                  >
+                                  <div style={{ paddingBottom: "65%", position: "relative" }}>
                                     {getYouTubeId(media.media_url) ? (
                                       <iframe
-                                        src={`https://www.youtube.com/embed/${getYouTubeId(
-                                          media.media_url
-                                        )}`}
+                                        src={`https://www.youtube.com/embed/${getYouTubeId(media.media_url)}`}
                                         title={item.title}
-                                        className="w-100 h-100"
+                                        className="position-absolute top-0 start-0 w-100 h-100"
                                         style={{ border: "none" }}
                                         allowFullScreen
                                       />
                                     ) : (
                                       <video
                                         src={media.media_url}
-                                        className="w-100 h-100"
-                                        style={{ objectFit: "cover" }}
+                                        className="position-absolute top-0 start-0 w-100 h-100"
+                                        style={{ objectFit: "contain", backgroundColor: "#000" }}
                                         controls
                                       />
                                     )}
@@ -252,88 +207,74 @@ const Portfolio: React.FC = () => {
                             ))}
                           </div>
 
-                          {/* Carousel arrows (only if > 1 media) */}
+                          {/* Controls & Indicators */}
                           {sortedMedia.length > 1 && (
                             <>
+                              <div className="carousel-indicators mb-2">
+                                {sortedMedia.map((_, idx) => (
+                                  <button
+                                    key={idx}
+                                    type="button"
+                                    data-bs-target={`#carousel-${item.id}`}
+                                    data-bs-slide-to={idx}
+                                    className={idx === 0 ? "active" : ""}
+                                    aria-current={idx === 0 ? "true" : "false"}
+                                    aria-label={`Slide ${idx + 1}`}
+                                  ></button>
+                                ))}
+                              </div>
                               <button
                                 className="carousel-control-prev"
                                 type="button"
                                 data-bs-target={`#carousel-${item.id}`}
                                 data-bs-slide="prev"
+                                style={{ width: "10%" }}
                               >
-                                <span
-                                  className="carousel-control-prev-icon"
-                                  style={{
-                                    background:
-                                      "rgba(0,0,0,0.5)",
-                                    borderRadius: "50%",
-                                    padding: "12px",
-                                  }}
-                                />
+                                <span className="carousel-control-prev-icon" aria-hidden="true" style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }}></span>
+                                <span className="visually-hidden">Précédent</span>
                               </button>
                               <button
                                 className="carousel-control-next"
                                 type="button"
                                 data-bs-target={`#carousel-${item.id}`}
                                 data-bs-slide="next"
+                                style={{ width: "10%" }}
                               >
-                                <span
-                                  className="carousel-control-next-icon"
-                                  style={{
-                                    background:
-                                      "rgba(0,0,0,0.5)",
-                                    borderRadius: "50%",
-                                    padding: "12px",
-                                  }}
-                                />
+                                <span className="carousel-control-next-icon" aria-hidden="true" style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }}></span>
+                                <span className="visually-hidden">Suivant</span>
                               </button>
                             </>
-                          )}
-
-                          {/* Media count badge */}
-                          {sortedMedia.length > 1 && (
-                            <span
-                              className="badge"
-                              style={{
-                                position: "absolute",
-                                top: "12px",
-                                right: "12px",
-                                background: "rgba(0,0,0,0.6)",
-                                color: "#fff",
-                                borderRadius: "20px",
-                                padding: "4px 10px",
-                                fontSize: "0.75rem",
-                              }}
-                            >
-                              <i className="fas fa-images me-1"></i>
-                              {sortedMedia.length}
-                            </span>
                           )}
                         </div>
                       )}
 
                       {/* Card Body */}
-                      <div className="card-body p-4">
-                        <h5
-                          className="card-title fw-bold mb-2"
-                          style={{ color: "#1a1a2e" }}
-                        >
-                          {item.title}
-                        </h5>
-                        <p
-                          className="card-text text-muted"
-                          style={{ fontSize: "0.9rem", lineHeight: "1.6" }}
-                        >
+                      <div className="card-body p-5">
+                        <div className="d-flex justify-content-between align-items-start mb-3">
+                          <h4 className="card-title fw-bolder mb-0" style={{ color: "#1a1a2e" }}>
+                            {item.title}
+                          </h4>
+                          <span className="badge bg-warning text-dark px-3 py-2 rounded-pill shadow-sm">
+                            <i className="fas fa-check-circle me-1"></i> Réalisé
+                          </span>
+                        </div>
+                        <p className="card-text text-secondary fs-6 mb-4" style={{ lineHeight: "1.7" }}>
                           {item.description}
                         </p>
-                        <small className="text-muted" style={{ opacity: 0.6 }}>
-                          <i className="fas fa-calendar-alt me-1"></i>
-                          {new Date(item.created_at).toLocaleDateString("fr-FR", {
-                            day: "numeric",
-                            month: "long",
-                            year: "numeric",
-                          })}
-                        </small>
+                        <hr className="text-muted opacity-25" />
+                        <div className="d-flex justify-content-between align-items-center mt-3">
+                          <span className="text-secondary small fw-medium">
+                            <i className="far fa-calendar-alt text-warning me-2"></i>
+                            {new Date(item.created_at).toLocaleDateString("fr-FR", {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                            })}
+                          </span>
+                          <span className="text-secondary small fw-medium">
+                             MTE Algérie
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
