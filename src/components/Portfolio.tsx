@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../utils/supabase";
 import { Link } from "react-router-dom";
-import { ChevronLeft, ChevronRight, Loader2, Info, X, Play, Send, Heart, MessageCircle } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, Info, X, Play } from "lucide-react";
 import Footer from "./footer";
 
 interface PortfolioItem {
@@ -94,6 +94,18 @@ const PortfolioCard = ({ item, setLightbox }: { item: PortfolioItem; setLightbox
         </div>
       </header>
 
+      {/* Dot Indicators - Moved above image per user feedback */}
+      {sortedMedia.length > 1 && (
+        <div className="w-full flex justify-center gap-1.5 pb-2 -mt-1">
+          {sortedMedia.map((_, idx) => (
+            <div 
+              key={idx}
+              className={`h-[4px] rounded-full transition-all duration-300 ${idx === currentIndex ? "bg-[#ff6600] w-4" : "bg-slate-200 w-[4px]"}`}
+            />
+          ))}
+        </div>
+      )}
+
       {/* Media Carousel - Square/Vertical aspect ratio like IG */}
       <div 
         className="relative w-full bg-slate-950 flex items-center justify-center text-white aspect-[4/5] sm:aspect-square"
@@ -173,23 +185,8 @@ const PortfolioCard = ({ item, setLightbox }: { item: PortfolioItem; setLightbox
         )}
       </div>
 
-      {/* Instagram Native Action Bar */}
-      <div className="px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between">
-         <div className="flex items-center gap-4">
-            <button className="text-slate-900 hover:text-slate-500 transition-colors">
-               <Heart size={24} strokeWidth={1.5} />
-            </button>
-            <button className="text-slate-900 hover:text-slate-500 transition-colors">
-               <MessageCircle size={24} strokeWidth={1.5} />
-            </button>
-            <Link to={`/portfolio/${item.id}`} className="text-slate-900 hover:text-slate-500 transition-colors">
-               <Send size={24} strokeWidth={1.5} className="transform -rotate-12 mt-[-3px]" />
-            </Link>
-         </div>
-      </div>
-
       {/* Post Content */}
-      <div className="px-3 sm:px-4 pb-4">
+      <div className="p-3 sm:p-4 pb-4 mt-2">
         {/* SEO Semantic Caption & Title */}
         <div className="mb-2 flex flex-col gap-1">
            <Link to={`/portfolio/${item.id}`} className="inline-block no-underline group hover:opacity-80 transition-opacity">
@@ -205,18 +202,6 @@ const PortfolioCard = ({ item, setLightbox }: { item: PortfolioItem; setLightbox
           {formattedDate}
         </div>
       </div>
-      
-      {/* Dot Indicators at very bottom mimicking IG (optional, often shown above caption) */}
-      {sortedMedia.length > 1 && (
-        <div className="w-full flex justify-center gap-1.5 pb-4">
-          {sortedMedia.map((_, idx) => (
-            <div 
-              key={idx}
-              className={`h-[4px] rounded-full transition-all duration-300 ${idx === currentIndex ? "bg-orange-500 w-4" : "bg-slate-200 w-[4px]"}`}
-            />
-          ))}
-        </div>
-      )}
     </article>
   );
 };
@@ -242,7 +227,7 @@ const PortfolioNavbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center relative z-50">
           {/* Logo */}
-          <Link to="/" className="flex-shrink-0 transition-transform hover:scale-105">
+          <Link to="/" className="flex-shrink-0 transition-transform">
             <img 
               src={isScrolled ? "/images/logo.png" : "/images/logo%20white.png"} 
               alt="MTE Logo" 

@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "../utils/supabase";
 import { Helmet } from "react-helmet-async";
-import { ChevronLeft, ChevronRight, Loader2, Info, ArrowLeft, Send, Heart, MessageCircle } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, Info } from "lucide-react";
+import Navbar from "./Navbar";
 import Footer from "./footer";
 
 interface PortfolioItem {
@@ -126,18 +127,11 @@ export default function SinglePortfolioPost() {
         )}
       </Helmet>
 
-      {/* Top Banner specific to isolated view */}
-      <nav className="bg-white shadow-sm sticky top-0 z-[100] py-4">
-        <div className="max-w-3xl mx-auto px-4 w-full flex items-center justify-between">
-            <Link to="/portfolio" className="flex flex-row items-center gap-2 text-slate-600 hover:text-[#ff6600] font-bold transition-colors">
-               <ArrowLeft size={20} strokeWidth={2.5}/> Retour au Portfolio
-            </Link>
-            <img src="/images/logo.png" alt="MTE Logo" className="h-8 object-contain" />
-        </div>
-      </nav>
+      {/* Main Navigation */}
+      <Navbar />
 
       {/* Main Single Feed Content */}
-      <main className="flex-1 w-full max-w-3xl mx-auto px-4 py-8 sm:py-12">
+      <main className="flex-1 w-full max-w-3xl mx-auto px-4 py-8 sm:py-12 mt-20">
         <article className="bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden text-sm">
           {/* Header */}
           <header className="flex items-center justify-between p-4 border-b border-slate-100">
@@ -222,31 +216,8 @@ export default function SinglePortfolioPost() {
             )}
           </div>
 
-          {/* Post Content structure replicating IG */}
-          
-          {/* Action Bar */}
-          <div className="px-5 sm:px-6 py-3 sm:py-4 flex items-center justify-between border-b border-slate-100">
-             <div className="flex items-center gap-5">
-                <button className="text-slate-900 hover:text-slate-500 transition-colors">
-                   <Heart size={28} strokeWidth={1.5} />
-                </button>
-                <button className="text-slate-900 hover:text-slate-500 transition-colors">
-                   <MessageCircle size={28} strokeWidth={1.5} />
-                </button>
-                <button 
-                  onClick={() => {
-                    navigator.clipboard.writeText(canonicalUrl);
-                    alert("Lien copié dans le presse-papiers!");
-                  }}
-                  className="text-slate-900 hover:text-slate-500 transition-colors relative"
-                >
-                   <Send size={28} strokeWidth={1.5} className="transform -rotate-12 mt-[-3px]" />
-                </button>
-             </div>
-          </div>
-
           {/* Texts */}
-          <div className="p-5 sm:p-6 bg-white shrink-0 h-auto">
+          <div className="p-5 sm:p-6 bg-white shrink-0 h-auto border-t border-slate-100">
             <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 mb-3">{item.title}</h1>
             <p className="text-base sm:text-lg text-slate-800 break-words leading-relaxed whitespace-pre-wrap">
                {renderDescription(item.description)}
