@@ -221,18 +221,19 @@ const PortfolioNavbar = () => {
           </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex space-x-8 items-center">
+          <div className="hidden md:flex space-x-6 items-center">
             <Link 
               to="/" 
-              className={`font-semibold transition-colors duration-300 ${
-                isScrolled ? "text-slate-600 hover:text-orange-500" : "text-white/80 hover:text-white"
+              className={`text-sm font-semibold uppercase tracking-wider transition-colors duration-300 ${
+                isScrolled ? "text-slate-600 hover:text-orange-500" : "text-white/70 hover:text-white"
               }`}
             >
               Accueil
             </Link>
+            <div className={`h-1 w-1 rounded-full ${isScrolled ? 'bg-slate-300' : 'bg-white/30'}`}></div>
             <span 
-              className={`font-bold transition-colors duration-300 ${
-                isScrolled ? "text-orange-500 border-b-2 border-orange-500 pb-1" : "text-orange-400 border-b-2 border-orange-400 pb-1"
+              className={`text-sm font-bold uppercase tracking-wider transition-colors duration-300 ${
+                isScrolled ? "text-orange-500" : "text-orange-400"
               }`}
             >
               Portfolio
@@ -263,11 +264,11 @@ const PortfolioNavbar = () => {
           <Link 
             to="/" 
             onClick={() => setIsMobileMenuOpen(false)}
-            className="text-xl font-bold text-slate-600 hover:text-orange-500 transition-colors"
+            className="text-lg font-bold uppercase tracking-widest text-slate-600 hover:text-orange-500 transition-colors"
           >
             Accueil
           </Link>
-          <span className="text-xl font-bold text-orange-500 border-b-2 border-orange-500 pb-1">
+          <span className="text-lg font-bold uppercase tracking-widest text-orange-500">
             Portfolio
           </span>
         </div>
@@ -307,10 +308,10 @@ export default function Portfolio() {
       <section className="bg-gradient-to-br from-[#1a1a2e] to-[#16213e] text-center text-white pt-32 sm:pt-40 pb-16 relative overflow-hidden -mt-px">
         <div className="max-w-3xl mx-auto px-4 relative z-10">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">
-             Nos <span className="text-[#f5a623]">Réalisations</span>
+             Mes <span className="text-[#f5a623]">Réalisations</span>
           </h2>
           <p className="text-[15px] sm:text-lg text-white/80 font-light max-w-2xl mx-auto">
-            Découvrez nos interventions et notre expertise en réparation électronique industrielle en Algérie.
+            Découvrez mes interventions et mon expertise en réparation électronique industrielle en Algérie.
           </p>
         </div>
       </section>
