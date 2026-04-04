@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../utils/supabase";
 import { Link } from "react-router-dom";
-import { ChevronLeft, ChevronRight, MoreHorizontal, Loader2, Info, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, Info, X } from "lucide-react";
 import Footer from "./footer";
 
 interface PortfolioItem {
@@ -80,9 +80,6 @@ const PortfolioCard = ({ item, setLightbox }: { item: PortfolioItem; setLightbox
             <span className="font-semibold text-slate-900 leading-tight">MTE Algérie</span>
           </div>
         </div>
-        <button className="text-slate-400 hover:text-slate-600 transition-colors p-1">
-          <MoreHorizontal size={20} />
-        </button>
       </header>
 
       {/* Media Carousel - Square/Vertical aspect ratio like IG */}
@@ -162,12 +159,12 @@ const PortfolioCard = ({ item, setLightbox }: { item: PortfolioItem; setLightbox
 
       {/* Post Content */}
       <div className="p-3 sm:p-4">
-        {/* Caption & Title */}
-        <div className="mb-2">
-           <span className="font-semibold text-slate-900 mr-2">MTE Algérie</span>
-           <span className="text-slate-800 break-words leading-relaxed whitespace-pre-wrap">
-              <span className="font-semibold">{item.title}</span> — {item.description}
-           </span>
+        {/* SEO Semantic Caption & Title */}
+        <div className="mb-2 flex flex-col gap-1">
+           <h3 className="text-base font-bold text-slate-900 leading-tight">{item.title}</h3>
+           <p className="text-sm text-slate-700 break-words leading-relaxed whitespace-pre-wrap">
+              {item.description}
+           </p>
         </div>
         
         {/* Date */}
