@@ -1,6 +1,19 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { supabase } from "../utils/supabase";
 
 const AboutUs: React.FC = () => {
+  const [resumeLinks, setResumeLinks] = useState({ en: "", fr: "" });
+
+  useEffect(() => {
+    async function fetchResume() {
+      const { data, error } = await supabase.from("resume_links").select("*").single();
+      if (!error && data) {
+        setResumeLinks({ en: data.url_en || "", fr: data.url_fr || "" });
+      }
+    }
+    fetchResume();
+  }, []);
   return (
     <>
 
@@ -24,6 +37,24 @@ const AboutUs: React.FC = () => {
                     <p>Contrairement aux approches de maintenance traditionnelles, j'interviens directement au niveau composant (PCB). En tant que technicien indépendant, je maîtrise à la fois la théorie du contrôle, la programmation PLC et la microélectronique. Cette double casquette me permet de diagnostiquer les pannes industrielles les plus complexes et de réparer vos cartes de contrôle à la source.</p>
                     <br />
                     <p>Mon engagement : vous fournir des solutions techniques sur mesure, transparentes et hautement fiables pour garantir l'efficacité maximale de vos opérations.</p>
+                    
+                    {/* Attractive Action Buttons */}
+                    <div className="d-flex flex-wrap gap-3 mt-4 mt-lg-5">
+                      <Link to="/portfolio" className="main-btn" style={{ padding: "12px 25px", fontSize: "14px", backgroundColor: "#f5a623", color: "white", borderRadius: "50px", border: "none" }}>
+                        <i className="fas fa-briefcase me-2"></i> Mon Portfolio
+                      </Link>
+                      {resumeLinks.en && (
+                        <a href={resumeLinks.en} target="_blank" rel="noopener noreferrer" className="main-btn" style={{ padding: "12px 25px", fontSize: "14px", backgroundColor: "#2d3748", color: "white", borderRadius: "50px", border: "none" }}>
+                           <i className="fas fa-file-pdf me-2"></i> CV (En)
+                        </a>
+                      )}
+                      {resumeLinks.fr && (
+                        <a href={resumeLinks.fr} target="_blank" rel="noopener noreferrer" className="main-btn" style={{ padding: "12px 25px", fontSize: "14px", backgroundColor: "#2d3748", color: "white", borderRadius: "50px", border: "none" }}>
+                           <i className="fas fa-file-pdf me-2"></i> CV (Fr)
+                        </a>
+                      )}
+                    </div>
+
 <div className="flex gap-5 mt-50  justify-center ">
   <a href="https://www.linkedin.com/in/moutie/"
     target="_blank"
