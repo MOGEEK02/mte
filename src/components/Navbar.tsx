@@ -141,9 +141,9 @@ const HomePage: React.FC = () => {
                       </a>
                       <Link 
                         to="/portfolio" 
-                        className="flex items-center gap-2 px-6 py-3 sm:px-8 bg-white/10 hover:bg-white text-white hover:text-[#1a1a2e] border border-white/30 rounded-full font-bold uppercase tracking-wider backdrop-blur-sm transition-all duration-300 shadow-[0_4px_15px_rgba(255,255,255,0.1)] hover:shadow-[0_6px_20px_rgba(255,255,255,0.4)] hover:-translate-y-0.5 no-underline"
+                        className="main-btn"
                       >
-                        <i className="fas fa-briefcase"></i> Mon Portfolio
+                        Mon Portfolio
                       </Link>
                     </div>
                   </div>

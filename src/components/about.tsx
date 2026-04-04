@@ -44,9 +44,9 @@ const AboutUs: React.FC = () => {
                           href={resumeLinks.fr} 
                           target="_blank" 
                           rel="noopener noreferrer" 
-                          className="flex items-center gap-2.5 px-6 sm:px-8 py-3 bg-slate-900 hover:bg-[#ff6600] text-white rounded-full font-bold uppercase tracking-wider text-sm transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 no-underline"
+                          className="main-btn"
                         >
-                           <i className="fas fa-file-pdf text-lg"></i> Mon CV (Français)
+                           Mon CV (Français)
                         </a>
                       )}
                       {resumeLinks.en && (
@@ -54,9 +54,9 @@ const AboutUs: React.FC = () => {
                           href={resumeLinks.en} 
                           target="_blank" 
                           rel="noopener noreferrer" 
-                          className="flex items-center gap-2.5 px-6 sm:px-8 py-3 bg-white hover:bg-slate-50 text-slate-900 border-2 border-slate-200 hover:border-[#ff6600] hover:text-[#ff6600] rounded-full font-bold uppercase tracking-wider text-sm transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1 no-underline"
+                          className="main-btn"
                         >
-                           <i className="fas fa-file-pdf text-lg"></i> Mon CV (Anglais)
+                           Mon CV (Anglais)
                         </a>
                       )}
                     </div>
