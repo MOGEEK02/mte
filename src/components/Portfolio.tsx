@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../utils/supabase";
 import { Link } from "react-router-dom";
-import { ChevronLeft, ChevronRight, Loader2, Info, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, Info, X, Play } from "lucide-react";
 import Footer from "./footer";
 
 interface PortfolioItem {
@@ -112,11 +112,11 @@ const PortfolioCard = ({ item, setLightbox }: { item: PortfolioItem; setLightbox
                     src={media.media_url}
                     alt={`${item.title} - ${idx + 1}`}
                     className="w-full h-full object-cover cursor-zoom-in"
-                    onClick={() => setLightbox({ url: media.media_url, type: 'image' })}
+                    onClick={() => setLightbox({ mediaList: sortedMedia, currentIndex: idx })}
                   />
                 ) : (
                   getYouTubeId(media.media_url) ? (
-                    <div className="w-full h-full relative cursor-zoom-in" onClick={() => setLightbox({ url: media.media_url, type: 'youtube' })}>
+                    <div className="w-full h-full relative cursor-zoom-in" onClick={() => setLightbox({ mediaList: sortedMedia, currentIndex: idx })}>
                       <iframe
                         src={`https://www.youtube.com/embed/${getYouTubeId(media.media_url)}?autoplay=1&mute=1&loop=1&playlist=${getYouTubeId(media.media_url)}&controls=0&modestbranding=1&playsinline=1`}
                         className="w-full h-full pointer-events-none"
@@ -134,7 +134,7 @@ const PortfolioCard = ({ item, setLightbox }: { item: PortfolioItem; setLightbox
                       muted
                       loop
                       playsInline
-                      onClick={() => setLightbox({ url: media.media_url, type: 'video' })}
+                      onClick={() => setLightbox({ mediaList: sortedMedia, currentIndex: idx })}
                     />
                   )
                 )}
@@ -304,7 +304,7 @@ const PortfolioNavbar = () => {
 export default function Portfolio() {
   const [items, setItems] = useState<PortfolioItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [lightbox, setLightbox] = useState<{ url: string; type: string } | null>(null);
+  const [lightbox, setLightbox] = useState<{ mediaList: MediaItem[]; currentIndex: number } | null>(null);
 
   useEffect(() => {
     async function fetchPortfolio() {
@@ -375,41 +375,112 @@ export default function Portfolio() {
           onClick={() => setLightbox(null)}
           className="fixed inset-0 z-[9999] bg-black/95 backdrop-blur-sm flex items-center justify-center cursor-zoom-out p-2 sm:p-6 animate-in fade-in duration-200"
         >
-          {lightbox.type === "image" && (
-            <img
-              src={lightbox.url}
-              alt="Vue agrandie"
-              className="max-w-full max-h-full object-contain animate-in zoom-in-95 duration-200"
-            />
-          )}
+          {(() => {
+            const currentMedia = lightbox.mediaList[lightbox.currentIndex];
+            const isYouTube = getYouTubeId(currentMedia.media_url);
+            const type = currentMedia.media_type === "image" ? "image" : isYouTube ? "youtube" : "video";
 
-          {lightbox.type === "video" && (
-            <video
-              src={lightbox.url}
-              autoPlay
-              controls
-              className="w-full h-auto max-w-5xl max-h-[85vh] sm:max-h-[90vh] object-contain rounded-md shadow-2xl animate-in zoom-in-95 duration-200 cursor-auto"
-              onClick={(e) => e.stopPropagation()}
-            />
-          )}
+            const handlePrev = (e: React.MouseEvent) => {
+              e.stopPropagation();
+              setLightbox({ ...lightbox, currentIndex: (lightbox.currentIndex - 1 + lightbox.mediaList.length) % lightbox.mediaList.length });
+            };
+            const handleNext = (e: React.MouseEvent) => {
+              e.stopPropagation();
+              setLightbox({ ...lightbox, currentIndex: (lightbox.currentIndex + 1) % lightbox.mediaList.length });
+            };
 
-          {lightbox.type === "youtube" && (
-            <div 
-              className="w-full max-w-5xl aspect-video bg-black rounded-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 cursor-auto" 
-              onClick={(e) => e.stopPropagation()}
-            >
-               <iframe
-                 src={`https://www.youtube.com/embed/${getYouTubeId(lightbox.url)}?autoplay=1&rel=0`}
-                 className="w-full h-full"
-                 allow="autoplay; fullscreen"
-                 allowFullScreen
-               />
-            </div>
-          )}
+            return (
+              <div className="relative w-full h-full flex flex-col items-center justify-center">
+                {type === "image" && (
+                  <img
+                    key={currentMedia.media_url} // Forces animation re-trigger on swap
+                    src={currentMedia.media_url}
+                    alt="Vue agrandie"
+                    className="max-w-full max-h-[80vh] sm:max-h-[85vh] object-contain animate-in zoom-in-95 duration-200 mb-16 sm:mb-24"
+                  />
+                )}
+
+                {type === "video" && (
+                  <video
+                    key={currentMedia.media_url} 
+                    src={currentMedia.media_url}
+                    autoPlay
+                    controls
+                    className="w-full h-auto max-w-5xl max-h-[75vh] sm:max-h-[80vh] object-contain rounded-md shadow-2xl animate-in zoom-in-95 duration-200 cursor-auto mb-16 sm:mb-24"
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                )}
+
+                {type === "youtube" && (
+                  <div 
+                    key={currentMedia.media_url}
+                    className="w-full max-w-5xl aspect-[16/9] bg-black rounded-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 cursor-auto mb-16 sm:mb-24" 
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                     <iframe
+                       src={`https://www.youtube.com/embed/${getYouTubeId(currentMedia.media_url)}?autoplay=1&rel=0`}
+                       className="w-full h-full"
+                       allow="autoplay; fullscreen"
+                       allowFullScreen
+                     />
+                  </div>
+                )}
+
+                {/* Sweep Controls inside Gallery */}
+                {lightbox.mediaList.length > 1 && (
+                  <>
+                    <button 
+                      onClick={handlePrev}
+                      className="absolute left-2 sm:left-4 top-1/2 -translate-y-[calc(50%+2rem)] w-10 h-10 sm:w-14 sm:h-14 bg-black/50 hover:bg-black/80 border border-white/20 text-white rounded-full flex items-center justify-center transition-all cursor-pointer z-50"
+                    >
+                      <ChevronLeft size={28} />
+                    </button>
+                    <button 
+                      onClick={handleNext}
+                      className="absolute right-2 sm:right-4 top-1/2 -translate-y-[calc(50%+2rem)] w-10 h-10 sm:w-14 sm:h-14 bg-black/50 hover:bg-black/80 border border-white/20 text-white rounded-full flex items-center justify-center transition-all cursor-pointer z-50"
+                    >
+                      <ChevronRight size={28} />
+                    </button>
+
+                    {/* Thumbnail Strip at bottom */}
+                    <div 
+                      className="absolute bottom-4 sm:bottom-6 left-0 w-full flex justify-center gap-2 sm:gap-3 px-4 z-50 overflow-x-auto scroolbar-hide"
+                      onClick={(e) => e.stopPropagation()} 
+                    >
+                      {lightbox.mediaList.map((m, i) => {
+                        const isYTVid = getYouTubeId(m.media_url);
+                        return (
+                          <div 
+                            key={m.id}
+                            onClick={(e) => { e.stopPropagation(); setLightbox({ ...lightbox, currentIndex: i }) }}
+                            className={`relative w-14 h-14 sm:w-16 sm:h-16 rounded-md overflow-hidden cursor-pointer transition-all flex-shrink-0 ${
+                              i === lightbox.currentIndex 
+                                ? "ring-2 ring-orange-500 scale-110 opacity-100 shadow-xl" 
+                                : "ring-1 ring-white/20 opacity-40 hover:opacity-100"
+                            }`}
+                          >
+                            {m.media_type === "image" ? (
+                              <img src={m.media_url} className="w-full h-full object-cover" />
+                            ) : isYTVid ? (
+                              <img src={`https://img.youtube.com/vi/${isYTVid}/0.jpg`} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full bg-slate-800 flex items-center justify-center text-white/50">
+                                <Play size={24} />
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+              </div>
+            );
+          })()}
 
           <button
             onClick={(e: React.MouseEvent) => { e.stopPropagation(); setLightbox(null); }}
-            className="absolute top-4 right-4 sm:top-6 sm:right-6 w-10 h-10 sm:w-12 sm:h-12 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-full flex items-center justify-center transition-colors cursor-pointer"
+            className="absolute top-4 right-4 sm:top-6 sm:right-6 w-10 h-10 sm:w-12 sm:h-12 bg-black/50 hover:bg-black/80 border border-white/20 text-white rounded-full flex items-center justify-center transition-colors cursor-pointer z-[10000]"
           >
             <X size={20} />
           </button>
