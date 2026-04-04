@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../utils/supabase";
+import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, MapPin, MoreHorizontal, Loader2, Info, X } from "lucide-react";
-import Navbar from "./Navbar";
-import Footer from "./footer";
 
 interface PortfolioItem {
   id: number;
@@ -220,9 +219,38 @@ export default function Portfolio() {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans">
-      <Navbar />
+      {/* Navbar */}
+      <nav className="sticky top-0 z-[100] bg-gradient-to-br from-[#1a1a2e] to-[#16213e] py-4 shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center">
+            <Link to="/" className="flex-shrink-0 transition-transform hover:scale-105">
+              <img src="/images/logo%20white.png" alt="MTE Logo" className="h-10 object-contain" />
+            </Link>
+            <div className="flex space-x-6 items-center">
+              <Link to="/" className="text-white/80 hover:text-white font-medium transition-colors">
+                Accueil
+              </Link>
+              <span className="text-orange-400 font-bold border-b-2 border-orange-400 pb-1">
+                Portfolio
+              </span>
+            </div>
+          </div>
+        </div>
+      </nav>
 
-      <main className="pt-8 sm:pt-12 pb-20 px-0 sm:px-4">
+      {/* Hero Header */}
+      <section className="bg-gradient-to-br from-[#1a1a2e] to-[#16213e] text-center text-white py-12 -mt-px relative overflow-hidden">
+        <div className="max-w-3xl mx-auto px-4 relative z-10">
+          <h2 className="text-3xl md:text-4xl font-extrabold mb-3 tracking-tight">
+             Nos <span className="text-[#f5a623]">Réalisations</span>
+          </h2>
+          <p className="text-[15px] text-white/80 font-light">
+            Découvrez nos interventions et réparations électroniques en Algérie.
+          </p>
+        </div>
+      </section>
+
+      <main className="pt-8 sm:pt-14 pb-20 px-0 sm:px-4">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 mt-10">
             <Loader2 className="w-10 h-10 text-orange-500 animate-spin mb-4" />
@@ -265,7 +293,12 @@ export default function Portfolio() {
         </div>
       )}
 
-      <Footer />
+      {/* Footer */}
+      <footer className="bg-[#1a1a2e] text-white/60 py-6 text-center text-sm border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-4">
+          <p>&copy; {new Date().getFullYear()} MTE – Réparation Électronique Industrielle. Tous droits réservés.</p>
+        </div>
+      </footer>
     </div>
   );
 }
