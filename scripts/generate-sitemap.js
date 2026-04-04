@@ -18,7 +18,7 @@ const supabaseKey = process.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY || process
 async function generateSitemap() {
   console.log('[SEO Sitemap] Generating Google XML structure...');
   
-  const baseUrl = 'https://mte-dz.com';
+  const baseUrl = 'https://moutie.vercel.app';
   let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
   xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
 

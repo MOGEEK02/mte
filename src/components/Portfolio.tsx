@@ -347,7 +347,7 @@ export default function Portfolio() {
         <title>Portfolio des Réparations | MTE Électronique Industrielle Algérie</title>
         <meta name="description" content="Découvrez nos interventions, maintenances et succès en réparation de cartes électroniques, variateurs de fréquence, automates et équipements industriels partout en Algérie." />
         <meta name="keywords" content="Portfolio MTE, réparation électronique industrielle Algérie, maintenance variateur, réparation cartes électroniques industrielles, automates programmables, IHM" />
-        <link rel="canonical" href="https://mte-dz.com/portfolio" />
+        <link rel="canonical" href="https://moutie.vercel.app/portfolio" />
         <meta property="og:title" content="Portfolio des Réparations | MTE Algérie" />
         <meta property="og:description" content="Explorez notre galerie de réparations électroniques pour l'industrie algérienne." />
       </Helmet>

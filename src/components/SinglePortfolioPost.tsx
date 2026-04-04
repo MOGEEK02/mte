@@ -109,7 +109,7 @@ export default function SinglePortfolioPost() {
   };
 
   // Construct absolute URL for canonical tagging
-  const canonicalUrl = typeof window !== 'undefined' ? window.location.href : `https://mte-dz.com/portfolio/${item.id}`;
+  const canonicalUrl = typeof window !== 'undefined' ? window.location.href : `https://moutie.vercel.app/portfolio/${item.id}`;
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://mte-dz.com/sitemap.xml
+Sitemap: https://moutie.vercel.app/sitemap.xml
