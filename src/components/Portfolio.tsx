@@ -312,19 +312,21 @@ export default function Portfolio() {
     <div className="min-h-screen bg-slate-50 font-sans">
       <PortfolioNavbar />
 
-      {/* Hero Header */}
+      {/* Hero Header exactly like Home Page Slider */}
       <section 
-        className="text-center text-white pt-32 sm:pt-40 pb-16 relative overflow-hidden -mt-px bg-cover bg-center"
+        className="text-left text-white min-h-[50vh] sm:min-h-[60vh] flex items-center relative overflow-hidden bg-cover bg-center"
         style={{ backgroundImage: "url(/images/backg.png)" }}
       >
         <div className="absolute inset-0 bg-[#1a1a2e]/85 backdrop-blur-[2px]"></div>
-        <div className="max-w-3xl mx-auto px-4 relative z-10">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">
-             Mes <span className="text-[#f5a623]">Réalisations</span>
-          </h2>
-          <p className="text-[15px] sm:text-lg text-white/80 font-light max-w-2xl mx-auto">
-            Découvrez mes interventions et mon expertise en réparation électronique industrielle en Algérie.
-          </p>
+        <div className="max-w-7xl w-full mx-auto px-4 relative z-10 pt-32 pb-16">
+          <div className="max-w-2xl">
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 sm:mb-6 tracking-tight leading-tight">
+               Mes <span className="text-[#f5a623]">Réalisations</span>
+            </h2>
+            <p className="text-[15px] sm:text-lg text-white/90 font-light max-w-xl leading-relaxed">
+              Découvrez mes interventions et mon expertise en réparation électronique industrielle en Algérie.
+            </p>
+          </div>
         </div>
       </section>
 
