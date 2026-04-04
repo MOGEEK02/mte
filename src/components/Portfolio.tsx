@@ -183,9 +183,19 @@ const PortfolioCard = ({ item, setLightbox }: { item: PortfolioItem; setLightbox
            </p>
         </div>
         
-        {/* Date */}
-        <div className="text-[10px] sm:text-[11px] uppercase text-slate-500 font-medium tracking-wide mt-3 mb-1">
-          {formattedDate}
+        {/* Date & Action Row */}
+        <div className="flex items-center justify-between mt-3 mb-1">
+          <div className="text-[10px] sm:text-[11px] uppercase text-slate-500 font-medium tracking-wide">
+            {formattedDate}
+          </div>
+          
+          <Link 
+            to={`/portfolio/${item.id}`} 
+            className="flex items-center gap-1.5 text-[#1a1a2e] hover:text-[#ff6600] text-xs sm:text-sm font-bold uppercase tracking-wider transition-colors no-underline"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <i className="fas fa-link"></i> Partager / Voir
+          </Link>
         </div>
       </div>
       
