@@ -65,7 +65,8 @@ const PortfolioCard = ({ item, setLightbox }: { item: PortfolioItem; setLightbox
   // Format Date uniquely
   const formattedDate = new Date(item.created_at).toLocaleDateString("fr-FR", {
     day: 'numeric',
-    month: 'long'
+    month: 'long',
+    year: 'numeric'
   });
 
   // Hashtag Styling Logic
