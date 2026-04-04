@@ -194,6 +194,91 @@ const PortfolioCard = ({ item, setLightbox }: { item: PortfolioItem; setLightbox
   );
 };
 
+const PortfolioNavbar = () => {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  return (
+    <nav 
+      className={`fixed top-0 left-0 w-full z-[100] transition-all duration-300 ${
+        isScrolled ? "bg-white shadow-md py-2 sm:py-3" : "bg-transparent py-4 sm:py-6"
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center relative z-50">
+          {/* Logo */}
+          <Link to="/" className="flex-shrink-0 transition-transform hover:scale-105">
+            <img 
+              src={isScrolled ? "/images/logo.png" : "/images/logo%20white.png"} 
+              alt="MTE Logo" 
+              className="h-9 sm:h-11 w-auto object-contain transition-all duration-300"
+            />
+          </Link>
+
+          {/* Desktop Menu */}
+          <div className="hidden md:flex space-x-8 items-center">
+            <Link 
+              to="/" 
+              className={`font-semibold transition-colors duration-300 ${
+                isScrolled ? "text-slate-600 hover:text-orange-500" : "text-white/80 hover:text-white"
+              }`}
+            >
+              Accueil
+            </Link>
+            <span 
+              className={`font-bold transition-colors duration-300 ${
+                isScrolled ? "text-orange-500 border-b-2 border-orange-500 pb-1" : "text-orange-400 border-b-2 border-orange-400 pb-1"
+              }`}
+            >
+              Portfolio
+            </span>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <div className="md:hidden flex items-center">
+            <button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className={`focus:outline-none transition-colors duration-300 ${
+                isScrolled || isMobileMenuOpen ? "text-slate-900" : "text-white"
+              }`}
+            >
+              {isMobileMenuOpen ? <X size={28} /> : <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Menu Dropdown */}
+      <div 
+        className={`md:hidden absolute top-0 left-0 w-full bg-white shadow-xl transition-all duration-300 ease-in-out z-40 ${
+          isMobileMenuOpen ? "translate-y-0 opacity-100 h-auto pt-24 pb-8" : "-translate-y-full opacity-0 h-0 overflow-hidden"
+        }`}
+      >
+        <div className="flex flex-col items-center justify-center space-y-6">
+          <Link 
+            to="/" 
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="text-xl font-bold text-slate-600 hover:text-orange-500 transition-colors"
+          >
+            Accueil
+          </Link>
+          <span className="text-xl font-bold text-orange-500 border-b-2 border-orange-500 pb-1">
+            Portfolio
+          </span>
+        </div>
+      </div>
+    </nav>
+  );
+};
+
 export default function Portfolio() {
   const [items, setItems] = useState<PortfolioItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -219,33 +304,16 @@ export default function Portfolio() {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans">
-      {/* Navbar */}
-      <nav className="sticky top-0 z-[100] bg-gradient-to-br from-[#1a1a2e] to-[#16213e] py-4 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center">
-            <Link to="/" className="flex-shrink-0 transition-transform hover:scale-105">
-              <img src="/images/logo%20white.png" alt="MTE Logo" className="h-10 object-contain" />
-            </Link>
-            <div className="flex space-x-6 items-center">
-              <Link to="/" className="text-white/80 hover:text-white font-medium transition-colors">
-                Accueil
-              </Link>
-              <span className="text-orange-400 font-bold border-b-2 border-orange-400 pb-1">
-                Portfolio
-              </span>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <PortfolioNavbar />
 
       {/* Hero Header */}
-      <section className="bg-gradient-to-br from-[#1a1a2e] to-[#16213e] text-center text-white py-12 -mt-px relative overflow-hidden">
+      <section className="bg-gradient-to-br from-[#1a1a2e] to-[#16213e] text-center text-white pt-32 sm:pt-40 pb-16 relative overflow-hidden -mt-px">
         <div className="max-w-3xl mx-auto px-4 relative z-10">
-          <h2 className="text-3xl md:text-4xl font-extrabold mb-3 tracking-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">
              Nos <span className="text-[#f5a623]">Réalisations</span>
           </h2>
-          <p className="text-[15px] text-white/80 font-light">
-            Découvrez nos interventions et réparations électroniques en Algérie.
+          <p className="text-[15px] sm:text-lg text-white/80 font-light max-w-2xl mx-auto">
+            Découvrez nos interventions et notre expertise en réparation électronique industrielle en Algérie.
           </p>
         </div>
       </section>
