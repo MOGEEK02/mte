@@ -116,21 +116,25 @@ const PortfolioCard = ({ item, setLightbox }: { item: PortfolioItem; setLightbox
                   />
                 ) : (
                   getYouTubeId(media.media_url) ? (
-                    <iframe
-                      src={`https://www.youtube.com/embed/${getYouTubeId(media.media_url)}?autoplay=1&mute=1&loop=1&playlist=${getYouTubeId(media.media_url)}&controls=0&modestbranding=1&playsinline=1`}
-                      className="w-full h-full pointer-events-none"
-                      style={{ border: "none" }}
-                      allow="autoplay; encrypted-media"
-                      allowFullScreen
-                    />
+                    <div className="w-full h-full relative cursor-zoom-in" onClick={() => setLightbox({ url: media.media_url, type: 'youtube' })}>
+                      <iframe
+                        src={`https://www.youtube.com/embed/${getYouTubeId(media.media_url)}?autoplay=1&mute=1&loop=1&playlist=${getYouTubeId(media.media_url)}&controls=0&modestbranding=1&playsinline=1`}
+                        className="w-full h-full pointer-events-none"
+                        style={{ border: "none" }}
+                        allow="autoplay; encrypted-media"
+                        tabIndex={-1}
+                      />
+                      <div className="absolute inset-0 z-10 bg-transparent"></div> {/* Intercepts clicks */}
+                    </div>
                   ) : (
                     <video
                       src={media.media_url}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover cursor-zoom-in"
                       autoPlay
                       muted
                       loop
                       playsInline
+                      onClick={() => setLightbox({ url: media.media_url, type: 'video' })}
                     />
                   )
                 )}
@@ -365,20 +369,47 @@ export default function Portfolio() {
         )}
       </main>
 
-      {/* Lightbox */}
-      {lightbox && lightbox.type === "image" && (
+      {/* Fullscreen Lightbox & Media Modal */}
+      {lightbox && (
         <div
           onClick={() => setLightbox(null)}
-          className="fixed inset-0 z-[9999] bg-black/95 backdrop-blur-sm flex items-center justify-center cursor-zoom-out p-0 sm:p-4 animate-in fade-in duration-200"
+          className="fixed inset-0 z-[9999] bg-black/95 backdrop-blur-sm flex items-center justify-center cursor-zoom-out p-2 sm:p-6 animate-in fade-in duration-200"
         >
-          <img
-            src={lightbox.url}
-            alt="Vue agrandie"
-            className="max-w-full max-h-full object-contain animate-in zoom-in-95 duration-200"
-          />
+          {lightbox.type === "image" && (
+            <img
+              src={lightbox.url}
+              alt="Vue agrandie"
+              className="max-w-full max-h-full object-contain animate-in zoom-in-95 duration-200"
+            />
+          )}
+
+          {lightbox.type === "video" && (
+            <video
+              src={lightbox.url}
+              autoPlay
+              controls
+              className="w-full h-auto max-w-5xl max-h-[85vh] sm:max-h-[90vh] object-contain rounded-md shadow-2xl animate-in zoom-in-95 duration-200 cursor-auto"
+              onClick={(e) => e.stopPropagation()}
+            />
+          )}
+
+          {lightbox.type === "youtube" && (
+            <div 
+              className="w-full max-w-5xl aspect-video bg-black rounded-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 cursor-auto" 
+              onClick={(e) => e.stopPropagation()}
+            >
+               <iframe
+                 src={`https://www.youtube.com/embed/${getYouTubeId(lightbox.url)}?autoplay=1&rel=0`}
+                 className="w-full h-full"
+                 allow="autoplay; fullscreen"
+                 allowFullScreen
+               />
+            </div>
+          )}
+
           <button
             onClick={(e: React.MouseEvent) => { e.stopPropagation(); setLightbox(null); }}
-            className="absolute top-4 right-4 sm:top-6 sm:right-6 w-10 h-10 sm:w-12 sm:h-12 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-full flex items-center justify-center transition-colors"
+            className="absolute top-4 right-4 sm:top-6 sm:right-6 w-10 h-10 sm:w-12 sm:h-12 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-full flex items-center justify-center transition-colors cursor-pointer"
           >
             <X size={20} />
           </button>
