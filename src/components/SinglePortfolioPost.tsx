@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "../utils/supabase";
 import { Helmet } from "react-helmet-async";
-import { ChevronLeft, ChevronRight, Loader2, Info, ArrowLeft } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, Info, ArrowLeft, Send, Heart, MessageCircle } from "lucide-react";
 import Footer from "./footer";
 
 interface PortfolioItem {
@@ -222,25 +222,35 @@ export default function SinglePortfolioPost() {
             )}
           </div>
 
-          {/* Post Content */}
+          {/* Post Content structure replicating IG */}
+          
+          {/* Action Bar */}
+          <div className="px-5 sm:px-6 py-3 sm:py-4 flex items-center justify-between border-b border-slate-100">
+             <div className="flex items-center gap-5">
+                <button className="text-slate-900 hover:text-slate-500 transition-colors">
+                   <Heart size={28} strokeWidth={1.5} />
+                </button>
+                <button className="text-slate-900 hover:text-slate-500 transition-colors">
+                   <MessageCircle size={28} strokeWidth={1.5} />
+                </button>
+                <button 
+                  onClick={() => {
+                    navigator.clipboard.writeText(canonicalUrl);
+                    alert("Lien copié dans le presse-papiers!");
+                  }}
+                  className="text-slate-900 hover:text-slate-500 transition-colors relative"
+                >
+                   <Send size={28} strokeWidth={1.5} className="transform -rotate-12 mt-[-3px]" />
+                </button>
+             </div>
+          </div>
+
+          {/* Texts */}
           <div className="p-5 sm:p-6 bg-white shrink-0 h-auto">
             <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 mb-3">{item.title}</h1>
             <p className="text-base sm:text-lg text-slate-800 break-words leading-relaxed whitespace-pre-wrap">
                {renderDescription(item.description)}
             </p>
-            
-            {/* Built-in Share CTA for Single View */}
-            <div className="mt-8 pt-6 border-t border-slate-100 flex items-center gap-4">
-              <button 
-                onClick={() => {
-                  navigator.clipboard.writeText(canonicalUrl);
-                  alert("Lien copié dans le presse-papiers!");
-                }}
-                className="flex items-center gap-2 bg-[#1a1a2e] hover:bg-[#ff6600] text-white px-6 py-3 rounded-full font-bold uppercase tracking-wider text-sm transition-colors shadow-md"
-              >
-                <i className="fas fa-link"></i> Copier le lien
-              </button>
-            </div>
           </div>
           
         </article>

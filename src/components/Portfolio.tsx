@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../utils/supabase";
 import { Link } from "react-router-dom";
-import { ChevronLeft, ChevronRight, Loader2, Info, X, Play } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, Info, X, Play, Send, Heart, MessageCircle } from "lucide-react";
 import Footer from "./footer";
 
 interface PortfolioItem {
@@ -173,29 +173,36 @@ const PortfolioCard = ({ item, setLightbox }: { item: PortfolioItem; setLightbox
         )}
       </div>
 
+      {/* Instagram Native Action Bar */}
+      <div className="px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between">
+         <div className="flex items-center gap-4">
+            <button className="text-slate-900 hover:text-slate-500 transition-colors">
+               <Heart size={24} strokeWidth={1.5} />
+            </button>
+            <button className="text-slate-900 hover:text-slate-500 transition-colors">
+               <MessageCircle size={24} strokeWidth={1.5} />
+            </button>
+            <Link to={`/portfolio/${item.id}`} className="text-slate-900 hover:text-slate-500 transition-colors">
+               <Send size={24} strokeWidth={1.5} className="transform -rotate-12 mt-[-3px]" />
+            </Link>
+         </div>
+      </div>
+
       {/* Post Content */}
-      <div className="p-3 sm:p-4">
+      <div className="px-3 sm:px-4 pb-4">
         {/* SEO Semantic Caption & Title */}
         <div className="mb-2 flex flex-col gap-1">
-           <h3 className="text-base font-bold text-slate-900 leading-tight">{item.title}</h3>
+           <Link to={`/portfolio/${item.id}`} className="inline-block no-underline group hover:opacity-80 transition-opacity">
+             <h3 className="text-base font-bold text-slate-900 leading-tight">{item.title}</h3>
+           </Link>
            <p className="text-sm text-slate-800 break-words leading-relaxed whitespace-pre-wrap">
               {renderDescription(item.description)}
            </p>
         </div>
         
-        {/* Date & Action Row */}
-        <div className="flex items-center justify-between mt-3 mb-1">
-          <div className="text-[10px] sm:text-[11px] uppercase text-slate-500 font-medium tracking-wide">
-            {formattedDate}
-          </div>
-          
-          <Link 
-            to={`/portfolio/${item.id}`} 
-            className="flex items-center gap-1.5 text-[#1a1a2e] hover:text-[#ff6600] text-xs sm:text-sm font-bold uppercase tracking-wider transition-colors no-underline"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <i className="fas fa-link"></i> Partager / Voir
-          </Link>
+        {/* Date */}
+        <div className="text-[10px] sm:text-[11px] uppercase text-slate-500 font-medium tracking-wide mt-2">
+          {formattedDate}
         </div>
       </div>
       
