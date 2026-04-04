@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { supabase } from "../utils/supabase";
 
 const AboutUs: React.FC = () => {
@@ -39,18 +38,25 @@ const AboutUs: React.FC = () => {
                     <p>Mon engagement : vous fournir des solutions techniques sur mesure, transparentes et hautement fiables pour garantir l'efficacité maximale de vos opérations.</p>
                     
                     {/* Attractive Action Buttons */}
-                    <div className="d-flex flex-wrap gap-3 mt-4 mt-lg-5">
-                      <Link to="/portfolio" className="main-btn" style={{ padding: "12px 25px", fontSize: "14px", backgroundColor: "#f5a623", color: "white", borderRadius: "50px", border: "none" }}>
-                        <i className="fas fa-briefcase me-2"></i> Mon Portfolio
-                      </Link>
-                      {resumeLinks.en && (
-                        <a href={resumeLinks.en} target="_blank" rel="noopener noreferrer" className="main-btn" style={{ padding: "12px 25px", fontSize: "14px", backgroundColor: "#2d3748", color: "white", borderRadius: "50px", border: "none" }}>
-                           <i className="fas fa-file-pdf me-2"></i> CV (En)
+                    <div className="flex flex-wrap gap-4 mt-6 sm:mt-10">
+                      {resumeLinks.fr && (
+                        <a 
+                          href={resumeLinks.fr} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="flex items-center gap-2.5 px-6 sm:px-8 py-3 bg-slate-900 hover:bg-[#ff6600] text-white rounded-full font-bold uppercase tracking-wider text-sm transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 no-underline"
+                        >
+                           <i className="fas fa-file-pdf text-lg"></i> Mon CV (Français)
                         </a>
                       )}
-                      {resumeLinks.fr && (
-                        <a href={resumeLinks.fr} target="_blank" rel="noopener noreferrer" className="main-btn" style={{ padding: "12px 25px", fontSize: "14px", backgroundColor: "#2d3748", color: "white", borderRadius: "50px", border: "none" }}>
-                           <i className="fas fa-file-pdf me-2"></i> CV (Fr)
+                      {resumeLinks.en && (
+                        <a 
+                          href={resumeLinks.en} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="flex items-center gap-2.5 px-6 sm:px-8 py-3 bg-white hover:bg-slate-50 text-slate-900 border-2 border-slate-200 hover:border-[#ff6600] hover:text-[#ff6600] rounded-full font-bold uppercase tracking-wider text-sm transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1 no-underline"
+                        >
+                           <i className="fas fa-file-pdf text-lg"></i> Mon CV (Anglais)
                         </a>
                       )}
                     </div>

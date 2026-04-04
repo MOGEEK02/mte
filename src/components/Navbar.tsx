@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { supabase } from "../utils/supabase";
 
 const navLabels: Record<string, string> = {
   home: "Accueil",
@@ -12,17 +11,6 @@ const navLabels: Record<string, string> = {
 const HomePage: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
-  const [resumeLinks, setResumeLinks] = useState({ en: "", fr: "" });
-
-  useEffect(() => {
-    async function fetchResume() {
-      const { data, error } = await supabase.from("resume_links").select("*").single();
-      if (!error && data) {
-        setResumeLinks({ en: data.url_en || "", fr: data.url_fr || "" });
-      }
-    }
-    fetchResume();
-  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -151,19 +139,12 @@ const HomePage: React.FC = () => {
                       <a href="#contact" className="main-btn">
                         Contactez-nous
                       </a>
-                      <Link to="/portfolio" className="main-btn" style={{ backgroundColor: "#2d3748", border: "1px solid #2d3748" }}>
-                        Mon Portfolio
+                      <Link 
+                        to="/portfolio" 
+                        className="flex items-center gap-2 px-6 py-3 sm:px-8 bg-white/10 hover:bg-white text-white hover:text-[#1a1a2e] border border-white/30 rounded-full font-bold uppercase tracking-wider backdrop-blur-sm transition-all duration-300 shadow-[0_4px_15px_rgba(255,255,255,0.1)] hover:shadow-[0_6px_20px_rgba(255,255,255,0.4)] hover:-translate-y-0.5 no-underline"
+                      >
+                        <i className="fas fa-briefcase"></i> Mon Portfolio
                       </Link>
-                      {resumeLinks.fr && (
-                        <a href={resumeLinks.fr} target="_blank" rel="noopener noreferrer" className="main-btn" style={{ backgroundColor: "transparent", border: "2px solid white", color: "white" }}>
-                           Télécharger CV (FR)
-                        </a>
-                      )}
-                      {resumeLinks.en && (
-                        <a href={resumeLinks.en} target="_blank" rel="noopener noreferrer" className="main-btn" style={{ backgroundColor: "transparent", border: "2px solid white", color: "white" }}>
-                           Télécharger CV (EN)
-                        </a>
-                      )}
                     </div>
                   </div>
                 </div>
