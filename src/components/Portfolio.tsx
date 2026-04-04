@@ -313,7 +313,11 @@ export default function Portfolio() {
       <PortfolioNavbar />
 
       {/* Hero Header */}
-      <section className="bg-gradient-to-br from-[#1a1a2e] to-[#16213e] text-center text-white pt-32 sm:pt-40 pb-16 relative overflow-hidden -mt-px">
+      <section 
+        className="text-center text-white pt-32 sm:pt-40 pb-16 relative overflow-hidden -mt-px bg-cover bg-center"
+        style={{ backgroundImage: "url(/images/backg.png)" }}
+      >
+        <div className="absolute inset-0 bg-[#1a1a2e]/85 backdrop-blur-[2px]"></div>
         <div className="max-w-3xl mx-auto px-4 relative z-10">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">
              Mes <span className="text-[#f5a623]">Réalisations</span>
