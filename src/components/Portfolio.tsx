@@ -80,7 +80,7 @@ const PortfolioCard = ({ item, setLightbox }: { item: PortfolioItem; setLightbox
   };
 
   return (
-    <article className="bg-white border border-slate-200 rounded-[3px] sm:rounded-xl shadow-sm mb-10 w-full max-w-[470px] mx-auto overflow-hidden text-sm">
+    <article className="bg-white border border-slate-200 rounded-[3px] sm:rounded-xl shadow-sm mb-10 w-full max-w-[560px] mx-auto overflow-hidden text-sm">
       {/* Header - Instagram Style */}
       <header className="flex items-center justify-between p-3 sm:p-4">
         <div className="flex items-center gap-3">
