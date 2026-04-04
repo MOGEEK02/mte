@@ -68,6 +68,17 @@ const PortfolioCard = ({ item, setLightbox }: { item: PortfolioItem; setLightbox
     month: 'long'
   });
 
+  // Hashtag Styling Logic
+  const renderDescription = (text: string) => {
+    if (!text) return null;
+    return text.split(/(\s+)/).map((word, index) => {
+      if (word.startsWith('#')) {
+        return <span key={index} className="text-[#00376b] font-medium hover:opacity-80 transition-opacity">{word}</span>;
+      }
+      return <span key={index}>{word}</span>;
+    });
+  };
+
   return (
     <article className="bg-white border border-slate-200 rounded-[3px] sm:rounded-xl shadow-sm mb-10 w-full max-w-[470px] mx-auto overflow-hidden text-sm">
       {/* Header - Instagram Style */}
@@ -162,8 +173,8 @@ const PortfolioCard = ({ item, setLightbox }: { item: PortfolioItem; setLightbox
         {/* SEO Semantic Caption & Title */}
         <div className="mb-2 flex flex-col gap-1">
            <h3 className="text-base font-bold text-slate-900 leading-tight">{item.title}</h3>
-           <p className="text-sm text-slate-700 break-words leading-relaxed whitespace-pre-wrap">
-              {item.description}
+           <p className="text-sm text-slate-800 break-words leading-relaxed whitespace-pre-wrap">
+              {renderDescription(item.description)}
            </p>
         </div>
         
