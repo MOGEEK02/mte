@@ -19,9 +19,9 @@ const Footer: React.FC = () => {
           <div className="col-md-4 mb-4">
             <h5 className="text-uppercase fw-bold mb-3 text-warning">Liens Rapides</h5>
             <ul className="list-unstyled">
-              <li><a href="#contact" className="text-light text-decoration-none">Contact</a></li>
-              <li><a href="#services" className="text-light text-decoration-none">Services</a></li>
-              <li><a href="#about" className="text-light text-decoration-none">À Propos</a></li>
+              <li><a href="/#contact" className="text-light text-decoration-none">Contact</a></li>
+              <li><a href="/#services" className="text-light text-decoration-none">Services</a></li>
+              <li><a href="/#about" className="text-light text-decoration-none">À Propos</a></li>
             </ul>
           </div>
 
