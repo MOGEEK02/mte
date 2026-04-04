@@ -228,24 +228,26 @@ const PortfolioNavbar = () => {
             />
           </Link>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex space-x-6 items-center">
-            <Link 
-              to="/" 
-              className={`text-sm font-semibold uppercase tracking-wider transition-colors duration-300 ${
-                isScrolled ? "text-slate-600 hover:text-orange-500" : "text-white/70 hover:text-white"
-              }`}
-            >
-              Accueil
-            </Link>
-            <div className={`h-1 w-1 rounded-full ${isScrolled ? 'bg-slate-300' : 'bg-white/30'}`}></div>
-            <span 
-              className={`text-sm font-bold uppercase tracking-wider transition-colors duration-300 ${
-                isScrolled ? "text-orange-500" : "text-orange-400"
-              }`}
-            >
-              Portfolio
-            </span>
+          {/* Desktop Menu - Mirrored from Home Page Template */}
+          <div className="hidden md:block">
+            <ul className="navbar-nav d-flex flex-row gap-4 mb-0 align-items-center">
+              <li className="nav-item">
+                <Link 
+                  to="/" 
+                  className={`nav-link fs-6 transition-all duration-300 ${isScrolled ? "text-dark" : "text-white"}`}
+                >
+                  Accueil
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link 
+                  to="/portfolio"
+                  className="nav-link fs-6 text-warning fw-bold"
+                >
+                  Portfolio
+                </Link>
+              </li>
+            </ul>
           </div>
 
           {/* Mobile Menu Button */}
@@ -268,17 +270,27 @@ const PortfolioNavbar = () => {
           isMobileMenuOpen ? "translate-y-0 opacity-100 h-auto pt-24 pb-8" : "-translate-y-full opacity-0 h-0 overflow-hidden"
         }`}
       >
-        <div className="flex flex-col items-center justify-center space-y-6">
-          <Link 
-            to="/" 
-            onClick={() => setIsMobileMenuOpen(false)}
-            className="text-lg font-bold uppercase tracking-widest text-slate-600 hover:text-orange-500 transition-colors"
-          >
-            Accueil
-          </Link>
-          <span className="text-lg font-bold uppercase tracking-widest text-orange-500">
-            Portfolio
-          </span>
+        <div className="flex flex-col items-center justify-center">
+          <ul className="navbar-nav w-100 text-center space-y-4">
+            <li className="nav-item">
+              <Link 
+                to="/" 
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="nav-link fs-4 text-dark"
+              >
+                Accueil
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link 
+                to="/portfolio"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="nav-link fs-4 text-warning fw-bold"
+              >
+                Portfolio
+              </Link>
+            </li>
+          </ul>
         </div>
       </div>
     </nav>
