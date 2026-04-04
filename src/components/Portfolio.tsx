@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../utils/supabase";
-import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Calendar, CheckCircle, Info, Loader2, X } from "lucide-react";
 import Navbar from "./Navbar";
 import Footer from "./footer";
@@ -38,11 +37,11 @@ const PortfolioCard = ({ item, setLightbox }: { item: PortfolioItem; setLightbox
   const minSwipeDistance = 50;
 
   const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % sortedMedia.length);
+    setCurrentIndex((prev: number) => (prev + 1) % sortedMedia.length);
   };
 
   const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + sortedMedia.length) % sortedMedia.length);
+    setCurrentIndex((prev: number) => (prev - 1 + sortedMedia.length) % sortedMedia.length);
   };
 
   const onTouchStart = (e: React.TouchEvent) => {
@@ -113,13 +112,13 @@ const PortfolioCard = ({ item, setLightbox }: { item: PortfolioItem; setLightbox
             {sortedMedia.length > 1 && (
               <>
                 <button 
-                  onClick={(e) => { e.stopPropagation(); prevSlide(); }}
+                  onClick={(e: React.MouseEvent) => { e.stopPropagation(); prevSlide(); }}
                   className="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-black/70 text-white p-2 rounded-full backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                   <ChevronLeft size={20} />
                 </button>
                 <button 
-                  onClick={(e) => { e.stopPropagation(); nextSlide(); }}
+                  onClick={(e: React.MouseEvent) => { e.stopPropagation(); nextSlide(); }}
                   className="absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-black/70 text-white p-2 rounded-full backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                   <ChevronRight size={20} />
@@ -256,7 +255,7 @@ export default function Portfolio() {
             className="max-w-full max-h-full rounded-lg shadow-2xl object-contain animate-in zoom-in-95 duration-200"
           />
           <button
-            onClick={(e) => { e.stopPropagation(); setLightbox(null); }}
+            onClick={(e: React.MouseEvent) => { e.stopPropagation(); setLightbox(null); }}
             className="absolute top-6 right-6 w-12 h-12 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-full flex items-center justify-center transition-colors"
           >
             <X size={24} />
