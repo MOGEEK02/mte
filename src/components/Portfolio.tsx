@@ -206,11 +206,12 @@ const PortfolioCard = ({ item, setLightbox }: { item: PortfolioItem; setLightbox
   );
 };
 
-const PortfolioNavbar = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
+export const PortfolioNavbar = ({ alwaysWhite = false }: { alwaysWhite?: boolean }) => {
+  const [isScrolled, setIsScrolled] = useState(alwaysWhite);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
+    if (alwaysWhite) return;
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };

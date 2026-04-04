@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { supabase } from "../utils/supabase";
 import { Helmet } from "react-helmet-async";
 import { ChevronLeft, ChevronRight, Loader2, Info } from "lucide-react";
-import Navbar from "./Navbar";
+import { PortfolioNavbar } from "./Portfolio";
 import Footer from "./footer";
 
 interface PortfolioItem {
@@ -128,7 +128,7 @@ export default function SinglePortfolioPost() {
       </Helmet>
 
       {/* Main Navigation */}
-      <Navbar />
+      <PortfolioNavbar alwaysWhite={true} />
 
       {/* Main Single Feed Content */}
       <main className="flex-1 w-full max-w-3xl mx-auto px-4 py-8 sm:py-12 mt-20">
