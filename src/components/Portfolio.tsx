@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../utils/supabase";
 import { Link } from "react-router-dom";
-import { ChevronLeft, ChevronRight, MapPin, MoreHorizontal, Loader2, Info, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, MoreHorizontal, Loader2, Info, X } from "lucide-react";
 
 interface PortfolioItem {
   id: number;
@@ -75,12 +75,8 @@ const PortfolioCard = ({ item, setLightbox }: { item: PortfolioItem; setLightbox
           <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex-shrink-0 bg-slate-50 border border-slate-200 p-1 flex items-center justify-center overflow-hidden">
             <img src="/images/logo.png" alt="MTE Algérie" className="w-full h-full object-contain" />
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col justify-center">
             <span className="font-semibold text-slate-900 leading-tight">MTE Algérie</span>
-            <span className="text-[11px] sm:text-xs text-slate-500 flex items-center gap-1">
-               <MapPin size={10} className="text-slate-400" />
-               Médéa, Algérie
-            </span>
           </div>
         </div>
         <button className="text-slate-400 hover:text-slate-600 transition-colors p-1">
@@ -175,7 +171,7 @@ const PortfolioCard = ({ item, setLightbox }: { item: PortfolioItem; setLightbox
         
         {/* Date */}
         <div className="text-[10px] sm:text-[11px] uppercase text-slate-500 font-medium tracking-wide mt-3 mb-1">
-          {formattedDate} • Intervention Réalisée
+          {formattedDate}
         </div>
       </div>
       
