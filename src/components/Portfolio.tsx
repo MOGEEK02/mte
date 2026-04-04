@@ -82,7 +82,7 @@ const PortfolioCard = ({ item, setLightbox }: { item: PortfolioItem; setLightbox
   };
 
   return (
-    <article className="bg-white border border-slate-200 rounded-[3px] sm:rounded-xl shadow-sm mb-10 w-full max-w-[560px] mx-auto overflow-hidden text-sm">
+    <article className="snap-center scroll-my-24 sm:scroll-my-32 bg-white border border-slate-200 rounded-[3px] sm:rounded-xl shadow-sm mb-12 sm:mb-20 w-full max-w-[560px] mx-auto overflow-hidden text-sm">
       {/* Header - Instagram Style */}
       <header className="flex items-center justify-between p-3 sm:p-4">
         <div className="flex items-center gap-3">
@@ -312,6 +312,17 @@ export default function Portfolio() {
   const [lightbox, setLightbox] = useState<{ mediaList: MediaItem[]; currentIndex: number } | null>(null);
 
   useEffect(() => {
+    // Enable "Reels" magnetic smooth scroll natively across the document viewport
+    document.documentElement.style.scrollSnapType = 'y mandatory';
+    document.documentElement.style.scrollBehavior = 'smooth';
+    
+    return () => {
+      document.documentElement.style.scrollSnapType = '';
+      document.documentElement.style.scrollBehavior = '';
+    };
+  }, []);
+
+  useEffect(() => {
     async function fetchPortfolio() {
       const { data, error } = await supabase
         .from("portfolio")
@@ -345,7 +356,7 @@ export default function Portfolio() {
 
       {/* Hero Header exactly like Home Page Slider */}
       <section 
-        className="text-left text-white min-h-[50vh] sm:min-h-[60vh] flex items-center relative overflow-hidden bg-cover bg-center"
+        className="snap-start scroll-my-0 text-left text-white min-h-[50vh] sm:min-h-[60vh] flex items-center relative overflow-hidden bg-cover bg-center"
         style={{ backgroundImage: "url(/images/backg.png)" }}
       >
         <div className="absolute inset-0 bg-[#1a1a2e]/85 backdrop-blur-[2px]"></div>
