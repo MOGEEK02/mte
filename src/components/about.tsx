@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { supabase } from "../utils/supabase";
 
 const AboutUs: React.FC = () => {
@@ -39,6 +40,12 @@ const AboutUs: React.FC = () => {
                     
                     {/* Attractive Action Buttons */}
                     <div className="flex flex-wrap gap-4 mt-6 sm:mt-10">
+                      <Link 
+                        to="/portfolio" 
+                        className="main-btn"
+                      >
+                        Mon Portfolio
+                      </Link>
                       {resumeLinks.fr && (
                         <a 
                           href={resumeLinks.fr} 
