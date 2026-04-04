@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { supabase } from "../utils/supabase";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Calendar, CheckCircle, Info, Loader2, X } from "lucide-react";
+import Navbar from "./Navbar";
+import Footer from "./footer";
 
 interface PortfolioItem {
   id: number;
@@ -202,24 +204,7 @@ export default function Portfolio() {
 
   return (
     <div className="min-h-screen bg-[#f8f9fa] font-sans">
-      {/* Navbar */}
-      <nav className="sticky top-0 z-[100] bg-gradient-to-br from-[#1a1a2e] to-[#16213e] py-4 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center">
-            <Link to="/" className="flex-shrink-0 transition-transform hover:scale-105">
-              <img src="/images/logo%20white.png" alt="MTE Logo" className="h-10 object-contain" />
-            </Link>
-            <div className="flex space-x-6 items-center">
-              <Link to="/" className="text-white/80 hover:text-white font-medium transition-colors">
-                Accueil
-              </Link>
-              <span className="text-orange-400 font-bold border-b-2 border-orange-400 pb-1">
-                Portfolio
-              </span>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-[#1a1a2e] to-[#16213e] text-center text-white py-16 -mt-px relative overflow-hidden">
@@ -279,12 +264,7 @@ export default function Portfolio() {
         </div>
       )}
 
-      {/* Footer */}
-      <footer className="bg-[#1a1a2e] text-white/60 py-8 text-center text-sm border-t border-white/5">
-        <div className="max-w-7xl mx-auto px-4">
-          <p>&copy; {new Date().getFullYear()} MTE – Réparation Électronique Industrielle. Tous droits réservés.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
