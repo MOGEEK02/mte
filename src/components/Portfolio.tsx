@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { supabase } from "../utils/supabase";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, MoreHorizontal, Loader2, Info, X } from "lucide-react";
+import Footer from "./footer";
 
 interface PortfolioItem {
   id: number;
@@ -357,12 +358,7 @@ export default function Portfolio() {
         </div>
       )}
 
-      {/* Footer */}
-      <footer className="bg-[#1a1a2e] text-white/60 py-6 text-center text-sm border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-4">
-          <p>&copy; {new Date().getFullYear()} MTE – Réparation Électronique Industrielle. Tous droits réservés.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
