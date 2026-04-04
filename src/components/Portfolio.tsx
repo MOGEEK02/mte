@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../utils/supabase";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { ChevronLeft, ChevronRight, Loader2, Info, X, Play } from "lucide-react";
 import Footer from "./footer";
 
@@ -198,9 +199,9 @@ const PortfolioCard = ({ item, setLightbox }: { item: PortfolioItem; setLightbox
         </div>
         
         {/* Date */}
-        <div className="text-[10px] sm:text-[11px] uppercase text-slate-500 font-medium tracking-wide mt-2">
+        <time dateTime={item.created_at} className="block text-[10px] sm:text-[11px] uppercase text-slate-500 font-medium tracking-wide mt-2">
           {formattedDate}
-        </div>
+        </time>
       </div>
     </article>
   );
@@ -330,6 +331,16 @@ export default function Portfolio() {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans">
+      {/* Global Portfolio SEO */}
+      <Helmet>
+        <title>Portfolio des Réparations | MTE Électronique Industrielle Algérie</title>
+        <meta name="description" content="Découvrez nos interventions, maintenances et succès en réparation de cartes électroniques, variateurs de fréquence, automates et équipements industriels partout en Algérie." />
+        <meta name="keywords" content="Portfolio MTE, réparation électronique industrielle Algérie, maintenance variateur, réparation cartes électroniques industrielles, automates programmables, IHM" />
+        <link rel="canonical" href="https://mte-dz.com/portfolio" />
+        <meta property="og:title" content="Portfolio des Réparations | MTE Algérie" />
+        <meta property="og:description" content="Explorez notre galerie de réparations électroniques pour l'industrie algérienne." />
+      </Helmet>
+
       <PortfolioNavbar />
 
       {/* Hero Header exactly like Home Page Slider */}
@@ -340,12 +351,12 @@ export default function Portfolio() {
         <div className="absolute inset-0 bg-[#1a1a2e]/85 backdrop-blur-[2px]"></div>
         <div className="max-w-7xl w-full mx-auto px-4 relative z-10 pt-32 pb-16">
           <div className="max-w-2xl">
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 sm:mb-6 tracking-tight leading-tight">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 sm:mb-6 tracking-tight leading-tight">
                Mes <span className="text-[#f5a623]">Réalisations</span>
-            </h2>
-            <p className="text-[15px] sm:text-lg text-white/90 font-light max-w-xl leading-relaxed">
+            </h1>
+            <h2 className="text-[15px] sm:text-lg text-white/90 font-light max-w-xl leading-relaxed">
               Découvrez mes interventions et mon expertise en réparation électronique industrielle en Algérie.
-            </p>
+            </h2>
           </div>
         </div>
       </section>
