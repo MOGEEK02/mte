@@ -1,4 +1,14 @@
 User-agent: *
 Allow: /
+Allow: /portfolio
+Allow: /portfolio/
+
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 2
 
 Sitemap: https://moutie.vercel.app/sitemap.xml
