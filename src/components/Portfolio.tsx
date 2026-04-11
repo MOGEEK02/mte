@@ -65,7 +65,7 @@ const MasonryCard = ({ item }: { item: PortfolioItem }) => {
     <div className="mb-4 sm:mb-6 break-inside-avoid">
       <Link 
         to={`/portfolio/${item.id}`} 
-        className="block bg-white rounded-[3px] sm:rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-slate-200 group relative"
+        className="block bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-100 group relative"
       >
         {/* Media Thumbnail */}
         {currentMedia ? (
@@ -140,18 +140,21 @@ const MasonryCard = ({ item }: { item: PortfolioItem }) => {
         )}
 
         {/* Content Section */}
-        <div className="p-4 sm:p-5 text-left border-t border-slate-100">
-          <h3 className="text-[16px] sm:text-[18px] font-bold text-slate-900 leading-tight mb-2 group-hover:text-[#ff6600] transition-colors break-words">
+        <div className="p-4 sm:p-5 text-left">
+          <h3 className="text-[15px] sm:text-[17px] font-bold text-slate-900 leading-snug mb-2 group-hover:text-[#ff6600] transition-colors duration-200 line-clamp-2">
             {item.title}
           </h3>
           
-          <p className="text-[13px] sm:text-sm text-slate-600 line-clamp-3 md:line-clamp-4 leading-relaxed mb-3 sm:mb-4 whitespace-pre-wrap">
+          <p className="text-[12px] sm:text-[13px] text-slate-500 line-clamp-3 leading-relaxed mb-3 sm:mb-4 whitespace-pre-wrap">
              {renderDescription(item.description)}
           </p>
 
-          <time dateTime={item.created_at} className="block text-[10px] sm:text-[11px] uppercase text-slate-400 font-bold tracking-widest">
-            {formattedDate}
-          </time>
+          <div className="flex items-center justify-between">
+            <time dateTime={item.created_at} className="text-[10px] uppercase text-slate-400 font-semibold tracking-wider">
+              {formattedDate}
+            </time>
+            <span className="text-[#ff6600] text-[11px] font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-200">Voir →</span>
+          </div>
         </div>
       </Link>
     </div>
