@@ -69,7 +69,7 @@ const MasonryCard = ({ item }: { item: PortfolioItem }) => {
       >
         {/* Media Thumbnail */}
         {currentMedia ? (
-          <div className="relative w-full aspect-[4/3] bg-slate-50 overflow-hidden shrink-0">
+          <div className="relative w-full aspect-[9/16] bg-slate-50 overflow-hidden shrink-0">
             {currentMedia.media_type === "image" ? (
               <img
                 src={currentMedia.media_url}
@@ -325,7 +325,7 @@ export default function Portfolio() {
             <p className="text-slate-500 text-sm">Revenez bientôt pour découvrir nos dernières réparations.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
+          <div className="flex flex-col gap-10 sm:gap-14 w-full max-w-md mx-auto">
             {items.map((item) => (
               <MasonryCard key={item.id} item={item} />
             ))}
