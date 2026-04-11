@@ -62,37 +62,37 @@ const MasonryCard = ({ item }: { item: PortfolioItem }) => {
   };
 
   return (
-    <div className="mb-4 sm:mb-6 break-inside-avoid">
+    <div className="mb-6 sm:mb-8 break-inside-avoid px-2">
       <Link 
         to={`/portfolio/${item.id}`} 
-        className="block bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-100 group relative"
+        className="block bg-white rounded-3xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.08)] hover:shadow-[0_15px_30px_-5px_rgba(0,0,0,0.12)] hover:-translate-y-1 transition-all duration-400 overflow-hidden group relative"
       >
         {/* Media Thumbnail */}
         {currentMedia ? (
-          <div className="relative w-full bg-slate-100 overflow-hidden">
+          <div className="relative w-full bg-slate-50 overflow-hidden">
             {currentMedia.media_type === "image" ? (
               <img
                 src={currentMedia.media_url}
                 alt={item.title}
-                className="w-full h-auto object-cover group-hover:scale-[1.03] transition-transform duration-500 ease-out"
+                className="w-full h-auto object-cover group-hover:scale-[1.05] transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]"
                 loading="lazy"
               />
             ) : getYouTubeId(currentMedia.media_url) ? (
               <img 
                 src={`https://img.youtube.com/vi/${getYouTubeId(currentMedia.media_url)}/hqdefault.jpg`}
                 alt={item.title}
-                className="w-full h-auto object-cover group-hover:scale-[1.03] transition-transform duration-500 ease-out"
+                className="w-full h-auto object-cover group-hover:scale-[1.05] transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]"
                 loading="lazy"
               />
             ) : (
                <div className="relative w-full aspect-[4/5] sm:aspect-auto sm:min-h-[300px] bg-slate-900 flex items-center justify-center overflow-hidden">
                  <video
                   src={currentMedia.media_url}
-                  className="w-full h-full object-cover opacity-90 group-hover:scale-[1.03] transition-transform duration-500 ease-out"
+                  className="w-full h-full object-cover opacity-90 group-hover:scale-[1.05] transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]"
                   muted playsInline loop autoPlay
                  />
                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-12 h-12 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg">
+                    <div className="w-14 h-14 bg-black/30 backdrop-blur-md rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(0,0,0,0.3)]">
                       <Play className="text-white w-6 h-6 ml-1" fill="currentColor" />
                     </div>
                  </div>
@@ -102,58 +102,60 @@ const MasonryCard = ({ item }: { item: PortfolioItem }) => {
             {/* Sweep Navigation Controls */}
             {sortedMedia.length > 1 && (
                <>
-                 <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 px-2 flex justify-between opacity-0 group-hover:opacity-100 transition-opacity z-20 pointer-events-none">
+                 <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 px-3 flex justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 pointer-events-none">
                     <button 
                       onClick={handlePrev}
-                      className="w-8 h-8 flex items-center justify-center bg-white/90 text-slate-800 rounded-full shadow-md hover:bg-white hover:text-orange-600 pointer-events-auto transition-all"
+                      className="w-9 h-9 flex items-center justify-center bg-white/20 backdrop-blur-md border border-white/30 text-white rounded-full shadow-[0_4px_15px_rgba(0,0,0,0.1)] hover:bg-white/40 hover:scale-105 pointer-events-auto transition-all"
                     >
-                      <ChevronLeft size={18} strokeWidth={2.5} />
+                      <ChevronLeft size={20} strokeWidth={2.5} className="-ml-0.5" />
                     </button>
                     <button 
                       onClick={handleNext}
-                      className="w-8 h-8 flex items-center justify-center bg-white/90 text-slate-800 rounded-full shadow-md hover:bg-white hover:text-orange-600 pointer-events-auto transition-all"
+                      className="w-9 h-9 flex items-center justify-center bg-white/20 backdrop-blur-md border border-white/30 text-white rounded-full shadow-[0_4px_15px_rgba(0,0,0,0.1)] hover:bg-white/40 hover:scale-105 pointer-events-auto transition-all"
                     >
-                      <ChevronRight size={18} strokeWidth={2.5} />
+                      <ChevronRight size={20} strokeWidth={2.5} className="-mr-0.5" />
                     </button>
                  </div>
 
                  {/* Dot Indicators */}
-                 <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1 z-20">
+                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
                     {sortedMedia.map((_, i) => (
                       <div 
                         key={i}
-                        className={`h-1 rounded-full transition-all duration-300 ${i === mediaIdx ? "w-4 bg-orange-500" : "w-1.5 bg-white/60"}`}
+                        className={`h-1.5 rounded-full transition-all duration-300 shadow-sm ${i === mediaIdx ? "w-5 bg-white" : "w-1.5 bg-white/50"}`}
                       />
                     ))}
                  </div>
 
-                 <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-white text-[10px] sm:text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow-md z-10 transition-opacity">
+                 <div className="absolute top-4 right-4 bg-black/40 backdrop-blur-md text-white text-[11px] font-bold tracking-widest px-3 py-1.5 rounded-full flex items-center shadow-sm z-10">
                     {mediaIdx + 1} / {sortedMedia.length}
                  </div>
                </>
             )}
           </div>
         ) : (
-          <div className="w-full aspect-square bg-slate-100 flex flex-col items-center justify-center text-slate-400">
-             <Info size={24} className="mb-2 opacity-50" />
+          <div className="w-full aspect-square bg-slate-50 flex flex-col items-center justify-center text-slate-300">
+             <Info size={32} className="mb-2 opacity-40" />
           </div>
         )}
 
         {/* Content Section */}
-        <div className="p-4 sm:p-5 text-left">
-          <h3 className="text-[15px] sm:text-[17px] font-bold text-slate-900 leading-snug mb-2 group-hover:text-[#ff6600] transition-colors duration-200 line-clamp-2">
+        <div className="p-5 sm:p-6 text-left">
+          <h3 className="text-[17px] sm:text-[19px] font-extrabold text-slate-900 leading-tight mb-2.5 group-hover:text-[#ff6600] transition-colors duration-300 line-clamp-2">
             {item.title}
           </h3>
           
-          <p className="text-[12px] sm:text-[13px] text-slate-500 line-clamp-3 leading-relaxed mb-3 sm:mb-4 whitespace-pre-wrap">
+          <p className="text-[13px] sm:text-[14px] text-slate-500 line-clamp-3 leading-relaxed mb-5 whitespace-pre-wrap font-medium">
              {renderDescription(item.description)}
           </p>
 
-          <div className="flex items-center justify-between">
-            <time dateTime={item.created_at} className="text-[10px] uppercase text-slate-400 font-semibold tracking-wider">
+          <div className="flex items-center justify-between pt-4 border-t border-slate-100/60 mt-auto">
+            <time dateTime={item.created_at} className="text-[11px] uppercase text-slate-400 font-bold tracking-widest">
               {formattedDate}
             </time>
-            <span className="text-[#ff6600] text-[11px] font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-200">Voir →</span>
+            <span className="flex items-center gap-1 text-[#ff6600] text-[12px] font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 transition-all duration-300">
+              Voir <ChevronRight size={14} strokeWidth={3} />
+            </span>
           </div>
         </div>
       </Link>
