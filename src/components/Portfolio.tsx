@@ -62,14 +62,14 @@ const MasonryCard = ({ item }: { item: PortfolioItem }) => {
   };
 
   return (
-    <div className="mb-6 sm:mb-8 break-inside-avoid px-2">
+    <div className="h-full">
       <Link 
         to={`/portfolio/${item.id}`} 
-        className="block bg-white rounded-3xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.08)] hover:shadow-[0_15px_30px_-5px_rgba(0,0,0,0.12)] hover:-translate-y-1 transition-all duration-400 overflow-hidden group relative"
+        className="flex flex-col h-full bg-white rounded-3xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.08)] hover:shadow-[0_15px_30px_-5px_rgba(0,0,0,0.12)] hover:-translate-y-1 transition-all duration-400 overflow-hidden group relative"
       >
         {/* Media Thumbnail */}
         {currentMedia ? (
-          <div className="relative w-full bg-slate-50 overflow-hidden">
+          <div className="relative w-full aspect-[4/3] bg-slate-50 overflow-hidden shrink-0">
             {currentMedia.media_type === "image" ? (
               <img
                 src={currentMedia.media_url}
@@ -140,16 +140,16 @@ const MasonryCard = ({ item }: { item: PortfolioItem }) => {
         )}
 
         {/* Content Section */}
-        <div className="p-5 sm:p-6 text-left">
-          <h3 className="text-[17px] sm:text-[19px] font-extrabold text-slate-900 leading-tight mb-2.5 group-hover:text-[#ff6600] transition-colors duration-300 line-clamp-2">
+        <div className="flex flex-col flex-grow p-5 sm:p-6 text-left">
+          <h3 className="text-[17px] sm:text-[19px] font-extrabold text-slate-900 leading-tight mb-2.5 group-hover:text-[#ff6600] transition-colors duration-300 line-clamp-2 shrink-0">
             {item.title}
           </h3>
           
-          <p className="text-[13px] sm:text-[14px] text-slate-500 line-clamp-3 leading-relaxed mb-5 whitespace-pre-wrap font-medium">
+          <p className="text-[13px] sm:text-[14px] text-slate-500 line-clamp-2 leading-relaxed mb-5 whitespace-pre-wrap font-medium flex-grow">
              {renderDescription(item.description)}
           </p>
 
-          <div className="flex items-center justify-between pt-4 border-t border-slate-100/60 mt-auto">
+          <div className="flex items-center justify-between pt-4 border-t border-slate-100/60 mt-auto shrink-0">
             <time dateTime={item.created_at} className="text-[11px] uppercase text-slate-400 font-bold tracking-widest">
               {formattedDate}
             </time>
@@ -325,7 +325,7 @@ export default function Portfolio() {
             <p className="text-slate-500 text-sm">Revenez bientôt pour découvrir nos dernières réparations.</p>
           </div>
         ) : (
-          <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 sm:gap-6 w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
             {items.map((item) => (
               <MasonryCard key={item.id} item={item} />
             ))}
