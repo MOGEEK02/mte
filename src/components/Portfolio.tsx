@@ -69,68 +69,74 @@ const MasonryCard = ({ item }: { item: PortfolioItem }) => {
       >
         {/* Media Thumbnail */}
         {currentMedia ? (
-          <div className="relative w-full aspect-[9/16] bg-slate-50 overflow-hidden shrink-0">
-            {currentMedia.media_type === "image" ? (
-              <img
-                src={currentMedia.media_url}
-                alt={item.title}
-                className="w-full h-auto object-cover group-hover:scale-[1.05] transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]"
-                loading="lazy"
-              />
-            ) : getYouTubeId(currentMedia.media_url) ? (
-              <img 
-                src={`https://img.youtube.com/vi/${getYouTubeId(currentMedia.media_url)}/hqdefault.jpg`}
-                alt={item.title}
-                className="w-full h-auto object-cover group-hover:scale-[1.05] transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]"
-                loading="lazy"
-              />
-            ) : (
-               <div className="relative w-full aspect-[4/5] sm:aspect-auto sm:min-h-[300px] bg-slate-900 flex items-center justify-center overflow-hidden">
-                 <video
+          <div className="flex flex-col w-full shrink-0 relative">
+            <div className="relative w-full aspect-[9/16] bg-slate-50 overflow-hidden shrink-0">
+              {currentMedia.media_type === "image" ? (
+                <img
                   src={currentMedia.media_url}
-                  className="w-full h-full object-cover opacity-90 group-hover:scale-[1.05] transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]"
-                  muted playsInline loop autoPlay
-                 />
-                 <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-14 h-14 bg-black/30 backdrop-blur-md rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(0,0,0,0.3)]">
-                      <Play className="text-white w-6 h-6 ml-1" fill="currentColor" />
-                    </div>
+                  alt={item.title}
+                  className="w-full h-auto object-cover group-hover:scale-[1.05] transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]"
+                  loading="lazy"
+                />
+              ) : getYouTubeId(currentMedia.media_url) ? (
+                <img 
+                  src={`https://img.youtube.com/vi/${getYouTubeId(currentMedia.media_url)}/hqdefault.jpg`}
+                  alt={item.title}
+                  className="w-full h-auto object-cover group-hover:scale-[1.05] transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]"
+                  loading="lazy"
+                />
+              ) : (
+                 <div className="relative w-full aspect-[4/5] sm:aspect-auto sm:min-h-[300px] bg-slate-900 flex items-center justify-center overflow-hidden">
+                   <video
+                    src={currentMedia.media_url}
+                    className="w-full h-full object-cover opacity-90 group-hover:scale-[1.05] transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]"
+                    muted playsInline loop autoPlay
+                   />
+                   <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-14 h-14 bg-black/30 backdrop-blur-md rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(0,0,0,0.3)]">
+                        <Play className="text-white w-6 h-6 ml-1" fill="currentColor" />
+                      </div>
+                   </div>
                  </div>
-               </div>
-            )}
-            
-            {/* Sweep Navigation Controls */}
+              )}
+              
+              
+              {/* Dot Indicators on Image */}
+              {sortedMedia.length > 1 && (
+                 <>
+                   <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
+                      {sortedMedia.map((_, i) => (
+                        <div 
+                          key={i}
+                          className={`h-1.5 rounded-full transition-all duration-300 shadow-sm ${i === mediaIdx ? "w-5 bg-white" : "w-1.5 bg-white/50"}`}
+                        />
+                      ))}
+                   </div>
+                 </>
+              )}
+            </div>
+
+            {/* Explicit Navigation Bar Below Media */}
             {sortedMedia.length > 1 && (
-               <>
-                 <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 px-3 flex justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 pointer-events-none">
-                    <button 
-                      onClick={handlePrev}
-                      className="w-9 h-9 flex items-center justify-center bg-white/20 backdrop-blur-md border border-white/30 text-white rounded-full shadow-[0_4px_15px_rgba(0,0,0,0.1)] hover:bg-white/40 hover:scale-105 pointer-events-auto transition-all"
-                    >
-                      <ChevronLeft size={20} strokeWidth={2.5} className="-ml-0.5" />
-                    </button>
-                    <button 
-                      onClick={handleNext}
-                      className="w-9 h-9 flex items-center justify-center bg-white/20 backdrop-blur-md border border-white/30 text-white rounded-full shadow-[0_4px_15px_rgba(0,0,0,0.1)] hover:bg-white/40 hover:scale-105 pointer-events-auto transition-all"
-                    >
-                      <ChevronRight size={20} strokeWidth={2.5} className="-mr-0.5" />
-                    </button>
-                 </div>
-
-                 {/* Dot Indicators */}
-                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
-                    {sortedMedia.map((_, i) => (
-                      <div 
-                        key={i}
-                        className={`h-1.5 rounded-full transition-all duration-300 shadow-sm ${i === mediaIdx ? "w-5 bg-white" : "w-1.5 bg-white/50"}`}
-                      />
-                    ))}
-                 </div>
-
-                 <div className="absolute top-4 right-4 bg-black/40 backdrop-blur-md text-white text-[11px] font-bold tracking-widest px-3 py-1.5 rounded-full flex items-center shadow-sm z-10">
+               <div className="bg-slate-50 border-b border-slate-100 p-3 sm:p-4 flex items-center justify-between w-full shrink-0">
+                  <button 
+                    onClick={handlePrev}
+                    className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-slate-600 hover:text-[#ff6600] font-bold text-[13px] flex items-center gap-1.5 transition-all shadow-sm z-20 pointer-events-auto"
+                  >
+                    <ChevronLeft size={16} strokeWidth={3} /> Précédent
+                  </button>
+                  
+                  <div className="text-[12px] font-extrabold text-slate-400 tracking-widest uppercase">
                     {mediaIdx + 1} / {sortedMedia.length}
-                 </div>
-               </>
+                  </div>
+
+                  <button 
+                    onClick={handleNext}
+                    className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-slate-600 hover:text-[#ff6600] font-bold text-[13px] flex items-center gap-1.5 transition-all shadow-sm z-20 pointer-events-auto"
+                  >
+                    Suivant <ChevronRight size={16} strokeWidth={3} />
+                  </button>
+               </div>
             )}
           </div>
         ) : (
