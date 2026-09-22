@@ -5,6 +5,7 @@ import { Helmet } from "react-helmet-async";
 import { ChevronLeft, ChevronRight, Loader2, Info } from "lucide-react";
 import { PortfolioNavbar } from "./Portfolio";
 import Footer from "./footer";
+import { getOptimizedImageUrl } from "../utils/imageOptimizer";
 
 interface PortfolioItem {
   id: number;
@@ -162,7 +163,7 @@ export default function SinglePortfolioPost() {
                   >
                     {media.media_type === "image" ? (
                       <img
-                        src={media.media_url}
+                        src={getOptimizedImageUrl(media.media_url, 1200)}
                         alt={`${item.title} - ${idx + 1}`}
                         className="w-full h-full object-contain bg-black"
                       />
