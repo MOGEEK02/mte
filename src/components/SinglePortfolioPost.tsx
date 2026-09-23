@@ -5,7 +5,8 @@ import { Helmet } from "react-helmet-async";
 import { ChevronLeft, ChevronRight, Loader2, Info } from "lucide-react";
 import { PortfolioNavbar } from "./Portfolio";
 import Footer from "./footer";
-import { getOptimizedImageUrl } from "../utils/imageOptimizer";
+import { getOptimizedImageUrl, isImageMedia, FALLBACK_IMAGE } from "../utils/imageOptimizer";
+
 
 interface PortfolioItem {
   id: number;
@@ -161,10 +162,15 @@ export default function SinglePortfolioPost() {
                     key={media.id} 
                     className={`absolute inset-0 w-full h-full transition-opacity duration-300 ${idx === currentIndex ? "opacity-100 z-10" : "opacity-0 z-0"}`}
                   >
-                    {media.media_type === "image" ? (
+                    {isImageMedia(media.media_url, media.media_type) ? (
                       <img
                         src={getOptimizedImageUrl(media.media_url, 1200)}
                         alt={`${item.title} - ${idx + 1}`}
+                        referrerPolicy="no-referrer"
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = FALLBACK_IMAGE;
+                        }}
                         className="w-full h-full object-contain bg-black"
                       />
                     ) : (

@@ -4,7 +4,8 @@ import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Loader2, Info, X, Play, ChevronLeft, ChevronRight } from "lucide-react";
 import Footer from "./footer";
-import { getOptimizedImageUrl } from "../utils/imageOptimizer";
+import { getOptimizedImageUrl, isImageMedia, FALLBACK_IMAGE } from "../utils/imageOptimizer";
+
 
 interface PortfolioItem {
   id: number;
@@ -72,10 +73,15 @@ const MasonryCard = ({ item }: { item: PortfolioItem }) => {
         {currentMedia ? (
           <div className="flex flex-col w-full shrink-0 relative">
             <div className="relative w-full aspect-[9/16] bg-slate-50 overflow-hidden shrink-0">
-              {currentMedia.media_type === "image" ? (
+              {isImageMedia(currentMedia.media_url, currentMedia.media_type) ? (
                 <img
                   src={getOptimizedImageUrl(currentMedia.media_url, 800)}
                   alt={item.title}
+                  referrerPolicy="no-referrer"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = FALLBACK_IMAGE;
+                  }}
                   className="w-full h-auto object-cover group-hover:scale-[1.05] transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]"
                   loading="lazy"
                 />
@@ -83,6 +89,11 @@ const MasonryCard = ({ item }: { item: PortfolioItem }) => {
                 <img 
                   src={`https://img.youtube.com/vi/${getYouTubeId(currentMedia.media_url)}/hqdefault.jpg`}
                   alt={item.title}
+                  referrerPolicy="no-referrer"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = FALLBACK_IMAGE;
+                  }}
                   className="w-full h-auto object-cover group-hover:scale-[1.05] transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]"
                   loading="lazy"
                 />
