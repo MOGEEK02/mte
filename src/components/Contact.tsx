@@ -1,107 +1,76 @@
-import React from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import '@fortawesome/fontawesome-free/css/all.min.css';
+import { Phone, MapPin } from "lucide-react";
+import { useLang } from "../i18n/LanguageProvider";
+import { SITE } from "../config";
+import { WhatsappIcon } from "./icons";
 
-const Contact: React.FC = () => {
+export default function Contact() {
+  const { t } = useLang();
+
+  const cards = [
+    {
+      href: SITE.whatsapp,
+      external: true,
+      icon: <WhatsappIcon size={26} />,
+      label: t.contact.whatsappLabel,
+      value: SITE.phoneDisplay,
+      desc: t.contact.whatsappDesc,
+      accent: "text-emerald-600 bg-emerald-50",
+    },
+    {
+      href: `tel:${SITE.phone}`,
+      external: false,
+      icon: <Phone size={26} />,
+      label: t.contact.callLabel,
+      value: SITE.phoneDisplay,
+      desc: t.contact.callDesc,
+      accent: "text-brand bg-brand/10",
+    },
+    {
+      href: SITE.maps,
+      external: true,
+      icon: <MapPin size={26} />,
+      label: t.contact.locationLabel,
+      value: "",
+      desc: t.contact.locationDesc,
+      accent: "text-rose-600 bg-rose-50",
+    },
+  ];
+
   return (
-    <section id="contact" className="py-5" style={{ background: 'linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%)' }}>
-      <div className="container">
-        {/* En-tête de section */}
-        <div className="text-center mb-5">
-          <h3 className="display-5 fw-bold">
-            Contactez-<span className="text-warning">nous</span>
-          </h3>
-          <p className="lead text-muted mt-3">
-            Contactez-nous facilement par téléphone, WhatsApp ou visitez notre emplacement.
-          </p>
+    <section id="contact" className="py-20 sm:py-28 bg-white">
+      <div className="container-mte">
+        <div className="text-center max-w-2xl mx-auto">
+          <span className="eyebrow">{t.contact.eyebrow}</span>
+          <h2 className="section-title mt-3">{t.contact.title}</h2>
+          <p className="mt-4 text-slate-600">{t.contact.subtitle}</p>
         </div>
 
-        {/* Cartes de contact */}
-        <div className="row justify-content-center g-4">
-          {/* WhatsApp */}
-          <div className="col-md-6 col-lg-4">
-            <div className="text-center bg-white p-4 rounded-4 shadow-sm hover-shadow">
-              <a
-                href="https://wa.me/213778461682"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-success d-inline-block mb-3"
-                style={{ fontSize: '3rem' }}
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {cards.map((c, i) => (
+            <a
+              key={i}
+              href={c.href}
+              {...(c.external
+                ? { target: "_blank", rel: "noopener noreferrer" }
+                : {})}
+              className="group flex flex-col items-center rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-brand/30"
+            >
+              <span
+                className={`flex h-14 w-14 items-center justify-center rounded-full ${c.accent}`}
               >
-                <i className="fab fa-whatsapp"></i>
-              </a>
-              <h4 className="mb-1">
-                <a href="https://wa.me/213778461682" className="text-success text-decoration-none" style={{ fontSize: '1.5rem' }}>
-                  +213 778 461 682
-                </a>
-              </h4>
-              <p className="text-muted">Discutez avec nous sur WhatsApp</p>
-            </div>
-          </div>
-
-          {/* Appel */}
-          <div className="col-md-6 col-lg-4">
-            <div className="text-center bg-white p-4 rounded-4 shadow-sm hover-shadow">
-              <a
-                href="tel:+213778461682"
-                className="text-primary d-inline-block mb-3"
-                style={{ fontSize: '3rem' }}
-              >
-                <i className="fas fa-phone-alt"></i>
-              </a>
-              <h4 className="mb-1">
-                <a href="tel:+213778461682" className="text-primary text-decoration-none" style={{ fontSize: '1.5rem' }}>
-                  +213 778 461 682
-                </a>
-              </h4>
-              <p className="text-muted">Appelez-nous directement</p>
-            </div>
-          </div>
-
-          {/* Adresse */}
-          <div className="col-md-6 col-lg-4">
-            <div className="text-center bg-white p-4 rounded-4 shadow-sm hover-shadow">
-              <a
-                href="https://maps.app.goo.gl/o5DLijMqhsTaiac19"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-danger d-inline-block mb-3"
-                style={{ fontSize: '3rem' }}
-              >
-                <i className="fas fa-map-marker-alt"></i>
-              </a>
-              <h4 className="mb-1">
-                <a 
-                target="_blank"
-                rel="noopener noreferrer"
-                href="https://maps.app.goo.gl/o5DLijMqhsTaiac19"
-              
-                
-                className="text-dark text-decoration-none" style={{ fontSize: '1.2rem' }}>
-                  Médéa, Ain Dhab, Algérie
-                </a>
-              </h4>
-              <p className="text-muted">Visitez notre emplacement</p>
-            </div>
-          </div>
+                {c.icon}
+              </span>
+              <span className="mt-5 text-base font-bold text-ink">{c.label}</span>
+              {c.value && (
+                <span className="mt-1 text-sm font-semibold text-slate-700" dir="ltr">
+                  {c.value}
+                </span>
+              )}
+              <span className="mt-1 text-sm text-slate-500">{c.desc}</span>
+            </a>
+          ))}
         </div>
       </div>
-
-      {/* Effet hover */}
-      <style>
-        {`
-          .hover-shadow:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 25px rgba(0,0,0,0.2);
-            transition: 0.3s;
-          }
-          a:hover {
-            transform: scale(1.1);
-          }
-        `}
-      </style>
     </section>
   );
-};
-
-export default Contact;
+}

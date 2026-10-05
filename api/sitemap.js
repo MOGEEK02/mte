@@ -16,18 +16,72 @@ function escapeXml(str) {
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
 }
 
+// Service page slugs (shared across languages). Keep in sync with src/i18n/fr.ts.
+const SERVICE_SLUGS = [
+  'programmation-plc',
+  'variateurs-vfd',
+  'servo-variateurs',
+  'ihm-scada',
+  'reparation-carte-electronique',
+  'armoires-de-commande',
+  'reparation-machine-industrielle',
+  'groupe-electrogene',
+];
+
+function altLinks(path) {
+  return `      <xhtml:link rel="alternate" hreflang="fr" href="${BASE_URL}/fr${path}"/>
+      <xhtml:link rel="alternate" hreflang="en" href="${BASE_URL}/en${path}"/>
+      <xhtml:link rel="alternate" hreflang="x-default" href="${BASE_URL}/fr${path}"/>`;
+}
+
+// Localized services index + per-service detail pages, both languages, with hreflang.
+function servicesUrlsXml(today) {
+  const paths = ['/services', ...SERVICE_SLUGS.map((s) => `/services/${s}`)];
+  const out = [];
+  for (const path of paths) {
+    for (const locale of ['fr', 'en']) {
+      out.push(`  <url>
+    <loc>${BASE_URL}/${locale}${path}</loc>
+    <lastmod>${today}</lastmod>
+${altLinks(path)}
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>`);
+    }
+  }
+  return out.join('\n');
+}
+
+// Localized home pages with reciprocal hreflang alternates.
+function homeUrlsXml(today) {
+  const alts = `      <xhtml:link rel="alternate" hreflang="fr" href="${BASE_URL}/fr"/>
+      <xhtml:link rel="alternate" hreflang="en" href="${BASE_URL}/en"/>
+      <xhtml:link rel="alternate" hreflang="x-default" href="${BASE_URL}/fr"/>`;
+  return `  <url>
+    <loc>${BASE_URL}/fr</loc>
+    <lastmod>${today}</lastmod>
+${alts}
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>${BASE_URL}/en</loc>
+    <lastmod>${today}</lastmod>
+${alts}
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>`;
+}
+
 function buildStaticFallbackXml() {
   const today = new Date().toISOString().split('T')[0];
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
         xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
-  <url>
-    <loc>${BASE_URL}/</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
+${homeUrlsXml(today)}
+${servicesUrlsXml(today)}
   <url>
     <loc>${BASE_URL}/portfolio</loc>
     <lastmod>${today}</lastmod>
@@ -159,12 +213,16 @@ export default async function handler(request, response) {
     const today = new Date().toISOString().split('T')[0];
     let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
     xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n`;
+    xml += `        xmlns:xhtml="http://www.w3.org/1999/xhtml"\n`;
     xml += `        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"\n`;
     xml += `        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">\n`;
 
-    // Homepage
-    xml += `  <url>\n    <loc>${BASE_URL}/</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
-    
+    // Localized home pages (/fr, /en) with hreflang
+    xml += `${homeUrlsXml(today)}\n`;
+
+    // Services index + per-service pages (/fr, /en) with hreflang
+    xml += `${servicesUrlsXml(today)}\n`;
+
     // Portfolio hub
     xml += `  <url>\n    <loc>${BASE_URL}/portfolio</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
 

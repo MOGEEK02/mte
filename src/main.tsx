@@ -1,10 +1,25 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
+import { StrictMode } from "react";
+import { createRoot, hydrateRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import { HelmetProvider } from "@dr.pogodin/react-helmet";
+import "./index.css";
+import App from "./App";
 
-createRoot(document.getElementById('root')!).render(
+const app = (
   <StrictMode>
-    <App />
-  </StrictMode>,
-)
+    <HelmetProvider>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </HelmetProvider>
+  </StrictMode>
+);
+
+const container = document.getElementById("root")!;
+
+// Hydrate prerendered pages (/fr, /en); otherwise mount a fresh SPA.
+if (container.firstElementChild) {
+  hydrateRoot(container, app);
+} else {
+  createRoot(container).render(app);
+}

@@ -1,41 +1,28 @@
-
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { HelmetProvider } from "react-helmet-async";
-import Navbar from "./components/Navbar";
-import CompanyLogosShowcase from "./components/company";
-import AboutUs from "./components/about";
-import ExpertiseSection from "./components/ExpertiseSection";
-import Contact from "./components/Contact";
-import Footer from "./components/footer";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
+import { LanguageProvider } from "./i18n/LanguageProvider";
+import { DEFAULT_LOCALE } from "./i18n";
+import HomePage from "./components/HomePage";
+import ServicesIndex from "./components/ServicesIndex";
+import ServiceDetail from "./components/ServiceDetail";
 import Portfolio from "./components/Portfolio";
 import SinglePortfolioPost from "./components/SinglePortfolioPost";
-import '@fortawesome/fontawesome-free/css/all.min.css';
 
-function HomePage() {
+export default function App() {
   return (
-    <div>
-      <Navbar />
-      <AboutUs />
-      <CompanyLogosShowcase />
-      <ExpertiseSection />
-      <Contact />
-      <Footer />
-    </div>
+    <LanguageProvider>
+      <Routes>
+        <Route path="/" element={<Navigate to={`/${DEFAULT_LOCALE}`} replace />} />
+        <Route path="/portfolio" element={<Portfolio />} />
+        <Route path="/portfolio/:id" element={<SinglePortfolioPost />} />
+        <Route path="/:lang/services/:slug" element={<ServiceDetail />} />
+        <Route path="/:lang/services" element={<ServicesIndex />} />
+        <Route path="/:lang" element={<HomePage />} />
+        <Route path="*" element={<Navigate to={`/${DEFAULT_LOCALE}`} replace />} />
+      </Routes>
+      <Analytics />
+      <SpeedInsights />
+    </LanguageProvider>
   );
 }
-
-function App() {
-  return (
-    <HelmetProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/portfolio" element={<Portfolio />} />
-          <Route path="/portfolio/:id" element={<SinglePortfolioPost />} />
-        </Routes>
-      </Router>
-    </HelmetProvider>
-  );
-}
-
-export default App;

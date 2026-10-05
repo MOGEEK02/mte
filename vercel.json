@@ -16,16 +16,15 @@
     },
     {
       "source": "/(.*)",
-      "headers": [
-        { "key": "X-Robots-Tag", "value": "index, follow" }
-      ]
+      "headers": [{ "key": "X-Robots-Tag", "value": "index, follow" }]
     },
     {
       "source": "/gestion/:path*",
-      "headers": [
-        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
-      ]
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
     }
+  ],
+  "redirects": [
+    { "source": "/", "destination": "/fr", "permanent": true }
   ],
   "rewrites": [
     { "source": "/sitemap.xml", "destination": "/api/sitemap" },
