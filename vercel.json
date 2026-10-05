@@ -19,11 +19,18 @@
       "headers": [
         { "key": "X-Robots-Tag", "value": "index, follow" }
       ]
+    },
+    {
+      "source": "/gestion/:path*",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+      ]
     }
   ],
   "rewrites": [
     { "source": "/sitemap.xml", "destination": "/api/sitemap" },
     { "source": "/robots.txt", "destination": "/robots.txt" },
+    { "source": "/gestion/:path*", "destination": "https://mte-facturation.vercel.app/gestion/:path*" },
     { "source": "/:path*", "destination": "/index.html" }
   ]
 }
