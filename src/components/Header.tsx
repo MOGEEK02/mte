@@ -1,99 +1,95 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Phone } from "lucide-react";
 import { useLang } from "../i18n/LanguageProvider";
+import { SITE } from "../config";
+import { WhatsappIcon } from "./icons";
 import LanguageSwitcher from "./LanguageSwitcher";
 
 type Variant = "home" | "inner";
-
-const SECTIONS = ["about", "services", "process", "faq", "contact"] as const;
 
 export default function Header({ variant = "home" }: { variant?: Variant }) {
   const { lang, t } = useLang();
   const isInner = variant === "inner";
   const [scrolled, setScrolled] = useState(isInner);
-  const [active, setActive] = useState<string>("home");
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     if (isInner) return;
-    const onScroll = () => {
-      setScrolled(window.scrollY > 40);
-      const pos = window.scrollY + 120;
-      let current = "home";
-      for (const id of SECTIONS) {
-        const el = document.getElementById(id);
-        if (el && pos >= el.offsetTop) current = id;
-      }
-      setActive(current);
-    };
+    const onScroll = () => setScrolled(window.scrollY > 40);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, [isInner]);
 
   const solid = scrolled || menuOpen;
-  const navLinks = SECTIONS.map((id) => ({ id, label: t.nav[id] }));
 
-  const linkColor = solid ? "text-slate-700" : "text-white/85";
+  // Always-dark header on home hero → readable; solid steel once scrolled / inner.
+  const shellCls = solid
+    ? "bg-ink/95 backdrop-blur border-b border-white/10 py-2.5"
+    : "bg-gradient-to-b from-black/60 to-transparent py-4";
+
+  const links: { to: string; label: string }[] = [
+    { to: `/${lang}`, label: t.nav.home },
+    { to: `/${lang}/services`, label: t.nav.services },
+    { to: "/portfolio", label: t.nav.portfolio },
+    { to: `/${lang}#contact`, label: t.nav.contact },
+  ];
 
   return (
-    <header
-      className={`fixed top-0 inset-x-0 z-[100] transition-all duration-300 ${
-        solid ? "bg-white shadow-sm py-2.5" : "bg-transparent py-4"
-      }`}
-    >
+    <header className={`fixed top-0 inset-x-0 z-[100] text-white transition-all duration-300 ${shellCls}`}>
       <div className="container-mte flex items-center justify-between gap-4">
         <Link to={`/${lang}`} className="flex-shrink-0" aria-label="MTE">
           <img
-            src={solid ? "/images/logo.png" : "/images/logo%20white.png"}
-            alt="MTE – Automatisme & électronique industrielle en Algérie"
+            src="/images/logo%20white.png"
+            alt="MTE – Électronique & automatisme industriel en Algérie"
             className="h-9 sm:h-11 w-auto object-contain"
           />
         </Link>
 
         {/* Desktop nav */}
         <nav className="hidden lg:flex items-center gap-7">
-          {!isInner &&
-            navLinks.map((l) => (
-              <a
-                key={l.id}
-                href={`#${l.id}`}
-                className={`text-sm font-medium transition-colors hover:text-brand ${
-                  active === l.id ? "text-brand" : linkColor
-                }`}
-              >
-                {l.label}
-              </a>
-            ))}
-          {isInner && (
+          {links.map((l) => (
             <Link
-              to={`/${lang}`}
-              className={`text-sm font-medium transition-colors hover:text-brand ${linkColor}`}
+              key={l.label}
+              to={l.to}
+              className="text-sm font-semibold text-white/85 hover:text-brand transition-colors"
             >
-              {t.nav.home}
+              {l.label}
             </Link>
-          )}
-          <Link
-            to="/portfolio"
-            className={`text-sm font-semibold transition-colors ${
-              isInner ? "text-brand" : `hover:text-brand ${linkColor}`
-            }`}
+          ))}
+          <LanguageSwitcher dark />
+          <a
+            href={`tel:${SITE.phone}`}
+            className="hidden xl:flex items-center gap-1.5 text-sm font-bold text-white"
+            dir="ltr"
           >
-            {t.nav.portfolio}
-          </Link>
-          <LanguageSwitcher dark={!solid} />
+            <Phone size={16} className="text-brand" />
+            {SITE.phoneDisplay}
+          </a>
+          <a href={SITE.whatsapp} target="_blank" rel="noopener noreferrer" className="btn-wa !px-4 !py-2.5">
+            <WhatsappIcon size={16} />
+            WhatsApp
+          </a>
         </nav>
 
         {/* Mobile controls */}
-        <div className="flex items-center gap-3 lg:hidden">
-          <LanguageSwitcher dark={!solid} />
+        <div className="flex items-center gap-2 lg:hidden">
+          <a
+            href={SITE.whatsapp}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="WhatsApp"
+            className="flex h-9 w-9 items-center justify-center rounded-md bg-wa text-white"
+          >
+            <WhatsappIcon size={18} />
+          </a>
           <button
             type="button"
             onClick={() => setMenuOpen((v) => !v)}
             aria-label="Menu"
             aria-expanded={menuOpen}
-            className={solid ? "text-ink" : "text-white"}
+            className="text-white"
           >
             {menuOpen ? <X size={26} /> : <Menu size={26} />}
           </button>
@@ -102,38 +98,28 @@ export default function Header({ variant = "home" }: { variant?: Variant }) {
 
       {/* Mobile drawer */}
       <div
-        className={`lg:hidden overflow-hidden bg-white transition-[max-height] duration-300 ${
-          menuOpen ? "max-h-96 border-t border-slate-100" : "max-h-0"
+        className={`lg:hidden overflow-hidden bg-ink transition-[max-height] duration-300 ${
+          menuOpen ? "max-h-[420px] border-t border-white/10" : "max-h-0"
         }`}
       >
         <nav className="container-mte flex flex-col py-4">
-          {!isInner &&
-            navLinks.map((l) => (
-              <a
-                key={l.id}
-                href={`#${l.id}`}
-                onClick={() => setMenuOpen(false)}
-                className="py-2.5 text-base font-medium text-slate-700 hover:text-brand"
-              >
-                {l.label}
-              </a>
-            ))}
-          {isInner && (
+          {links.map((l) => (
             <Link
-              to={`/${lang}`}
+              key={l.label}
+              to={l.to}
               onClick={() => setMenuOpen(false)}
-              className="py-2.5 text-base font-medium text-slate-700 hover:text-brand"
+              className="py-2.5 text-base font-semibold text-white/90 hover:text-brand"
             >
-              {t.nav.home}
+              {l.label}
             </Link>
-          )}
-          <Link
-            to="/portfolio"
-            onClick={() => setMenuOpen(false)}
-            className="py-2.5 text-base font-semibold text-brand"
-          >
-            {t.nav.portfolio}
-          </Link>
+          ))}
+          <div className="mt-3 flex items-center justify-between">
+            <LanguageSwitcher dark />
+            <a href={`tel:${SITE.phone}`} className="flex items-center gap-1.5 text-sm font-bold text-white" dir="ltr">
+              <Phone size={16} className="text-brand" />
+              {SITE.phoneDisplay}
+            </a>
+          </div>
         </nav>
       </div>
     </header>

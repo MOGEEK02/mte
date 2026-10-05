@@ -1,24 +1,32 @@
 @import "tailwindcss";
 
-/* ───────────── Design tokens ───────────── */
+/* ───────────── Design tokens — bold industrial ───────────── */
 @theme {
-  --font-sans: "Ubuntu", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: "Archivo", ui-sans-serif, system-ui, sans-serif;
 
-  --color-brand: #ff6600;
-  --color-brand-dark: #e65c00;
-  --color-amber: #f5a623;
-  --color-ink: #0f172a;
-  --color-ink-soft: #1e293b;
+  --color-brand: #ff6a00;        /* orange */
+  --color-brand-dark: #e85d00;
+  --color-safety: #ffb000;       /* safety amber */
+  --color-wa: #25d366;           /* whatsapp green */
+  --color-wa-dark: #1ebe5b;
+
+  --color-ink: #0a0c10;          /* near-black steel */
+  --color-steel: #11151b;        /* dark panel */
+  --color-steel-2: #1a2027;      /* lighter panel / borders */
 }
 
 /* ───────────── Base ───────────── */
 @layer base {
   html {
     scroll-behavior: smooth;
-    scroll-padding-top: 5rem;
+    scroll-padding-top: 5.5rem;
   }
   body {
     @apply font-sans text-ink antialiased bg-white;
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
   }
 }
 
@@ -28,24 +36,44 @@
     @apply max-w-6xl mx-auto px-5 sm:px-8;
   }
   .eyebrow {
-    @apply inline-block text-xs font-bold uppercase tracking-[0.22em] text-brand;
+    @apply inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-brand;
+  }
+  .eyebrow::before {
+    content: "";
+    @apply inline-block h-[2px] w-7 bg-brand;
   }
   .section-title {
-    @apply text-3xl sm:text-4xl font-extrabold tracking-tight text-ink;
+    @apply font-extrabold tracking-tight text-ink;
+    font-family: var(--font-display);
+    font-size: clamp(1.9rem, 1.2rem + 2.4vw, 3rem);
+    line-height: 1.05;
+  }
+  .btn-wa {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-6 py-3.5
+           text-sm font-bold uppercase tracking-wide transition-all duration-200 cursor-pointer
+           bg-wa text-white shadow-lg hover:bg-wa-dark hover:-translate-y-0.5;
   }
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3
-           text-sm font-semibold transition-all duration-200 cursor-pointer
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-6 py-3.5
+           text-sm font-bold uppercase tracking-wide transition-all duration-200 cursor-pointer
            bg-brand text-white shadow-lg hover:bg-brand-dark hover:-translate-y-0.5;
   }
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3
-           text-sm font-semibold transition-all duration-200 cursor-pointer
-           border border-white/30 text-white hover:bg-white/10 hover:-translate-y-0.5;
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-6 py-3.5
+           text-sm font-bold uppercase tracking-wide transition-all duration-200 cursor-pointer
+           border border-white/25 text-white hover:bg-white/10 hover:-translate-y-0.5;
   }
   .btn-outline {
-    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3
-           text-sm font-semibold transition-all duration-200 cursor-pointer
-           border border-slate-300 text-ink hover:border-brand hover:text-brand;
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-6 py-3.5
+           text-sm font-bold uppercase tracking-wide transition-all duration-200 cursor-pointer
+           border-2 border-ink/15 text-ink hover:border-brand hover:text-brand;
+  }
+  /* industrial hazard stripe */
+  .hazard {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      var(--color-safety) 0 12px,
+      #0a0c10 12px 24px
+    );
   }
 }

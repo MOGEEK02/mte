@@ -38,24 +38,24 @@ export default function Footer() {
           </h3>
           <ul className="mt-4 space-y-2 text-sm">
             <li>
-              <a href={`/${lang}#services`} className="hover:text-brand transition-colors">
+              <Link to={`/${lang}/services`} className="hover:text-brand transition-colors">
                 {t.nav.services}
-              </a>
+              </Link>
             </li>
             <li>
-              <a href={`/${lang}#about`} className="hover:text-brand transition-colors">
-                {t.nav.about}
+              <Link to="/portfolio" className="hover:text-brand transition-colors">
+                {t.nav.portfolio}
+              </Link>
+            </li>
+            <li>
+              <a href={`/${lang}#quote`} className="hover:text-brand transition-colors">
+                {t.nav.quote}
               </a>
             </li>
             <li>
               <a href={`/${lang}#contact`} className="hover:text-brand transition-colors">
                 {t.nav.contact}
               </a>
-            </li>
-            <li>
-              <Link to="/portfolio" className="hover:text-brand transition-colors">
-                {t.nav.portfolio}
-              </Link>
             </li>
           </ul>
         </div>

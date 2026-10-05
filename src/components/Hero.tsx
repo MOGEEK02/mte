@@ -1,5 +1,4 @@
-import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
+import { Check } from "lucide-react";
 import { useLang } from "../i18n/LanguageProvider";
 import { SITE } from "../config";
 import { WhatsappIcon } from "./icons";
@@ -10,60 +9,49 @@ export default function Hero() {
   return (
     <section
       id="home"
-      className="relative min-h-[92vh] flex items-center bg-ink bg-cover bg-center"
+      className="relative flex items-center bg-ink bg-cover bg-center min-h-[94vh]"
       style={{ backgroundImage: "url(/images/backg.png)" }}
     >
-      {/* overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-ink/95 via-ink/85 to-ink/70" />
+      <div className="absolute inset-0 bg-gradient-to-br from-ink via-ink/92 to-ink/70" />
+      {/* safety stripe accent */}
+      <div className="hazard absolute left-0 top-0 h-1.5 w-full opacity-80" />
 
-      <div className="container-mte relative z-10 pt-28 pb-16 w-full">
+      <div className="container-mte relative z-10 pt-32 pb-16 w-full">
         <div className="max-w-3xl">
-          <span className="inline-block rounded-full border border-white/20 bg-white/5 px-4 py-1.5 text-[11px] sm:text-xs font-semibold uppercase tracking-[0.18em] text-amber backdrop-blur-sm">
+          <span className="inline-block border-l-2 border-brand pl-3 text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] text-safety">
             {t.hero.badge}
           </span>
 
-          <h1 className="mt-6 text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.08] tracking-tight text-white">
-            {t.hero.title}{" "}
-            <span className="text-brand">{t.hero.titleAccent}</span>
+          <h1 className="mt-5 text-4xl sm:text-5xl lg:text-6xl font-extrabold uppercase leading-[0.98] tracking-tight text-white">
+            {t.hero.title}
+            <span className="block text-brand">{t.hero.titleAccent}</span>
           </h1>
 
           <p className="mt-6 max-w-2xl text-base sm:text-lg leading-relaxed text-white/80">
             {t.hero.subtitle}
           </p>
 
-          <div className="mt-9 flex flex-wrap gap-4">
-            <a
-              href={SITE.whatsapp}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-primary"
-            >
+          <div className="mt-8 flex flex-wrap gap-3">
+            <a href={SITE.whatsapp} target="_blank" rel="noopener noreferrer" className="btn-wa">
               <WhatsappIcon size={18} />
               {t.hero.ctaPrimary}
             </a>
-            <Link to="/portfolio" className="btn-ghost">
-              {t.hero.ctaSecondary}
-              <ArrowRight size={18} />
-            </Link>
+            <a href="#quote" className="btn-primary">
+              {t.hero.ctaQuote}
+            </a>
           </div>
 
-          {/* trust indicators */}
-          <div className="mt-14 grid grid-cols-3 gap-6 max-w-xl border-t border-white/10 pt-8">
-            {[
-              { v: t.hero.stat1Value, l: t.hero.stat1 },
-              { v: t.hero.stat2Value, l: t.hero.stat2 },
-              { v: t.hero.stat3Value, l: t.hero.stat3 },
-            ].map((s, i) => (
-              <div key={i}>
-                <div className="text-base sm:text-xl font-extrabold text-amber">
-                  {s.v}
-                </div>
-                <div className="mt-1 text-xs sm:text-sm text-white/60">
-                  {s.l}
-                </div>
-              </div>
+          {/* concrete trust chips (no vanity numbers) */}
+          <ul className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 max-w-2xl border-t border-white/10 pt-7">
+            {t.hero.chips.map((chip) => (
+              <li key={chip} className="flex items-center gap-2.5 text-sm font-medium text-white/85">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand/20 text-brand">
+                  <Check size={13} strokeWidth={3} />
+                </span>
+                {chip}
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </div>
     </section>

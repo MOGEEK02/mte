@@ -56,16 +56,15 @@ export default function Seo() {
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: t.services.title,
-      itemListElement: [...t.services.group1, ...t.services.group2].map(
-        (s) => ({
-          "@type": "Offer",
-          itemOffered: {
-            "@type": "Service",
-            name: s.title,
-            description: s.description,
-          },
-        })
-      ),
+      itemListElement: t.services.items.map((s) => ({
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: s.title,
+          description: s.intro,
+          url: `${SITE.baseUrl}/${lang}/services/${s.slug}`,
+        },
+      })),
     },
   };
 
