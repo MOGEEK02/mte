@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "../utils/supabase";
-import { Helmet } from "react-helmet-async";
+import { Helmet } from "@dr.pogodin/react-helmet";
 import { ChevronLeft, ChevronRight, Loader2, Info } from "lucide-react";
-import { PortfolioNavbar } from "./Portfolio";
+import Header from "./Header";
 import Footer from "./footer";
+import { useLang } from "../i18n/LanguageProvider";
+import { SITE } from "../config";
 import { getOptimizedImageUrl, isImageMedia, FALLBACK_IMAGE } from "../utils/imageOptimizer";
 
 
@@ -32,6 +34,7 @@ function getYouTubeId(url: string): string | null {
 
 export default function SinglePortfolioPost() {
   const { id } = useParams();
+  const { lang, t } = useLang();
   const [item, setItem] = useState<PortfolioItem | null>(null);
   const [loading, setLoading] = useState(true);
   
@@ -69,9 +72,9 @@ export default function SinglePortfolioPost() {
   if (!item) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center gap-4">
-        <h2 className="text-2xl font-bold text-slate-800">Publication introuvable</h2>
-        <Link to="/portfolio" className="text-[#ff6600] hover:underline font-medium">
-           Retourner au portfolio
+        <h2 className="text-2xl font-bold text-slate-800">{t.portfolio.notFound}</h2>
+        <Link to="/portfolio" className="text-brand hover:underline font-medium">
+          {t.portfolio.backToPortfolio}
         </Link>
       </div>
     );
@@ -94,11 +97,10 @@ export default function SinglePortfolioPost() {
     if (distance < -minSwipeDistance) prevSlide();
   };
 
-  const formattedDate = new Date(item.created_at).toLocaleDateString("fr-FR", {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
-  });
+  const formattedDate = new Date(item.created_at).toLocaleDateString(
+    lang === "fr" ? "fr-FR" : "en-GB",
+    { day: "numeric", month: "long", year: "numeric" }
+  );
 
   const renderDescription = (text: string) => {
     if (!text) return null;
@@ -117,7 +119,7 @@ export default function SinglePortfolioPost() {
     <div className="min-h-screen bg-slate-50 flex flex-col">
       {/* Dynamic SEO Meta Tags for Search Engines */}
       <Helmet>
-        <title>{item.title} | MTE Portfolio</title>
+        <title>{item.title} | MTE</title>
         <meta name="description" content={item.description.substring(0, 160)} />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content={item.title} />
@@ -127,10 +129,21 @@ export default function SinglePortfolioPost() {
         {sortedMedia[0] && sortedMedia[0].media_type === 'image' && (
            <meta property="og:image" content={sortedMedia[0].media_url} />
         )}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: t.nav.home, item: `${SITE.baseUrl}/${lang}` },
+              { "@type": "ListItem", position: 2, name: t.nav.portfolio, item: `${SITE.baseUrl}/portfolio` },
+              { "@type": "ListItem", position: 3, name: item.title, item: canonicalUrl },
+            ],
+          })}
+        </script>
       </Helmet>
 
       {/* Main Navigation */}
-      <PortfolioNavbar alwaysWhite={true} />
+      <Header variant="inner" />
 
       {/* Main Single Feed Content */}
       <main className="flex-1 w-full max-w-3xl mx-auto px-4 py-8 sm:py-12 mt-20">
@@ -218,7 +231,7 @@ export default function SinglePortfolioPost() {
             ) : (
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-100 text-slate-400">
                 <Info size={32} className="mb-2 opacity-50" />
-                <span className="text-sm font-medium">Média non disponible</span>
+                <span className="text-sm font-medium">{t.portfolio.mediaUnavailable}</span>
               </div>
             )}
           </div>

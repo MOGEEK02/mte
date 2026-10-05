@@ -1,16 +1,18 @@
 import { useState, useEffect } from "react";
-import { supabase } from "../utils/supabase";
 import { Link } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
-import { Loader2, Info, X, Play, ChevronLeft, ChevronRight } from "lucide-react";
+import { Helmet } from "@dr.pogodin/react-helmet";
+import { Loader2, Info, Play, ChevronLeft, ChevronRight } from "lucide-react";
+import Header from "./Header";
 import Footer from "./footer";
+import { supabase } from "../utils/supabase";
+import { useLang } from "../i18n/LanguageProvider";
+import { SITE } from "../config";
 import {
   getOptimizedImageUrl,
   isImageMedia,
   isVideoMedia,
   FALLBACK_IMAGE,
 } from "../utils/imageOptimizer";
-
 
 /* ─────────────────── Types ─────────────────── */
 
@@ -36,10 +38,10 @@ function getYouTubeId(url: string): string | null {
   return match ? match[1] : null;
 }
 
-
 /* ─────────────────── Card ──────────────────── */
 
 const PublicationCard = ({ item }: { item: PortfolioItem }) => {
+  const { lang, t } = useLang();
   const [mediaIdx, setMediaIdx] = useState(0);
 
   const sortedMedia = [...(item.portfolio_media || [])].sort(
@@ -49,64 +51,57 @@ const PublicationCard = ({ item }: { item: PortfolioItem }) => {
   const ytId = currentMedia ? getYouTubeId(currentMedia.media_url) : null;
 
   const prev = (e: React.MouseEvent) => {
-    e.preventDefault(); e.stopPropagation();
+    e.preventDefault();
+    e.stopPropagation();
     setMediaIdx((p) => (p - 1 + sortedMedia.length) % sortedMedia.length);
   };
   const next = (e: React.MouseEvent) => {
-    e.preventDefault(); e.stopPropagation();
+    e.preventDefault();
+    e.stopPropagation();
     setMediaIdx((p) => (p + 1) % sortedMedia.length);
   };
 
-  const formattedDate = new Date(item.created_at).toLocaleDateString("fr-FR", {
-    day: "numeric", month: "long", year: "numeric",
-  });
+  const formattedDate = new Date(item.created_at).toLocaleDateString(
+    lang === "fr" ? "fr-FR" : "en-GB",
+    { day: "numeric", month: "long", year: "numeric" }
+  );
 
-  const hashtags = (item.description || "").match(/#[a-zA-Z0-9_\u0600-\u06FF]+/g) || [];
+  const hashtags =
+    (item.description || "").match(/#[a-zA-Z0-9_؀-ۿ]+/g) || [];
   const cleanDesc = (item.description || "")
-    .replace(/#[a-zA-Z0-9_\u0600-\u06FF]+/g, "").trim();
+    .replace(/#[a-zA-Z0-9_؀-ۿ]+/g, "")
+    .trim();
 
-  const isVideo = currentMedia && isVideoMedia(currentMedia.media_url, currentMedia.media_type);
-  const isImage = currentMedia && isImageMedia(currentMedia.media_url, currentMedia.media_type);
+  const isVideo =
+    currentMedia && isVideoMedia(currentMedia.media_url, currentMedia.media_type);
+  const isImage =
+    currentMedia && isImageMedia(currentMedia.media_url, currentMedia.media_type);
 
   return (
     <article className="py-10 sm:py-14 border-b border-slate-100 last:border-b-0">
       <Link
         to={`/portfolio/${item.id}`}
-        /**
-         * Layout contract:
-         *  mobile  → flex-col  : image on top, text below, natural flow
-         *  desktop → flex-row + items-stretch : both columns share the
-         *            same height; image (left, 55%) sets that height via
-         *            aspect-video; text (right, 45%) fills that exact height
-         *            and uses justify-between to pin content top + bottom.
-         */
         className="flex flex-col md:flex-row md:items-stretch gap-6 md:gap-0 group"
       >
-
-        {/* ══════════ LEFT — Media (picture always here) ══════════ */}
+        {/* LEFT — Media */}
         <div className="w-full md:w-[55%] shrink-0 md:pr-10 lg:pr-14">
-          {/*
-           * aspect-video = forced 16:9 container.
-           * object-cover makes ANY source size (portrait, square, wide)
-           * fill the box cleanly with no letterboxing or distortion.
-           */}
-          <div className="relative w-full aspect-video bg-zinc-900 overflow-hidden">
-
+          <div className="relative w-full aspect-video bg-zinc-900 overflow-hidden rounded-xl">
             {currentMedia ? (
               <>
-                {/* ① Plain image */}
                 {isImage && !ytId && (
                   <img
                     src={getOptimizedImageUrl(currentMedia.media_url, 1400)}
                     alt={item.title}
                     referrerPolicy="no-referrer"
-                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = FALLBACK_IMAGE; }}
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = FALLBACK_IMAGE;
+                    }}
                     className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
                     loading="lazy"
                   />
                 )}
 
-                {/* ② YouTube thumbnail */}
                 {ytId && (
                   <div className="relative w-full h-full">
                     <img
@@ -128,45 +123,55 @@ const PublicationCard = ({ item }: { item: PortfolioItem }) => {
                   </div>
                 )}
 
-                {/* ③ Native / hosted video */}
                 {isVideo && !ytId && (
                   <div className="relative w-full h-full">
                     <video
                       src={currentMedia.media_url}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                      muted playsInline loop autoPlay
+                      muted
+                      playsInline
+                      loop
+                      autoPlay
                     />
                     <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                      <div className="w-16 h-16 bg-[#ff6600] rounded-full flex items-center justify-center shadow-2xl transition-transform duration-300 group-hover:scale-110">
+                      <div className="w-16 h-16 bg-brand rounded-full flex items-center justify-center shadow-2xl transition-transform duration-300 group-hover:scale-110">
                         <Play className="text-white w-7 h-7 ml-1" fill="currentColor" />
                       </div>
                     </div>
                   </div>
                 )}
 
-                {/* Top-left badge */}
-                <div className="absolute top-3 left-3 z-20 px-2.5 py-[5px] bg-black/60 backdrop-blur-md text-white text-[10px] font-semibold tracking-[0.1em] uppercase pointer-events-none select-none">
+                <div className="absolute top-3 left-3 z-20 px-2.5 py-[5px] bg-black/60 backdrop-blur-md text-white text-[10px] font-semibold tracking-[0.1em] uppercase pointer-events-none select-none rounded">
                   {isVideo
-                    ? "🎬 Vidéo"
-                    : `📸 ${sortedMedia.length} photo${sortedMedia.length > 1 ? "s" : ""}`}
+                    ? `🎬 ${t.portfolio.videoLabel}`
+                    : `📸 ${sortedMedia.length} ${
+                        sortedMedia.length > 1 ? t.portfolio.photos : t.portfolio.photo
+                      }`}
                 </div>
 
-                {/* Carousel arrows + dots */}
                 {sortedMedia.length > 1 && (
                   <>
-                    <button onClick={prev} aria-label="Précédent"
-                      className="absolute left-2 top-1/2 -translate-y-1/2 z-30 w-9 h-9 rounded-full bg-black/50 hover:bg-[#ff6600] text-white flex items-center justify-center backdrop-blur-sm transition-colors duration-200 pointer-events-auto">
+                    <button
+                      onClick={prev}
+                      aria-label="‹"
+                      className="absolute left-2 top-1/2 -translate-y-1/2 z-30 w-9 h-9 rounded-full bg-black/50 hover:bg-brand text-white flex items-center justify-center backdrop-blur-sm transition-colors duration-200 pointer-events-auto"
+                    >
                       <ChevronLeft size={20} strokeWidth={2.5} />
                     </button>
-                    <button onClick={next} aria-label="Suivant"
-                      className="absolute right-2 top-1/2 -translate-y-1/2 z-30 w-9 h-9 rounded-full bg-black/50 hover:bg-[#ff6600] text-white flex items-center justify-center backdrop-blur-sm transition-colors duration-200 pointer-events-auto">
+                    <button
+                      onClick={next}
+                      aria-label="›"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 z-30 w-9 h-9 rounded-full bg-black/50 hover:bg-brand text-white flex items-center justify-center backdrop-blur-sm transition-colors duration-200 pointer-events-auto"
+                    >
                       <ChevronRight size={20} strokeWidth={2.5} />
                     </button>
                     <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex gap-1.5 pointer-events-none">
                       {sortedMedia.map((_, i) => (
-                        <span key={i}
-                          className={`block h-[3px] rounded-full transition-all duration-300 ${i === mediaIdx ? "w-5 bg-[#ff6600]" : "w-2 bg-white/50"
-                            }`}
+                        <span
+                          key={i}
+                          className={`block h-[3px] rounded-full transition-all duration-300 ${
+                            i === mediaIdx ? "w-5 bg-brand" : "w-2 bg-white/50"
+                          }`}
                         />
                       ))}
                     </div>
@@ -174,151 +179,64 @@ const PublicationCard = ({ item }: { item: PortfolioItem }) => {
                 )}
               </>
             ) : (
-              /* No-media placeholder */
               <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-slate-400">
                 <Info size={36} className="opacity-20" />
-                <span className="text-[10px] font-medium tracking-[0.15em] uppercase">Aucun média</span>
+                <span className="text-[10px] font-medium tracking-[0.15em] uppercase">
+                  {t.portfolio.noMedia}
+                </span>
               </div>
             )}
           </div>
         </div>
-        {/* ══ end LEFT ══ */}
 
-
-        {/* ══════════ RIGHT — Text (same height as image on desktop) ══════════ */}
-        {/*
-         * flex-col + justify-between → "title block" pinned to the TOP of
-         * the column, "date + CTA block" pinned to the BOTTOM.
-         * On mobile, the column height is unconstrained so the gap between
-         * top and bottom just equals the natural spacing (gap-4 from inner div).
-         */}
+        {/* RIGHT — Text */}
         <div className="w-full md:w-[45%] flex flex-col justify-between">
-
-          {/* ── TOP: title + rule + description + tags ── */}
           <div className="flex flex-col gap-4">
-
-            <h2 className="text-xl sm:text-2xl lg:text-[26px] font-extrabold text-[#0d0d0d] tracking-wide uppercase leading-tight group-hover:text-[#ff6600] transition-colors duration-300">
+            <h2 className="text-xl sm:text-2xl lg:text-[26px] font-extrabold text-ink tracking-wide uppercase leading-tight group-hover:text-brand transition-colors duration-300">
               {item.title}
             </h2>
-
             <div className="w-full h-px bg-slate-200" />
-
             {cleanDesc && (
               <p className="text-[13.5px] sm:text-[15px] text-slate-500 leading-[1.85] line-clamp-4">
                 {cleanDesc}
               </p>
             )}
-
             {hashtags.length > 0 && (
               <div className="flex flex-wrap gap-1.5">
                 {hashtags.slice(0, 5).map((tag, i) => (
-                  <span key={i}
-                    className="text-[10px] font-bold px-2.5 py-[5px] bg-slate-50 border border-slate-200 text-slate-600 tracking-[0.07em] uppercase">
+                  <span
+                    key={i}
+                    className="text-[10px] font-bold px-2.5 py-[5px] bg-slate-50 border border-slate-200 text-slate-600 tracking-[0.07em] uppercase rounded"
+                  >
                     {tag}
                   </span>
                 ))}
               </div>
             )}
           </div>
-          {/* ── end TOP ── */}
 
-
-          {/* ── BOTTOM: date + CTA ── */}
           <div className="pt-4 mt-4 border-t border-slate-100">
             <p className="text-[12.5px] text-slate-500 mb-3">
-              <span className="font-bold text-slate-700 mr-1">Date d&apos;intervention :</span>
+              <span className="font-bold text-slate-700 mr-1">
+                {t.portfolio.interventionDate}
+              </span>
               {formattedDate}
             </p>
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#ff6600] tracking-[0.12em] uppercase group-hover:gap-3 transition-all duration-200">
-              Consulter le projet
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-brand tracking-[0.12em] uppercase group-hover:gap-3 transition-all duration-200">
+              {t.portfolio.viewProject}
               <span className="text-sm leading-none">→</span>
             </span>
           </div>
-          {/* ── end BOTTOM ── */}
-
         </div>
-        {/* ══ end RIGHT ══ */}
-
       </Link>
     </article>
   );
 };
 
-
-/* ─────────────────── Navbar ────────────────── */
-
-export const PortfolioNavbar = ({ alwaysWhite = false }: { alwaysWhite?: boolean }) => {
-  const [isScrolled, setIsScrolled] = useState(alwaysWhite);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    if (alwaysWhite) return;
-    const onScroll = () => setIsScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [alwaysWhite]);
-
-  return (
-    <nav className={`fixed top-0 left-0 w-full z-[100] transition-all duration-300 ${isScrolled ? "bg-white shadow-sm py-2 sm:py-3" : "bg-transparent py-4 sm:py-6"
-      }`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center relative z-50">
-
-          <Link to="/" className="flex-shrink-0">
-            <img
-              src={isScrolled ? "/images/logo.png" : "/images/logo%20white.png"}
-              alt="MTE Logo"
-              className="h-9 sm:h-11 w-auto object-contain transition-all duration-300"
-            />
-          </Link>
-
-          {/* Desktop links */}
-          <div className="hidden md:flex items-center gap-8">
-            <Link to="/"
-              className={`text-sm font-medium transition-colors duration-300 hover:text-[#ff6600] ${isScrolled ? "text-slate-700" : "text-white/85"
-                }`}>
-              Accueil
-            </Link>
-            <Link to="/portfolio" className="text-sm font-bold text-[#ff6600]">
-              Portfolio
-            </Link>
-          </div>
-
-          {/* Hamburger */}
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className={`md:hidden transition-colors duration-300 ${isScrolled || isMobileMenuOpen ? "text-slate-900" : "text-white"
-              }`}>
-            {isMobileMenuOpen
-              ? <X size={26} />
-              : <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />
-              </svg>
-            }
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile drawer */}
-      <div className={`md:hidden absolute top-0 left-0 w-full bg-white shadow-xl z-40 transition-all duration-300 ease-in-out ${isMobileMenuOpen
-        ? "translate-y-0 opacity-100 pt-24 pb-10"
-        : "-translate-y-full opacity-0 pointer-events-none"
-        }`}>
-        <div className="flex flex-col items-center gap-7">
-          <Link to="/" onClick={() => setIsMobileMenuOpen(false)}
-            className="text-xl font-medium text-slate-800">Accueil</Link>
-          <Link to="/portfolio" onClick={() => setIsMobileMenuOpen(false)}
-            className="text-xl font-bold text-[#ff6600]">Portfolio</Link>
-        </div>
-      </div>
-    </nav>
-  );
-};
-
-
 /* ─────────────────── Page ──────────────────── */
 
 export default function Portfolio() {
+  const { t } = useLang();
   const [items, setItems] = useState<PortfolioItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -326,10 +244,10 @@ export default function Portfolio() {
     async function fetchPortfolio() {
       const { data, error } = await supabase
         .from("portfolio")
-        .select(`
-          id, title, description, created_at,
-          portfolio_media ( id, media_url, media_type, sort_order )
-        `)
+        .select(
+          `id, title, description, created_at,
+           portfolio_media ( id, media_url, media_type, sort_order )`
+        )
         .order("created_at", { ascending: false });
       if (!error) setItems(data || []);
       setLoading(false);
@@ -338,47 +256,44 @@ export default function Portfolio() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white font-sans">
+    <div className="min-h-screen bg-white">
       <Helmet>
-        <title>Portfolio des Réparations | MTE Électronique Industrielle Algérie</title>
-        <meta name="description"
-          content="Découvrez nos interventions, maintenances et succès en réparation de cartes électroniques, variateurs de fréquence, automates et équipements industriels partout en Algérie." />
-        <meta name="keywords"
-          content="Portfolio MTE, réparation électronique industrielle Algérie, maintenance variateur, réparation cartes électroniques industrielles, automates programmables, IHM" />
-        <link rel="canonical" href="https://moutie.vercel.app/portfolio" />
-        <meta property="og:title" content="Portfolio des Réparations | MTE Algérie" />
-        <meta property="og:description"
-          content="Explorez notre galerie de réparations électroniques pour l'industrie algérienne." />
+        <title>{t.portfolio.metaTitle}</title>
+        <meta name="description" content={t.portfolio.metaDescription} />
+        <link rel="canonical" href={`${SITE.baseUrl}/portfolio`} />
+        <meta property="og:title" content={t.portfolio.metaTitle} />
+        <meta property="og:description" content={t.portfolio.metaDescription} />
+        <meta property="og:url" content={`${SITE.baseUrl}/portfolio`} />
       </Helmet>
 
-      <PortfolioNavbar />
+      <Header variant="inner" />
 
       {/* Hero */}
       <section
-        className="text-left text-white min-h-[45vh] sm:min-h-[55vh] flex items-center relative overflow-hidden bg-cover bg-center"
+        className="text-left text-white min-h-[42vh] sm:min-h-[50vh] flex items-center relative overflow-hidden bg-cover bg-center"
         style={{ backgroundImage: "url(/images/backg.png)" }}
       >
-        <div className="absolute inset-0 bg-[#1a1a2e]/85 backdrop-blur-[2px]" />
-        <div className="max-w-7xl w-full mx-auto px-5 sm:px-8 lg:px-10 relative z-10 pt-28 pb-14">
+        <div className="absolute inset-0 bg-ink/85" />
+        <div className="container-mte relative z-10 pt-28 pb-14">
           <div className="max-w-2xl">
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 tracking-tight leading-tight">
-              Mes <span className="text-[#f5a623]">Réalisations</span>
+              {t.portfolio.heroTitle}{" "}
+              <span className="text-amber">{t.portfolio.heroTitleAccent}</span>
             </h1>
             <p className="text-[15px] sm:text-lg text-white/80 font-light max-w-xl leading-relaxed">
-              Interventions et expertise en réparation électronique industrielle à travers toute l&apos;Algérie.
+              {t.portfolio.heroSubtitle}
             </p>
           </div>
         </div>
       </section>
 
       {/* Cards */}
-      <main className="pt-4 pb-24 px-5 sm:px-8 lg:px-10 max-w-6xl mx-auto">
-
+      <main className="pt-4 pb-24 container-mte">
         {loading && (
           <div className="flex flex-col items-center justify-center py-28">
-            <Loader2 className="w-9 h-9 text-[#ff6600] animate-spin mb-4" />
+            <Loader2 className="w-9 h-9 text-brand animate-spin mb-4" />
             <p className="text-slate-400 text-[11px] font-semibold tracking-[0.18em] uppercase animate-pulse">
-              Chargement...
+              {t.portfolio.loading}
             </p>
           </div>
         )}
@@ -388,12 +303,10 @@ export default function Portfolio() {
             <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
               <Info className="w-7 h-7 text-slate-300" />
             </div>
-            <h4 className="text-base font-bold text-slate-700 mb-2">
-              Aucune réalisation pour le moment
-            </h4>
-            <p className="text-slate-400 text-sm">
-              Revenez bientôt pour découvrir nos dernières interventions.
-            </p>
+            <h2 className="text-base font-bold text-slate-700 mb-2">
+              {t.portfolio.emptyTitle}
+            </h2>
+            <p className="text-slate-400 text-sm">{t.portfolio.emptyDesc}</p>
           </div>
         )}
 

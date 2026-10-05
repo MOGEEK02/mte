@@ -1,3 +1,51 @@
-
 @import "tailwindcss";
- 
+
+/* ───────────── Design tokens ───────────── */
+@theme {
+  --font-sans: "Ubuntu", ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  --color-brand: #ff6600;
+  --color-brand-dark: #e65c00;
+  --color-amber: #f5a623;
+  --color-ink: #0f172a;
+  --color-ink-soft: #1e293b;
+}
+
+/* ───────────── Base ───────────── */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+  body {
+    @apply font-sans text-ink antialiased bg-white;
+  }
+}
+
+/* ───────────── Components ───────────── */
+@layer components {
+  .container-mte {
+    @apply max-w-6xl mx-auto px-5 sm:px-8;
+  }
+  .eyebrow {
+    @apply inline-block text-xs font-bold uppercase tracking-[0.22em] text-brand;
+  }
+  .section-title {
+    @apply text-3xl sm:text-4xl font-extrabold tracking-tight text-ink;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3
+           text-sm font-semibold transition-all duration-200 cursor-pointer
+           bg-brand text-white shadow-lg hover:bg-brand-dark hover:-translate-y-0.5;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3
+           text-sm font-semibold transition-all duration-200 cursor-pointer
+           border border-white/30 text-white hover:bg-white/10 hover:-translate-y-0.5;
+  }
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3
+           text-sm font-semibold transition-all duration-200 cursor-pointer
+           border border-slate-300 text-ink hover:border-brand hover:text-brand;
+  }
+}

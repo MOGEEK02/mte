@@ -1,28 +1,26 @@
 {
-  "name": "ier",
+  "name": "mte",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "license": "GPL-3.0-only",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && npm run prerender",
+    "build:client": "tsc -b && vite build",
+    "prerender": "vite build --ssr src/entry-server.tsx --outDir dist-ssr && node scripts/prerender.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^7.0.0",
-    "@popperjs/core": "^2.11.8",
+    "@dr.pogodin/react-helmet": "^3.3.2",
     "@supabase/supabase-js": "^2.101.1",
     "@tailwindcss/vite": "^4.1.12",
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.2.0",
-    "axios": "^1.11.0",
-    "bootstrap": "^5.3.8",
     "lucide-react": "^0.542.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "react-helmet-async": "^3.0.0",
     "react-router-dom": "^7.14.0",
     "tailwindcss": "^4.1.12"
   },

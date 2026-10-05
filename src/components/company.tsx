@@ -1,39 +1,36 @@
-const CompanyLogosShowcase = () => {
+import { useLang } from "../i18n/LanguageProvider";
+
+const BRANDS = [
+  { src: "/images/Siemens_logo_16-9.png", name: "Siemens" },
+  { src: "/images/Schneider-Electric-logo-jpg-.png", name: "Schneider Electric" },
+  { src: "/images/ABB.png", name: "ABB" },
+  { src: "/images/images.png", name: "Omron" },
+  { src: "/images/fatek.png", name: "Fatek" },
+  { src: "/images/arduino_pro_logo.jpg", name: "Arduino" },
+];
+
+export default function CompanyLogosShowcase() {
+  const { t } = useLang();
   return (
-    <div className="flex justify-center  ">
-
-      <div className=" flex max-w-md lg:max-w-none w-auto lg:w-full flex-wrap  items-center justify-center lg:justify-between px-5">
-        
-        <div className="m-4 lg:mx-0 w-28 flex items-center justify-center">
-          <img src="/images/ABB.png" alt="Logo ABB – Partenaire réparation industrielle Algérie" className="w-36 h-auto" />
+    <section className="py-14 bg-slate-50 border-y border-slate-100">
+      <div className="container-mte text-center">
+        <span className="eyebrow">{t.brands.eyebrow}</span>
+        <h2 className="mt-2 text-lg font-semibold text-slate-500">
+          {t.brands.title}
+        </h2>
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-x-10 gap-y-8 sm:gap-x-16">
+          {BRANDS.map((b) => (
+            <img
+              key={b.name}
+              src={b.src}
+              alt={`${b.name} – programmation & réparation automatisme, MTE Algérie`}
+              title={b.name}
+              className="h-9 sm:h-11 w-auto object-contain opacity-70 grayscale transition hover:opacity-100 hover:grayscale-0"
+              loading="lazy"
+            />
+          ))}
         </div>
-
-        <div className="m-4 lg:mx-0 w-28 flex items-center justify-center">
-          <img src="/images/Schneider-Electric-logo-jpg-.png" alt="Logo Schneider Electric – Réparation variateurs Algérie" className="w-36 h-auto" />
-        </div>
-
-        <div className="m-4 lg:mx-0 w-28 flex items-center justify-center">
-          <img src="/images/arduino_pro_logo.jpg" alt="Logo Arduino – Programmation microcontrôleurs" className="w-36 h-auto" />
-        </div>
-
-        
-        <div className="m-4 lg:mx-0 w-28 flex items-center justify-center">
-          <img src="/images/Siemens_logo_16-9.png" alt="Logo Siemens – Réparation automates PLC Algérie" className="w-36 h-auto" />
-        </div>
-
-        
-        <div className="m-4 lg:mx-0 w-28 flex items-center justify-center">
-          <img src="/images/fatek.png" alt="Logo Fatek – Réparation PLC Fatek Algérie" className="w-36 h-auto" />
-        </div>
-        
-        <div className="m-4 lg:mx-0 w-28 flex items-center justify-center">
-          <img src="/images/images.png" alt="Logo Omron – Maintenance Omron Algérie" className="w-36 h-auto" />
-        </div>
-
-
       </div>
-    </div>
+    </section>
   );
-};
-
-export default CompanyLogosShowcase;
+}

@@ -16,20 +16,21 @@
     },
     {
       "source": "/(.*)",
-      "headers": [
-        { "key": "X-Robots-Tag", "value": "index, follow" }
-      ]
+      "headers": [{ "key": "X-Robots-Tag", "value": "index, follow" }]
     },
     {
       "source": "/gestion/:path*",
-      "headers": [
-        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
-      ]
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
     }
+  ],
+  "redirects": [
+    { "source": "/", "destination": "/fr", "permanent": true }
   ],
   "rewrites": [
     { "source": "/sitemap.xml", "destination": "/api/sitemap" },
     { "source": "/robots.txt", "destination": "/robots.txt" },
+    { "source": "/fr", "destination": "/fr/index.html" },
+    { "source": "/en", "destination": "/en/index.html" },
     { "source": "/gestion", "destination": "https://mte-facturation.vercel.app/gestion" },
     { "source": "/gestion/:path*", "destination": "https://mte-facturation.vercel.app/gestion/:path*" },
     { "source": "/:path*", "destination": "/index.html" }
