@@ -1,13 +1,14 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import { SERVICE_PAGES } from "../services";
+import { useServices } from "../services";
 import { ServiceArt } from "./ServiceArt";
 
 /** The four services, each linking to its page. */
 export function ServiceCards() {
+  const { services } = useServices();
   return (
     <ul className="grid gap-6 sm:grid-cols-2">
-      {SERVICE_PAGES.map((s) => (
+      {services.map((s) => (
         <li key={s.slug}>
           <Link
             to={`/services/${s.slug}`}

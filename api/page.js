@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { SERVICES, SERVICES_PAGE } from './_services.js';
+import { liveServices, SERVICES_PAGE } from './_services.js';
 
 // Serves the app shell for /services, /services/:slug, /portfolio and /portfolio/:id with that page's title,
 // description and preview image already in the HTML, so WhatsApp, Facebook,
@@ -81,9 +81,9 @@ function tags({ title, description, path, image, type = 'website', noindex = fal
 
 const NOT_FOUND = { title: 'Page introuvable | MTE', description: 'Cette page n’existe pas ou a été déplacée.', noindex: true };
 
-function servicesTags(slug) {
+async function servicesTags(slug) {
   if (!slug) return { status: 200, tags: tags({ ...SERVICES_PAGE, path: '/services' }) };
-  const service = SERVICES.find((s) => s.slug === slug);
+  const service = (await liveServices()).find((s) => s.slug === slug);
   if (!service) return { status: 404, tags: tags({ ...NOT_FOUND, path: `/services/${slug}` }) };
   return {
     status: 200,
@@ -141,7 +141,7 @@ export default async function handler(req, res) {
   const param = (name) => (typeof req.query[name] === 'string' ? req.query[name] : '');
   let page = null;
   try {
-    page = param('section') === 'services' ? servicesTags(param('slug')) : await portfolioTags(param('id'));
+    page = param('section') === 'services' ? await servicesTags(param('slug')) : await portfolioTags(param('id'));
   } catch (err) {
     console.error('page: lookup failed', err);
   }

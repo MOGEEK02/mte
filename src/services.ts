@@ -1,5 +1,9 @@
+import { useSyncExternalStore } from "react";
+import { select } from "./db";
+
 /**
- * The four service pages (/services/<slug>).
+ * Service pages (/services/<slug>). They are edited in /admin and stored in the "services" table;
+ * SERVICE_PAGES below is the built-in copy, used until the database answers or if it can't.
  * Titles and descriptions are repeated in api/_services.js for link previews and the sitemap.
  */
 
@@ -188,6 +192,93 @@ export const SERVICE_PAGES: Service[] = [
   },
 ];
 
-export function findService(slug: string) {
-  return SERVICE_PAGES.find((s) => s.slug === slug);
+export const ART_KINDS: { value: ArtKind; label: string }[] = [
+  { value: "ladder", label: "Schéma à contacts (ladder)" },
+  { value: "hmi", label: "Écran opérateur (IHM)" },
+  { value: "scope", label: "Oscilloscope / diagnostic" },
+  { value: "panel", label: "Armoire de commande" },
+  { value: "drive", label: "Variateur et moteur" },
+];
+
+/** Built-in services that have their own link-preview image. */
+export function ogImageFor(slug: string) {
+  return SERVICE_PAGES.some((s) => s.slug === slug) ? `/images/web/og-${slug}.png` : "/images/web/og-default.png";
+}
+
+export type ServiceRow = {
+  slug: string;
+  title: string;
+  summary: string;
+  art: ArtKind;
+  seo_title: string;
+  seo_description: string;
+  intro: string[];
+  specialties_title: string;
+  specialties: string[];
+  sections: { title: string; paragraphs: string[] }[];
+  keywords: string[];
+  request_type: string;
+  sort_order: number;
+  published: boolean;
+};
+
+export function fromRow(r: ServiceRow): Service {
+  return {
+    slug: r.slug,
+    title: r.title,
+    summary: r.summary,
+    art: r.art,
+    seoTitle: r.seo_title || `${r.title} | MTE Algérie`,
+    seoDescription: r.seo_description || r.summary,
+    intro: r.intro ?? [],
+    specialtiesTitle: r.specialties_title,
+    specialties: r.specialties ?? [],
+    sections: r.sections ?? [],
+    keywords: r.keywords ?? [],
+    requestType: r.request_type,
+  };
+}
+
+// --- Live list: last known copy first (browser cache or built-in), then the database. ---
+
+const CACHE_KEY = "mte-services-v1";
+type Snapshot = { services: Service[]; loaded: boolean };
+
+function readCache(): Service[] | null {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    return raw ? (JSON.parse(raw) as Service[]) : null;
+  } catch {
+    return null;
+  }
+}
+
+let snapshot: Snapshot = { services: readCache() ?? SERVICE_PAGES, loaded: false };
+const listeners = new Set<() => void>();
+let started = false;
+
+function load() {
+  if (started) return;
+  started = true;
+  select<ServiceRow>("services", { select: "*", order: "sort_order.asc" }).then((rows) => {
+    const services = rows.length ? rows.map(fromRow) : snapshot.services;
+    snapshot = { services, loaded: true };
+    try {
+      if (rows.length) localStorage.setItem(CACHE_KEY, JSON.stringify(services));
+    } catch {
+      // Storage unavailable: the list is simply fetched again next visit.
+    }
+    listeners.forEach((l) => l());
+  });
+}
+
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+}
+
+/** Published services in display order, kept up to date with the database. */
+export function useServices(): Snapshot {
+  load();
+  return useSyncExternalStore(subscribe, () => snapshot, () => snapshot);
 }

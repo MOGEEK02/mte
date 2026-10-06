@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowRight, Check, ChevronRight } from "lucide-react";
-import { findService, SERVICE_PAGES, type Service as ServiceData } from "../services";
+import { ogImageFor, useServices, type Service as ServiceData } from "../services";
 import { CONTACT, SITE_URL, whatsappUrl } from "../site";
 import { coverImage, fetchPortfolio, formatDate, type PortfolioItem } from "../portfolio";
 import { BrandIcon } from "../ui/BrandIcon";
@@ -11,9 +11,11 @@ import { Seo } from "../ui/Seo";
 import NotFound from "./NotFound";
 
 function relatedProjects(items: PortfolioItem[], service: ServiceData) {
+  // Projects linked to this service in /admin first, then those whose text matches its keywords.
   const score = (p: PortfolioItem) => {
+    if (p.service_slug === service.slug) return 100;
     const text = `${p.title} ${p.description}`.toLowerCase();
-    return service.keywords.filter((k) => text.includes(k)).length;
+    return service.keywords.filter((k) => text.includes(k.toLowerCase())).length;
   };
   return items
     .map((p) => ({ p, s: score(p) }))
@@ -79,9 +81,13 @@ function RelatedWork({ service }: { service: ServiceData }) {
 
 export default function Service() {
   const { slug = "" } = useParams();
-  const service = findService(slug);
-  if (!service) return <NotFound />;
-  const others = SERVICE_PAGES.filter((s) => s.slug !== service.slug);
+  const { services, loaded } = useServices();
+  const service = services.find((s) => s.slug === slug);
+  if (!service) {
+    // A service added in /admin may not be in the cached list yet.
+    return loaded ? <NotFound /> : <div className="min-h-[70vh] bg-navy-950" aria-busy="true" />;
+  }
+  const others = services.filter((s) => s.slug !== service.slug);
 
   return (
     <>
@@ -89,7 +95,7 @@ export default function Service() {
         title={service.seoTitle}
         description={service.seoDescription}
         path={`/services/${service.slug}`}
-        image={`${SITE_URL}/images/web/og-${service.slug}.png`}
+        image={SITE_URL + ogImageFor(service.slug)}
       />
 
       {/* Hero */}

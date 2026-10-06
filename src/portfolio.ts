@@ -13,10 +13,14 @@ export interface PortfolioItem {
   title: string;
   description: string;
   created_at: string;
+  /** Set in /admin (column added by supabase/admin.sql). */
+  service_slug?: string | null;
+  published?: boolean;
   portfolio_media: MediaItem[];
 }
 
-const SELECT = "id,title,description,created_at,portfolio_media(id,media_url,media_type,sort_order)";
+// "*" rather than a column list, so the query works before and after supabase/admin.sql adds columns.
+const SELECT = "*,portfolio_media(id,media_url,media_type,sort_order)";
 
 export function fetchPortfolio(limit?: number): Promise<PortfolioItem[]> {
   return select<PortfolioItem>("portfolio", {

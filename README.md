@@ -56,6 +56,17 @@ MTE is a professional industrial electronics repair service based in Médéa, Al
    yarn build
    ```
 
+## 🔐 Administration (/admin)
+
+The site has a private admin panel at `/admin` to manage quote requests, portfolio projects and service pages.
+
+1. In Supabase (website project) → **Authentication → Users → Add user**: your e-mail and a strong password, "Auto confirm user" ticked.
+2. **SQL Editor**: run [`supabase/admin.sql`](supabase/admin.sql) (safe to run again). It creates the tables, the access rules and the `portfolio` photo bucket, and makes that account the admin.
+3. **Authentication → URL Configuration**: Site URL `https://moutie.vercel.app`, and add `https://moutie.vercel.app/admin` to the redirect URLs (password reset).
+4. Vercel → project → **Settings → Environment Variables**:
+   - `SUPABASE_SECRET_KEY`: the project's secret key (saves quote requests)
+   - `RESEND_API_KEY`: e-mail notification of new requests (optional; requests are saved either way)
+
 ## 📄 License
 
 This project is licensed under the GPL-3.0 License. See the [package.json](package.json) for details.
