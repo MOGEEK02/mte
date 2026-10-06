@@ -1,15 +1,15 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, ImageOff, Play } from "lucide-react";
-import { coverImage, formatDate, getYouTubeId, portfolioStore, projectPath, projectText, sortedMedia, splitDescription, type PortfolioItem } from "../portfolio";
+import { ArrowRight, Play } from "lucide-react";
+import { formatDate, getYouTubeId, portfolioStore, projectPath, projectText, sortedMedia, splitDescription, type PortfolioItem } from "../portfolio";
 import { localePath, useLang, useT } from "../i18n";
 import { isVideoMedia } from "../utils/imageOptimizer";
+import { CardMedia } from "../ui/CardMedia";
 import { Seo } from "../ui/Seo";
 
 function Card({ item }: { item: PortfolioItem }) {
   const lang = useLang();
   const t = useT().work;
   const media = sortedMedia(item);
-  const cover = coverImage(item);
   const hasVideo = media.some((m) => getYouTubeId(m.media_url) || isVideoMedia(m.media_url, m.media_type));
   const text = projectText(item, lang);
   const { body, tags } = splitDescription(text.description);
@@ -22,14 +22,7 @@ function Card({ item }: { item: PortfolioItem }) {
         dir={text.translated ? undefined : "ltr"}
         className="group flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xs transition hover:shadow-md"
       >
-        <div className="relative aspect-video overflow-hidden bg-slate-200">
-          {cover ? (
-            <img src={cover} alt={text.title} loading="lazy" referrerPolicy="no-referrer" className="size-full object-cover transition duration-500 group-hover:scale-[1.03]" />
-          ) : (
-            <div className="flex size-full items-center justify-center text-slate-400">
-              <ImageOff className="size-8" />
-            </div>
-          )}
+        <CardMedia item={item} alt={text.title}>
           {hasVideo && (
             <span className="absolute top-3 start-3 inline-flex items-center gap-1 rounded bg-navy-950/75 px-2 py-1 text-[11px] font-semibold text-white">
               <Play className="size-3" fill="currentColor" /> {t.video}
@@ -38,7 +31,7 @@ function Card({ item }: { item: PortfolioItem }) {
           {media.length > 1 && (
             <span className="absolute top-3 end-3 rounded bg-navy-950/75 px-2 py-1 text-[11px] font-semibold text-white">{t.media(media.length)}</span>
           )}
-        </div>
+        </CardMedia>
         <div className="flex flex-1 flex-col p-6">
           <p className="text-xs text-slate-500">{formatDate(item.created_at, lang)}</p>
           <h2 className="mt-1.5 text-lg leading-snug font-semibold text-navy-900 group-hover:text-navy-700">{text.title}</h2>
@@ -84,7 +77,10 @@ export default function Portfolio() {
           {items === null ? (
             <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" aria-busy="true" aria-label={t.loading}>
               {Array.from({ length: 6 }, (_, i) => (
-                <li key={i} className="h-96 animate-pulse rounded-xl bg-slate-200/70" />
+                <li key={i} className="animate-pulse rounded-xl bg-slate-200/70">
+                  <div className="aspect-[3/4]" />
+                  <div className="h-44" />
+                </li>
               ))}
             </ul>
           ) : items.length === 0 ? (

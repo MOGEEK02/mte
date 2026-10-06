@@ -2,10 +2,11 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Check, Clock, Factory, FileText, Mail, MapPin, Phone, Plus } from "lucide-react";
 import { BRANDS } from "../site";
 import { cvStore, hoursFor, telHref, useContact, whatsappLink } from "../contact";
-import { coverImage, formatDate, portfolioStore, projectPath, projectText } from "../portfolio";
+import { formatDate, portfolioStore, projectPath, projectText } from "../portfolio";
 import { useServices } from "../services";
 import { localePath, useLang, useT } from "../i18n";
 import { BrandIcon } from "../ui/BrandIcon";
+import { CardMedia } from "../ui/CardMedia";
 import { QuoteForm } from "../ui/QuoteForm";
 import { Seo } from "../ui/Seo";
 
@@ -252,7 +253,7 @@ function LatestWork() {
               // Same box as a loaded card, so the page doesn't shift when projects arrive.
               return (
                 <li key={i} aria-hidden="true" className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-                  <div className="aspect-video animate-pulse bg-slate-200" />
+                  <div className="aspect-[3/4] animate-pulse bg-slate-200" />
                   <div className="p-5">
                     <div className="h-4 w-24 rounded bg-slate-100" />
                     <div className="mt-1.5 h-12 rounded bg-slate-100" />
@@ -260,7 +261,6 @@ function LatestWork() {
                 </li>
               );
             }
-            const cover = coverImage(item);
             const { title, translated } = projectText(item, lang);
             return (
               <li key={item.id}>
@@ -268,11 +268,7 @@ function LatestWork() {
                   to={localePath(lang, projectPath(item))}
                   className="group block overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xs transition hover:shadow-md"
                 >
-                  <div className="aspect-video overflow-hidden bg-slate-200">
-                    {cover && (
-                      <img src={cover} alt={title} loading="lazy" referrerPolicy="no-referrer" className="size-full object-cover transition duration-500 group-hover:scale-[1.03]" />
-                    )}
-                  </div>
+                  <CardMedia item={item} alt={title} />
                   <div className="p-5">
                     <p className="text-xs text-slate-500">{formatDate(item.created_at, lang)}</p>
                     <h3 className="mt-1.5 line-clamp-2 font-semibold text-navy-900 group-hover:text-navy-700" dir={translated ? undefined : "auto"}>
