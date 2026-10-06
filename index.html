@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#0a2a4a">
 
   <!-- Default page tags (home). Removed by src/main.tsx once the app runs; each page then sets its own.
-       api/portfolio-page.js swaps this block for project pages so link previews show the project. -->
+       api/page.js swaps this block on service and project pages so link previews show that page. -->
   <title data-seo>MTE – Réparation électronique industrielle en Algérie | Variateurs, PLC, cartes</title>
   <meta data-seo name="description" content="Réparation de variateurs de vitesse (VFD), automates PLC, cartes électroniques et écrans IHM à Médéa et partout en Algérie. Diagnostic sous 24 à 48 h, devis avant réparation.">
   <link data-seo rel="canonical" href="https://moutie.vercel.app/">
@@ -187,12 +187,10 @@
     "@type": "OfferCatalog",
     "name": "Réparation électronique industrielle",
     "itemListElement": [
-      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Réparation de variateurs de vitesse (VFD)" } },
-      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Réparation et programmation d’automates (PLC)" } },
-      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Réparation de cartes électroniques industrielles" } },
-      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Réparation et configuration d’écrans IHM" } },
-      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Réparation d’alimentations et de stabilisateurs" } },
-      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Diagnostic et remplacement de capteurs" } }
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Contrôle et automatisme", "url": "https://moutie.vercel.app/services/control-automation" } },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Installation et mise en service", "url": "https://moutie.vercel.app/services/installation" } },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Réparation électronique", "url": "https://moutie.vercel.app/services/electronic-repairs" } },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Programmation PLC et IHM", "url": "https://moutie.vercel.app/services/plc-hmi-programming" } }
     ]
   }
 }

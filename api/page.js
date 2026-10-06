@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
+import { SERVICES, SERVICES_PAGE } from './_services.js';
 
-// Serves the app shell for /portfolio and /portfolio/:id with that page's title,
+// Serves the app shell for /services, /services/:slug, /portfolio and /portfolio/:id with that page's title,
 // description and preview image already in the HTML, so WhatsApp, Facebook,
 // LinkedIn and crawlers that don't run JavaScript see the right page.
 // The browser then runs the app as usual (src/main.tsx replaces these tags).
@@ -78,7 +79,19 @@ function tags({ title, description, path, image, type = 'website', noindex = fal
   ].join('\n  ');
 }
 
-async function pageTags(id) {
+const NOT_FOUND = { title: 'Page introuvable | MTE', description: 'Cette page n’existe pas ou a été déplacée.', noindex: true };
+
+function servicesTags(slug) {
+  if (!slug) return { status: 200, tags: tags({ ...SERVICES_PAGE, path: '/services' }) };
+  const service = SERVICES.find((s) => s.slug === slug);
+  if (!service) return { status: 404, tags: tags({ ...NOT_FOUND, path: `/services/${slug}` }) };
+  return {
+    status: 200,
+    tags: tags({ title: service.title, description: service.description, path: `/services/${slug}`, image: BASE_URL + service.image }),
+  };
+}
+
+async function portfolioTags(id) {
   if (!id) {
     return {
       status: 200,
@@ -89,10 +102,7 @@ async function pageTags(id) {
       }),
     };
   }
-  const notFound = {
-    status: 404,
-    tags: tags({ title: 'Page introuvable | MTE', description: 'Cette page n’existe pas ou a été déplacée.', path: `/portfolio/${id}`, noindex: true }),
-  };
+  const notFound = { status: 404, tags: tags({ ...NOT_FOUND, path: `/portfolio/${id}` }) };
   if (!/^\d+$/.test(id)) return notFound;
   if (!supabaseUrl || !supabaseKey) return null;
 
@@ -123,17 +133,17 @@ export default async function handler(req, res) {
   try {
     shell = await loadShell(req);
   } catch (err) {
-    console.error('portfolio-page: app shell unavailable', err);
+    console.error('page: app shell unavailable', err);
     res.setHeader('Cache-Control', 'no-store');
     return res.status(503).send('Service momentanément indisponible. Réessayez dans un instant.');
   }
 
-  const id = typeof req.query.id === 'string' ? req.query.id : '';
+  const param = (name) => (typeof req.query[name] === 'string' ? req.query[name] : '');
   let page = null;
   try {
-    page = await pageTags(id);
+    page = param('section') === 'services' ? servicesTags(param('slug')) : await portfolioTags(param('id'));
   } catch (err) {
-    console.error('portfolio-page: lookup failed', err);
+    console.error('page: lookup failed', err);
   }
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
