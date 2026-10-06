@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Check, Clock, FileText, Mail, MapPin, Phone, Plus } from "lucide-react";
-import { BRANDS, CONTACT, FAQ, STEPS, whatsappUrl } from "../site";
+import { BRANDS, CONTACT, FAQ, SERVICES, STEPS, whatsappUrl } from "../site";
 import { coverImage, fetchPortfolio, formatDate, type PortfolioItem } from "../portfolio";
 import { select } from "../db";
 import { BrandIcon } from "../ui/BrandIcon";
 import { QuoteForm } from "../ui/QuoteForm";
-import { ServiceCards } from "../ui/ServiceCards";
 import { Seo } from "../ui/Seo";
 
 function SectionTitle({ eyebrow, title, text, light }: { eyebrow: string; title: string; text?: string; light?: boolean }) {
@@ -91,20 +90,30 @@ function Services() {
   return (
     <section id="services" className="bg-slate-50 py-20 sm:py-24">
       <div className="container-page">
-        <div className="flex flex-wrap items-end justify-between gap-6">
-          <SectionTitle
-            eyebrow="Services"
-            title="Ce que nous faisons"
-            text="De la conception d’armoires de commande à la réparation au niveau composant : toute la chaîne de commande de vos machines."
-          />
-          <Link to="/services" className="inline-flex items-center gap-1.5 text-sm font-semibold text-navy-900 hover:text-navy-700">
-            Tous les services
-            <ArrowRight className="size-4" />
-          </Link>
-        </div>
-        <div className="mt-12">
-          <ServiceCards />
-        </div>
+        <SectionTitle
+          eyebrow="Services"
+          title="Ce que nous réparons"
+          text="Réparation et maintenance des équipements électroniques qui font tourner vos lignes de production, en atelier ou sur site."
+        />
+        <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {SERVICES.map((s) => (
+            <li key={s.id} className="group flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xs transition hover:shadow-md">
+              <div className="aspect-[16/10] overflow-hidden bg-slate-100">
+                <img
+                  src={s.image}
+                  alt={s.title}
+                  loading="lazy"
+                  className="size-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                />
+              </div>
+              <div className="flex flex-1 flex-col p-6">
+                <h3 className="text-lg font-semibold text-navy-900">{s.title}</h3>
+                <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-600">{s.text}</p>
+                <p className="mt-4 border-t border-slate-100 pt-4 text-xs font-medium text-slate-500">{s.brands}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );

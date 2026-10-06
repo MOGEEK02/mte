@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { Mail, MapPin, Phone } from "lucide-react";
-import { CONTACT, SOCIAL, whatsappUrl } from "../site";
-import { SERVICE_PAGES } from "../services";
+import { CONTACT, SERVICES, SOCIAL, whatsappUrl } from "../site";
 import { BrandIcon, type Brand } from "./BrandIcon";
 
 const SOCIAL_LINKS: { name: Brand; href: string }[] = [
@@ -41,9 +40,9 @@ export function Footer() {
         <div>
           <h2 className="eyebrow text-brand">Services</h2>
           <ul className="mt-4 space-y-2 text-sm">
-            {SERVICE_PAGES.map((s) => (
-              <li key={s.slug}>
-                <Link to={`/services/${s.slug}`} className="hover:text-white">
+            {SERVICES.map((s) => (
+              <li key={s.id}>
+                <Link to="/#services" className="hover:text-white">
                   {s.title}
                 </Link>
               </li>
