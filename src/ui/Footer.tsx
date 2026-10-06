@@ -13,7 +13,7 @@ const SOCIAL_LINKS: { name: Brand; href: string }[] = [
 ];
 
 export function Footer() {
-  const { services } = useServices();
+  const services = useServices();
   const contact = useContact();
   const social = [{ name: "WhatsApp" as Brand, href: whatsappLink(contact) }, ...SOCIAL_LINKS];
   return (
@@ -22,7 +22,7 @@ export function Footer() {
         <div className="lg:col-span-1">
           <img src="/images/logo%20white.png" alt="MTE Industrial Electronics" width={900} height={384} className="h-10 w-auto" loading="lazy" />
           <p className="mt-4 text-sm leading-relaxed text-slate-400">
-            Automatisme industriel : programmation PLC et IHM, dépannage d’armoires et mise en service, à Médéa et partout en Algérie.
+            Automatisme et électronique industrielle : programmation PLC, dépannage d’armoires, études électriques et réparation, à Médéa et partout en Algérie.
           </p>
           <ul className="mt-5 flex gap-3">
             {social.map((s) => (
@@ -46,7 +46,7 @@ export function Footer() {
           <ul className="mt-4 space-y-2 text-sm">
             {services.map((s) => (
               <li key={s.slug}>
-                <Link to={`/services/${s.slug}`} className="hover:text-white">
+                <Link to="/#services" className="hover:text-white">
                   {s.title}
                 </Link>
               </li>

@@ -17,7 +17,7 @@ type MediaDraft = {
   preview?: string;
 };
 
-type Form = { title: string; date: string; description: string; service_slug: string; published: boolean };
+type Form = { title: string; date: string; description: string; published: boolean };
 
 const today = () => new Date().toISOString().slice(0, 10);
 const newKey = () => Math.random().toString(36).slice(2);
@@ -33,10 +33,9 @@ export default function ProjectEditor() {
   const flash = useFlash();
 
   const [original, setOriginal] = useState<PortfolioItem | null>(null);
-  const [form, setForm] = useState<Form>({ title: "", date: today(), description: "", service_slug: "", published: true });
+  const [form, setForm] = useState<Form>({ title: "", date: today(), description: "", published: true });
   const [media, setMedia] = useState<MediaDraft[]>([]);
   const [saved, setSaved] = useState<string>("");
-  const [services, setServices] = useState<{ slug: string; title: string }[]>([]);
   const [loading, setLoading] = useState(!isNew);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState<"" | "save" | "delete">("");
@@ -46,9 +45,8 @@ export default function ProjectEditor() {
   const snapshot = (f: Form, m: MediaDraft[]) => JSON.stringify([f, m.map((x) => x.key)]);
 
   useEffect(() => {
-    supabase.from("services").select("slug, title").order("sort_order").then(({ data }) => setServices(data ?? []));
     if (isNew) {
-      setSaved(snapshot({ title: "", date: today(), description: "", service_slug: "", published: true }, []));
+      setSaved(snapshot({ title: "", date: today(), description: "", published: true }, []));
       return;
     }
     supabase
@@ -65,7 +63,6 @@ export default function ProjectEditor() {
           title: p.title ?? "",
           date: (p.created_at ?? "").slice(0, 10) || today(),
           description: p.description ?? "",
-          service_slug: p.service_slug ?? "",
           published: p.published !== false,
         };
         const m: MediaDraft[] = [...(p.portfolio_media ?? [])]
@@ -129,7 +126,6 @@ export default function ProjectEditor() {
         title: form.title.trim(),
         description: form.description.trim(),
         created_at: keptDate ? original!.created_at : `${form.date}T12:00:00Z`,
-        service_slug: form.service_slug || null,
         published: form.published,
         updated_at: new Date().toISOString(),
       };
@@ -260,14 +256,6 @@ export default function ProjectEditor() {
           <Toggle checked={form.published} onChange={(v) => set("published", v)} label={form.published ? "Visible sur le site" : "Masqué du site"} />
           <Field label="Date d’intervention" htmlFor="p-date">
             <input id="p-date" type="date" className={inputClass} value={form.date} onChange={(e) => set("date", e.target.value || today())} />
-          </Field>
-          <Field label="Service" htmlFor="p-service" hint="Le projet est mis en avant sur la page de ce service.">
-            <select id="p-service" className={inputClass} value={form.service_slug} onChange={(e) => set("service_slug", e.target.value)}>
-              <option value="">— Aucun —</option>
-              {services.map((s) => (
-                <option key={s.slug} value={s.slug}>{s.title}</option>
-              ))}
-            </select>
           </Field>
         </section>
       </div>

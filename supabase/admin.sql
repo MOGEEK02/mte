@@ -190,31 +190,37 @@ create policy "portfolio files: admin delete" on storage.objects
   for delete to authenticated using (bucket_id = 'portfolio' and public.is_site_admin());
 
 -- ---------------------------------------------------------------------------
--- 7. The four services as they are on the site today (kept if already present)
+-- 7. Service cards on the home page (photo + short line)
 -- ---------------------------------------------------------------------------
-insert into public.services
-  (slug, title, summary, art, seo_title, seo_description, intro, specialties_title, specialties, sections, keywords, request_type, sort_order)
-values
-  ($q$plc-programming$q$, $q$Programmation PLC et IHM$q$, $q$Création, modification et mise au point de programmes d’automates et d’écrans opérateur, de la machine simple à la ligne de production complète.$q$, $q$hmi$q$, $q$Programmation d’automates PLC et d’écrans IHM en Algérie | MTE$q$, $q$Création et modification de programmes PLC et IHM, récupération de programmes perdus, migration d’automates obsolètes : Siemens, Schneider, Omron, Fatek. Intervention partout en Algérie.$q$,
-   array[$q$L’automate pilote chaque séquence de votre machine ; l’écran IHM donne à l’opérateur les bonnes informations au bon moment. Un programme clair et structuré, c’est une machine plus fiable, plus sûre et plus rapide à dépanner.$q$, $q$Nous intervenons sur des programmes existants comme sur des projets neufs : modification d’un cycle, ajout d’une fonction, récupération d’un programme perdu ou automatisation complète d’une machine.$q$]::text[],
-   $q$Ce que nous faisons$q$, array[$q$Création de programmes PLC et d’écrans IHM$q$, $q$Modification et optimisation de programmes existants$q$, $q$Sauvegarde et récupération de programmes perdus$q$, $q$Migration d’automates obsolètes vers une gamme actuelle$q$, $q$Communication entre automates, IHM, variateurs et capteurs$q$, $q$Mise en service et assistance sur site$q$]::text[],
-   $q$[{"title":"Les plateformes","paragraphs":["Siemens (S7-200, S7-300, S7-1200, S7-1500, LOGO!), Schneider Electric (Modicon, Zelio), Omron et Fatek, ainsi que les écrans opérateur associés. Pour une autre marque, demandez-nous : nous vous répondons rapidement."]},{"title":"Programme perdu ou automate verrouillé","paragraphs":["Quand le programme d’origine n’est plus disponible, nous le récupérons lorsque c’est possible, ou le réécrivons à partir du fonctionnement de la machine. Vous recevez une sauvegarde commentée, pour ne plus dépendre d’une seule copie."]},{"title":"Tester avant d’intervenir","paragraphs":["Les séquences peuvent être validées en simulation avant d’être chargées dans la machine. Le temps d’arrêt de la production est réduit au strict nécessaire."]}]$q$::jsonb,
-   array[$q$plc$q$, $q$automate$q$, $q$hmi$q$, $q$ihm$q$, $q$ktp$q$, $q$programmation$q$, $q$tia$q$, $q$factory io$q$, $q$et200$q$, $q$automatisme$q$]::text[], $q$Programmation PLC / IHM$q$, 10),
-  ($q$control-panel-diagnostics$q$, $q$Diagnostic et dépannage d’armoires$q$, $q$Machine à l’arrêt, défaut intermittent, automate en erreur : recherche méthodique de la panne dans l’armoire de commande et remise en production.$q$, $q$scope$q$, $q$Dépannage d’armoires électriques et diagnostic de pannes machines en Algérie | MTE$q$, $q$Recherche de pannes sur armoires de commande et machines industrielles : défauts automate, entrées/sorties, capteurs, variateurs, communications. Intervention sur site partout en Algérie.$q$,
-   array[$q$Une panne d’armoire peut venir d’un capteur, d’un câble, d’un relais, du programme ou de l’automate lui-même. Nous partons des symptômes, lisons l’état de l’automate et des entrées/sorties, et remontons jusqu’à la cause réelle, plutôt que de remplacer des pièces au hasard.$q$, $q$L’objectif : relancer la production rapidement, puis traiter la cause pour que la panne ne revienne pas.$q$]::text[],
-   $q$Ce que nous vérifions$q$, array[$q$Défauts de l’automate et lecture du programme en ligne$q$, $q$Entrées/sorties, capteurs, fins de course et sécurités$q$, $q$Relais, contacteurs, protections et alimentations$q$, $q$Défauts de variateurs et de démarreurs$q$, $q$Communications entre automate, IHM et équipements$q$, $q$Pannes intermittentes et défauts récurrents$q$]::text[],
-   $q$[{"title":"Sur site, partout en Algérie","paragraphs":["Nous venons avec le matériel de mesure et le logiciel adapté à votre automate. Un premier échange par téléphone ou WhatsApp (photos de l’armoire, code défaut affiché) permet souvent de préparer l’intervention avant le déplacement.","À la fin de l’intervention, vous recevez un bon d’intervention qui décrit la panne trouvée, ce qui a été fait et les recommandations éventuelles."]},{"title":"Et si une carte électronique est en cause ?","paragraphs":["Quand le défaut vient d’une carte (automate, variateur, alimentation), nous vous présentons les options : remplacement par un équivalent disponible, ou réparation lorsque c’est la solution la plus rapide pour relancer la machine."]}]$q$::jsonb,
-   array[$q$diagnostic$q$, $q$dépannage$q$, $q$panne$q$, $q$défaut$q$, $q$remise en service$q$, $q$armoire$q$, $q$eeprom$q$]::text[], $q$Machine ou armoire en panne$q$, 20),
-  ($q$control-automation$q$, $q$Conception et rétrofit d’armoires$q$, $q$Armoires de commande conçues sur mesure selon votre cahier des charges, et modernisation des installations existantes.$q$, $q$panel$q$, $q$Conception d’armoires de commande et rétrofit d’automatismes en Algérie | MTE$q$, $q$Étude, réalisation et mise en service d’armoires de commande sur mesure. Rétrofit d’automates et d’IHM obsolètes, intégration de variateurs et supervision. Médéa et toute l’Algérie.$q$,
-   array[$q$Chaque machine a ses contraintes : cadence, sécurité, environnement, budget. Nous concevons des armoires de commande pensées pour votre installation, avec du matériel disponible en Algérie pour une maintenance simple dans la durée.$q$, $q$De l’étude jusqu’à la mise en service sur site, un seul interlocuteur suit le projet : les choix techniques sont expliqués et chaque étape est validée avec vous.$q$]::text[],
-   $q$Nos prestations$q$, array[$q$Étude, schémas et choix du matériel$q$, $q$Réalisation et câblage d’armoires de commande$q$, $q$Rétrofit : remplacement d’automates et d’IHM obsolètes$q$, $q$Intégration de variateurs, démarreurs et sécurités$q$, $q$Supervision et remontée d’informations$q$, $q$Installation et mise en service sur site$q$]::text[],
-   $q$[{"title":"Du cahier des charges à la mise en service","paragraphs":["Nous partons du fonctionnement attendu : entrées et sorties, sécurités, modes de marche, interface opérateur. L’armoire est câblée et testée avant l’installation, puis mise en service avec vos équipes."]},{"title":"Moderniser plutôt que remplacer","paragraphs":["Automate obsolète, pièces introuvables, pannes répétées : un rétrofit remplace la partie commande en conservant la mécanique de la machine. C’est souvent la solution la plus économique pour prolonger la vie d’une ligne de production."]}]$q$::jsonb,
-   array[$q$rétrofit$q$, $q$retrofit$q$, $q$armoire$q$, $q$upgrade$q$, $q$modernisation$q$, $q$installation$q$, $q$scada$q$]::text[], $q$Nouvelle armoire / rétrofit$q$, 30),
-  ($q$drives-commissioning$q$, $q$Variateurs et mise en service$q$, $q$Paramétrage, intégration et remplacement de variateurs de fréquence et de démarreurs progressifs, jusqu’aux essais de la machine.$q$, $q$drive$q$, $q$Paramétrage et mise en service de variateurs de fréquence en Algérie | MTE$q$, $q$Paramétrage et intégration de variateurs ABB, Schneider Altivar, Siemens, Danfoss, LS. Remplacement par un équivalent disponible, liaison avec l’automate, essais et mise en service.$q$,
-   array[$q$Un variateur mal réglé use le moteur, se met en défaut ou limite la production. Nous paramétrons et intégrons vos variateurs : rampes, protections, régulation, commande par l’automate.$q$, $q$Quand un variateur est hors service ou introuvable, nous le remplaçons par un modèle disponible et reprenons le paramétrage pour que la machine fonctionne comme avant.$q$]::text[],
-   $q$Nos interventions$q$, array[$q$Paramétrage de variateurs ABB, Schneider, Siemens, Danfoss, LS…$q$, $q$Remplacement par un équivalent disponible$q$, $q$Commande par l’automate, câblée ou en réseau$q$, $q$Démarreurs progressifs et commandes moteur$q$, $q$Analyse des défauts variateur$q$, $q$Essais et mise en service$q$]::text[],
-   $q$[{"title":"Remplacer sans changer votre process","paragraphs":["Nous relevons les réglages de l’ancien variateur quand c’est possible, choisissons un modèle adapté au moteur et à l’application, puis reprenons le câblage et le paramétrage. La machine redémarre avec le même comportement."]},{"title":"Essais et réglages","paragraphs":["Chaque mise en service se termine par des essais en conditions réelles : sens de rotation, rampes, protections, sécurités. Les réglages importants sont notés pour vos futures interventions."]}]$q$::jsonb,
-   array[$q$variateur$q$, $q$vfd$q$, $q$altivar$q$, $q$atv$q$, $q$acs$q$, $q$drive$q$, $q$démarreur$q$, $q$paramétrage$q$]::text[], $q$Variateur / mise en service$q$, 40)
+alter table public.services add column if not exists tagline text not null default '';
+alter table public.services add column if not exists image text not null default '';
+
+-- The four "automation" pages from the previous version are replaced, unless they were edited in /admin.
+delete from public.services
+where (slug = 'control-automation' and summary = $q$Armoires de commande conçues sur mesure selon votre cahier des charges, et modernisation des installations existantes.$q$)
+   or (slug = 'drives-commissioning' and summary = $q$Paramétrage, intégration et remplacement de variateurs de fréquence et de démarreurs progressifs, jusqu’aux essais de la machine.$q$)
+   or (slug = 'plc-programming' and summary = $q$Création, modification et mise au point de programmes d’automates et d’écrans opérateur, de la machine simple à la ligne de production complète.$q$)
+   or (slug = 'control-panel-diagnostics' and summary = $q$Machine à l’arrêt, défaut intermittent, automate en erreur : recherche méthodique de la panne dans l’armoire de commande et remise en production.$q$);
+
+insert into public.services (slug, title, summary, tagline, image, sort_order) values
+  ('plc-programming', $q$Programmation PLC et IHM$q$,
+   $q$Création, modification et mise au point de programmes d’automates et d’écrans opérateur. Récupération de programmes perdus et migration d’automates obsolètes.$q$,
+   $q$Siemens S7 · TIA Portal · Modicon · Omron · Fatek$q$, '/images/web/ihm.webp', 10),
+  ('control-panel-diagnostics', $q$Dépannage d’armoires de commande$q$,
+   $q$Machine à l’arrêt ou défaut intermittent : recherche méthodique de la panne dans l’armoire (automate, entrées/sorties, capteurs, relais) et remise en production.$q$,
+   $q$Intervention sur site partout en Algérie$q$, '/images/web/automates.webp', 20),
+  ('electrical-study', $q$Études électriques$q$,
+   $q$Schémas électriques, bilan de puissance, choix des protections et des câbles, conception d’armoires de commande et rétrofit d’installations existantes.$q$,
+   $q$Armoires · protections · rétrofit$q$, '/images/web/fondateur-site.webp', 30),
+  ('drives-repair', $q$Variateurs de vitesse (VFD)$q$,
+   $q$Diagnostic, réparation, paramétrage et remplacement de variateurs AC/DC et de démarreurs progressifs, de 0,37 kW à plus de 500 kW.$q$,
+   $q$ABB · Schneider Altivar · Siemens · Danfoss · LS$q$, '/images/web/variateurs.webp', 40),
+  ('electronic-repair', $q$Réparation de cartes électroniques$q$,
+   $q$Réparation au niveau composant des cartes de commande et de puissance, rétro-ingénierie quand le schéma n’existe pas.$q$,
+   $q$Cartes de commande et de puissance$q$, '/images/web/cartes.webp', 50),
+  ('power-sensors', $q$Alimentations et capteurs$q$,
+   $q$Alimentations AC/DC, onduleurs et stabilisateurs de tension ; diagnostic et remplacement de capteurs et de transmetteurs.$q$,
+   $q$Alimentations · capteurs · instrumentation$q$, '/images/web/alimentations.webp', 60)
 on conflict (slug) do nothing;
 
 -- ---------------------------------------------------------------------------

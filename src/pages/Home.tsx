@@ -7,8 +7,7 @@ import { coverImage, fetchPortfolio, formatDate, type PortfolioItem } from "../p
 import { select } from "../db";
 import { BrandIcon } from "../ui/BrandIcon";
 import { QuoteForm } from "../ui/QuoteForm";
-import { ServiceArt } from "../ui/ServiceArt";
-import { ServiceCards } from "../ui/ServiceCards";
+import { useServices } from "../services";
 import { Seo } from "../ui/Seo";
 
 function SectionTitle({ eyebrow, title, text, light }: { eyebrow: string; title: string; text?: string; light?: boolean }) {
@@ -24,17 +23,25 @@ function SectionTitle({ eyebrow, title, text, light }: { eyebrow: string; title:
 function Hero() {
   const contact = useContact();
   return (
-    <section className="bg-grid relative isolate overflow-hidden bg-navy-950">
-      <div className="absolute inset-x-0 bottom-0 -z-10 h-1/2 bg-gradient-to-t from-navy-950 to-transparent" />
-      <div className="container-page grid items-center gap-12 pt-32 pb-20 sm:pt-40 sm:pb-24 lg:grid-cols-[1.05fr_1fr] lg:pt-44 lg:pb-28">
-        <div>
-          <p className="eyebrow text-brand">Automatisme industriel · Médéa · toute l’Algérie</p>
-          <h1 className="mt-4 text-4xl leading-[1.1] font-bold tracking-tight text-white sm:text-5xl lg:text-[3.4rem]">
-            Programmation d’automates et dépannage d’armoires
+    <section className="relative isolate overflow-hidden bg-navy-950">
+      <img
+        src="/images/web/hero.webp"
+        alt=""
+        width={1920}
+        height={768}
+        fetchPriority="high"
+        className="absolute inset-0 -z-10 size-full object-cover opacity-45"
+      />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-navy-950 via-navy-950/85 to-navy-950/30" />
+      <div className="container-page pt-32 pb-20 sm:pt-40 sm:pb-28 lg:pt-44 lg:pb-32">
+        <div className="max-w-2xl">
+          <p className="eyebrow text-brand">Médéa · Intervention dans toute l’Algérie</p>
+          <h1 className="mt-4 text-4xl leading-[1.1] font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
+            Automatisme et électronique industrielle
           </h1>
           <p className="mt-6 text-lg leading-relaxed text-slate-300">
-            Programmes PLC et IHM, recherche de pannes dans vos armoires de commande, rétrofit et mise en service de
-            variateurs : nous remettons vos machines en production et les rendons plus fiables.
+            Programmation d’automates, dépannage d’armoires de commande, études électriques, réparation de variateurs
+            et de cartes électroniques : un seul interlocuteur pour remettre vos machines en production.
           </p>
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
             <Link to="/#contact" className="btn-primary px-6">
@@ -47,30 +54,13 @@ function Hero() {
             </a>
           </div>
           <ul className="mt-10 grid gap-3 text-sm text-slate-300 sm:grid-cols-3 sm:gap-6">
-            {["Siemens, Schneider, Omron, Fatek", "Sur site partout en Algérie", "Devis avant intervention"].map((t) => (
+            {["Diagnostic sous 24 à 48 h", "Devis avant intervention", "Toutes marques"].map((t) => (
               <li key={t} className="flex items-center gap-2">
                 <Check className="size-4 shrink-0 text-brand" />
                 {t}
               </li>
             ))}
           </ul>
-        </div>
-
-        {/* A programming window showing a ladder diagram */}
-        <div className="hidden overflow-hidden rounded-xl bg-navy-900 shadow-2xl ring-1 ring-white/10 sm:block">
-          <div className="flex items-center gap-3 border-b border-white/10 px-4 py-2.5">
-            <span className="flex gap-1.5">
-              <span className="size-2.5 rounded-full bg-white/20" />
-              <span className="size-2.5 rounded-full bg-white/20" />
-              <span className="size-2.5 rounded-full bg-white/20" />
-            </span>
-            <span className="font-mono text-xs text-slate-400">OB1 · Programme principal</span>
-            <span className="ms-auto inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-2 py-0.5 font-mono text-[10px] font-semibold text-emerald-300">
-              <span className="size-1.5 rounded-full bg-emerald-400" />
-              EN LIGNE
-            </span>
-          </div>
-          <ServiceArt kind="ladder" className="aspect-[5/3]" />
         </div>
       </div>
     </section>
@@ -81,7 +71,7 @@ function Brands() {
   return (
     <section aria-label="Marques prises en charge" className="border-b border-slate-200 bg-white">
       <div className="container-page py-10">
-        <p className="text-center text-sm text-slate-500">Automates et équipements de toutes marques, notamment</p>
+        <p className="text-center text-sm text-slate-500">Équipements de toutes marques, notamment</p>
         <ul className="mt-6 flex flex-wrap items-center justify-center gap-x-10 gap-y-6 sm:justify-between">
           {BRANDS.map((b) => (
             <li key={b.name}>
@@ -100,23 +90,34 @@ function Brands() {
 }
 
 function Services() {
+  const services = useServices();
   return (
     <section id="services" className="bg-slate-50 py-20 sm:py-24">
       <div className="container-page">
-        <div className="flex flex-wrap items-end justify-between gap-6">
-          <SectionTitle
-            eyebrow="Services"
-            title="Ce que nous faisons"
-            text="Toute la partie commande de vos machines : le programme, l’armoire et les variateurs."
-          />
-          <Link to="/services" className="inline-flex items-center gap-1.5 text-sm font-semibold text-navy-900 hover:text-navy-700">
-            Tous les services
-            <ArrowRight className="size-4" />
-          </Link>
-        </div>
-        <div className="mt-12">
-          <ServiceCards />
-        </div>
+        <SectionTitle
+          eyebrow="Services"
+          title="Ce que nous faisons"
+          text="De la programmation d’automates à la réparation au niveau composant, en atelier ou sur site."
+        />
+        <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {services.map((s) => (
+            <li key={s.slug} className="group flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xs transition hover:shadow-md">
+              <div className="aspect-[16/10] overflow-hidden bg-slate-100">
+                <img
+                  src={s.image}
+                  alt={s.title}
+                  loading="lazy"
+                  className="size-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                />
+              </div>
+              <div className="flex flex-1 flex-col p-6">
+                <h3 className="text-lg font-semibold text-navy-900">{s.title}</h3>
+                <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-600">{s.summary}</p>
+                {s.tagline && <p className="mt-4 border-t border-slate-100 pt-4 text-xs font-medium text-slate-500">{s.tagline}</p>}
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );
@@ -124,12 +125,12 @@ function Services() {
 
 function Method() {
   return (
-    <section id="methode" className="bg-grid bg-navy-900 py-20 sm:py-24">
+    <section id="methode" className="bg-navy-900 py-20 sm:py-24">
       <div className="container-page">
         <SectionTitle
           light
           eyebrow="Méthode"
-          title="Une intervention préparée, de l’appel à la mise en service"
+          title="Une intervention claire, de la panne à la remise en service"
           text="Vous savez à chaque étape ce qui a été constaté, ce qui sera fait et dans quel délai."
         />
         <ol className="mt-12 grid gap-px overflow-hidden rounded-xl bg-white/10 sm:grid-cols-2 lg:grid-cols-4">
@@ -172,12 +173,12 @@ function About() {
           </div>
         </div>
         <div>
-          <SectionTitle eyebrow="À propos" title="Un ingénieur en automatisme, sur le terrain" />
+          <SectionTitle eyebrow="À propos" title="Un ingénieur, de l’automate jusqu’au composant" />
           <div className="mt-5 space-y-4 text-base leading-relaxed text-slate-600">
             <p>
               MTE a été créé par <strong className="font-semibold text-navy-900">Fekhar Moutie</strong>, ingénieur en
-              automatisme et électronique, pour accompagner les industriels sur la partie commande de leurs machines :
-              automates, écrans, armoires et variateurs.
+              automatisme et électronique, pour accompagner les industriels sur toute la partie commande de leurs
+              machines : automates, écrans, armoires, variateurs et cartes électroniques.
             </p>
             <p>
               Être à la fois programmeur et électronicien permet de dépanner vite : lire le programme en ligne, mesurer
@@ -346,8 +347,8 @@ export default function Home() {
   return (
     <>
       <Seo
-        title="MTE – Automatisme industriel en Algérie | Programmation PLC, dépannage d’armoires"
-        description="Programmation d’automates et d’écrans IHM, diagnostic et dépannage d’armoires de commande, rétrofit et mise en service de variateurs. Médéa et intervention partout en Algérie."
+        title="MTE – Automatisme et électronique industrielle en Algérie | PLC, armoires, variateurs"
+        description="Programmation PLC et IHM, dépannage d’armoires de commande, études électriques, réparation de variateurs de vitesse et de cartes électroniques. Médéa et intervention partout en Algérie."
         path="/"
       />
       <Hero />

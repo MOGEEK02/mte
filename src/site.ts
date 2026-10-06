@@ -47,12 +47,16 @@ export const FAQ = [
     a: "Nous récupérons le programme de l’automate quand c’est possible, ou le réécrivons à partir du fonctionnement de la machine. Vous recevez ensuite une sauvegarde pour ne plus dépendre d’une seule copie.",
   },
   {
-    q: "Intervenez-vous sur site ?",
-    a: "Oui, partout en Algérie, depuis Médéa. Pour une machine à l’arrêt, envoyez-nous des photos de l’armoire et le code défaut affiché : cela permet souvent de préparer l’intervention avant de se déplacer.",
+    q: "Réparez-vous les variateurs de vitesse ?",
+    a: "Oui : diagnostic, réparation au niveau composant et paramétrage de variateurs ABB, Schneider Altivar, Siemens, Danfoss, LS et autres, de 0,37 kW à plus de 500 kW. Le diagnostic est réalisé sous 24 à 48 heures.",
   },
   {
-    q: "Réparez-vous encore les cartes électroniques ?",
-    a: "Ponctuellement, quand c’est la solution la plus rapide pour relancer une machine. Notre activité principale est l’automatisme : programmation, diagnostic d’armoires et mise en service.",
+    q: "Réalisez-vous des études électriques ?",
+    a: "Oui : schémas électriques, bilan de puissance, choix des protections et des câbles, conception d’armoires et rétrofit d’installations. Envoyez-nous votre cahier des charges ou une description de l’installation.",
+  },
+  {
+    q: "Intervenez-vous sur site ?",
+    a: "Oui, partout en Algérie, depuis Médéa. Pour une machine à l’arrêt, envoyez-nous des photos de l’armoire et le code défaut affiché : cela permet souvent de préparer l’intervention avant de se déplacer.",
   },
   {
     q: "Comment obtenir un devis ?",
@@ -64,8 +68,8 @@ export const FAQ = [
 export const REQUEST_TYPES = [
   "Programmation PLC / IHM",
   "Machine ou armoire en panne",
-  "Nouvelle armoire / rétrofit",
-  "Variateur / mise en service",
-  "Réparation de carte",
+  "Étude électrique",
+  "Réparation de variateur",
+  "Réparation de carte électronique",
   "Autre",
 ] as const;

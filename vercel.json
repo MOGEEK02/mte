@@ -1,5 +1,9 @@
 {
   "trailingSlash": false,
+  "redirects": [
+    { "source": "/services", "destination": "/#services", "permanent": true },
+    { "source": "/services/:path*", "destination": "/#services", "permanent": true }
+  ],
   "headers": [
     {
       "source": "/sitemap.xml",
@@ -51,8 +55,6 @@
     { "source": "/gestion/:path*", "destination": "https://mte-facturation.vercel.app/gestion/:path*" },
     { "source": "/admin", "destination": "/index.html" },
     { "source": "/admin/:path*", "destination": "/index.html" },
-    { "source": "/services", "destination": "/api/page?section=services" },
-    { "source": "/services/:slug", "destination": "/api/page?section=services&slug=:slug" },
     { "source": "/portfolio", "destination": "/api/page?section=portfolio" },
     { "source": "/portfolio/:id", "destination": "/api/page?section=portfolio&id=:id" }
   ]

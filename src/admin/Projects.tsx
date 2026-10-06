@@ -8,7 +8,6 @@ import { inputClass, Loading, Notice, PageHeader, Toggle, useFlash } from "./ui"
 export default function Projects() {
   const flash = useFlash();
   const [items, setItems] = useState<PortfolioItem[] | null>(null);
-  const [services, setServices] = useState<Record<string, string>>({});
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
   const [show, setShow] = useState<"tous" | "publies" | "masques">("tous");
@@ -19,10 +18,6 @@ export default function Projects() {
       .select("*, portfolio_media(id, media_url, media_type, sort_order)")
       .order("created_at", { ascending: false })
       .then(({ data, error }) => (error ? setError(errorMessage(error)) : setItems(data as PortfolioItem[])));
-    supabase
-      .from("services")
-      .select("slug, title")
-      .then(({ data }) => setServices(Object.fromEntries((data ?? []).map((s) => [s.slug, s.title]))));
   }, []);
 
   const setPublished = async (item: PortfolioItem, published: boolean) => {
@@ -46,7 +41,7 @@ export default function Projects() {
     <div>
       <PageHeader
         title="Réalisations"
-        description="Les projets affichés sur la page Réalisations et sur les pages services."
+        description="Les projets affichés sur la page Réalisations et dans « Interventions récentes »."
         actions={
           <Link to="/admin/realisations/nouveau" className="inline-flex items-center gap-2 rounded-md bg-brand px-4 py-2.5 text-sm font-medium text-navy-950 hover:bg-brand-600">
             <Plus className="size-4" /> Nouveau projet
@@ -86,7 +81,6 @@ export default function Projects() {
                     <Link to={`/admin/realisations/${p.id}`} className="line-clamp-1 font-medium text-navy-900 hover:underline">{p.title}</Link>
                     <p className="mt-0.5 text-xs text-slate-500">
                       {formatDate(p.created_at)} · {p.portfolio_media?.length ?? 0} média(s)
-                      {p.service_slug && services[p.service_slug] && <> · <span className="font-medium text-slate-600">{services[p.service_slug]}</span></>}
                     </p>
                   </div>
                   <div className="hidden sm:block">

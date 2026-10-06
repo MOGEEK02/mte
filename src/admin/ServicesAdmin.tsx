@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowDown, ArrowUp, ExternalLink, Pencil, Plus } from "lucide-react";
-import type { ServiceRow } from "../services";
-import { ServiceArt } from "../ui/ServiceArt";
+import { ArrowDown, ArrowUp, Pencil, Plus } from "lucide-react";
+import { fromRow, type ServiceRow } from "../services";
 import { errorMessage, supabase } from "./supabase";
 import { Loading, Notice, PageHeader, Toggle, useFlash } from "./ui";
 
@@ -14,7 +13,7 @@ export default function ServicesAdmin() {
   useEffect(() => {
     supabase
       .from("services")
-      .select("*")
+      .select("slug, title, summary, tagline, image, sort_order, published")
       .order("sort_order")
       .then(({ data, error }) => (error ? setError(errorMessage(error)) : setItems(data as ServiceRow[])));
   }, []);
@@ -48,7 +47,7 @@ export default function ServicesAdmin() {
     <div>
       <PageHeader
         title="Services"
-        description="Les pages /services affichées sur le site, dans cet ordre."
+        description="Les cartes de la section Services de la page d’accueil, dans cet ordre."
         actions={
           <Link to="/admin/services/nouveau" className="inline-flex items-center gap-2 rounded-md bg-brand px-4 py-2.5 text-sm font-medium text-navy-950 hover:bg-brand-600">
             <Plus className="size-4" /> Nouveau service
@@ -62,10 +61,10 @@ export default function ServicesAdmin() {
           {items.length === 0 && <li className="p-8 text-center text-sm text-slate-500">Aucun service.</li>}
           {items.map((s, i) => (
             <li key={s.slug} className="flex items-center gap-4 p-3 sm:p-4">
-              <ServiceArt kind={s.art} className="hidden aspect-[5/3] w-24 shrink-0 rounded-md sm:block" />
+              <img src={fromRow(s).image} alt="" loading="lazy" className="h-14 w-20 shrink-0 rounded-md object-cover" />
               <div className="min-w-0 flex-1">
                 <Link to={`/admin/services/${s.slug}`} className="font-medium text-navy-900 hover:underline">{s.title}</Link>
-                <p className="mt-0.5 truncate font-mono text-xs text-slate-500">/services/{s.slug}</p>
+                <p className="mt-0.5 line-clamp-1 text-xs text-slate-500">{s.summary}</p>
               </div>
               <div className="hidden md:block">
                 <Toggle checked={s.published} onChange={(v) => setPublished(s, v)} label="Visible" />
@@ -78,9 +77,6 @@ export default function ServicesAdmin() {
                   <ArrowDown className="size-4" />
                 </button>
               </div>
-              <a href={`/services/${s.slug}`} target="_blank" rel="noopener" aria-label="Voir sur le site" className="rounded-md p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700">
-                <ExternalLink className="size-4" />
-              </a>
               <Link to={`/admin/services/${s.slug}`} aria-label="Modifier" className="rounded-md p-2 text-slate-500 hover:bg-slate-100 hover:text-navy-900">
                 <Pencil className="size-4" />
               </Link>
