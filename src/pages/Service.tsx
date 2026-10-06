@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowRight, Check, ChevronRight } from "lucide-react";
 import { ogImageFor, useServices, type Service as ServiceData } from "../services";
-import { CONTACT, SITE_URL, whatsappUrl } from "../site";
+import { SITE_URL } from "../site";
+import { useContact, whatsappLink } from "../contact";
 import { coverImage, fetchPortfolio, formatDate, type PortfolioItem } from "../portfolio";
 import { BrandIcon } from "../ui/BrandIcon";
 import { QuoteForm } from "../ui/QuoteForm";
@@ -82,6 +83,7 @@ function RelatedWork({ service }: { service: ServiceData }) {
 export default function Service() {
   const { slug = "" } = useParams();
   const { services, loaded } = useServices();
+  const contact = useContact();
   const service = services.find((s) => s.slug === slug);
   if (!service) {
     // A service added in /admin may not be in the cached list yet.
@@ -117,13 +119,13 @@ export default function Service() {
                 <ArrowRight className="size-4" />
               </a>
               <a
-                href={whatsappUrl(`Bonjour MTE, j’ai une question sur : ${service.title}.`)}
+                href={whatsappLink(contact, `Bonjour MTE, j’ai une question sur : ${service.title}.`)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-outline-light px-6"
               >
                 <BrandIcon name="WhatsApp" className="size-4" />
-                {CONTACT.phoneDisplay}
+                {contact.whatsapp}
               </a>
             </div>
           </div>

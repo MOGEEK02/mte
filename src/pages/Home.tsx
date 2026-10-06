@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Check, Clock, FileText, Mail, MapPin, Phone, Plus } from "lucide-react";
-import { BRANDS, CONTACT, FAQ, STEPS, whatsappUrl } from "../site";
+import { BRANDS, FAQ, STEPS } from "../site";
+import { telHref, useContact, whatsappLink } from "../contact";
 import { coverImage, fetchPortfolio, formatDate, type PortfolioItem } from "../portfolio";
 import { select } from "../db";
 import { BrandIcon } from "../ui/BrandIcon";
@@ -21,6 +22,7 @@ function SectionTitle({ eyebrow, title, text, light }: { eyebrow: string; title:
 }
 
 function Hero() {
+  const contact = useContact();
   return (
     <section className="bg-grid relative isolate overflow-hidden bg-navy-950">
       <div className="absolute inset-x-0 bottom-0 -z-10 h-1/2 bg-gradient-to-t from-navy-950 to-transparent" />
@@ -39,9 +41,9 @@ function Hero() {
               Demander un devis
               <ArrowRight className="size-4" />
             </Link>
-            <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer" className="btn-outline-light px-6">
+            <a href={whatsappLink(contact)} target="_blank" rel="noopener noreferrer" className="btn-outline-light px-6">
               <BrandIcon name="WhatsApp" className="size-4" />
-              {CONTACT.phoneDisplay}
+              {contact.whatsapp}
             </a>
           </div>
           <ul className="mt-10 grid gap-3 text-sm text-slate-300 sm:grid-cols-3 sm:gap-6">
@@ -288,12 +290,13 @@ function Faq() {
 }
 
 function Contact() {
+  const contact = useContact();
   const rows = [
-    { icon: <BrandIcon name="WhatsApp" className="size-5" />, label: "WhatsApp", value: CONTACT.phoneDisplay, href: whatsappUrl(), external: true },
-    { icon: <Phone className="size-5" />, label: "Téléphone", value: CONTACT.phoneDisplay, href: CONTACT.phoneHref },
-    { icon: <Mail className="size-5" />, label: "E-mail", value: CONTACT.email, href: `mailto:${CONTACT.email}` },
-    { icon: <MapPin className="size-5" />, label: "Adresse", value: CONTACT.address, href: CONTACT.mapUrl, external: true },
-    { icon: <Clock className="size-5" />, label: "Horaires", value: CONTACT.hours },
+    { icon: <BrandIcon name="WhatsApp" className="size-5" />, label: "WhatsApp", value: contact.whatsapp, href: whatsappLink(contact), external: true },
+    { icon: <Phone className="size-5" />, label: "Téléphone", value: contact.phone, href: telHref(contact.phone) },
+    { icon: <Mail className="size-5" />, label: "E-mail", value: contact.email, href: `mailto:${contact.email}` },
+    { icon: <MapPin className="size-5" />, label: "Adresse", value: contact.address, href: contact.mapUrl, external: true },
+    { icon: <Clock className="size-5" />, label: "Horaires", value: contact.hours },
   ];
   return (
     <section id="contact" className="bg-slate-50 py-20 sm:py-24">

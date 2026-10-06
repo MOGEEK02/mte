@@ -1,6 +1,7 @@
 import { useRef, useState, type FormEvent } from "react";
 import { CheckCircle2, Loader2, Send } from "lucide-react";
-import { REQUEST_TYPES, whatsappUrl } from "../site";
+import { REQUEST_TYPES } from "../site";
+import { useContact, whatsappLink } from "../contact";
 import { BrandIcon } from "./BrandIcon";
 
 type Fields = {
@@ -46,6 +47,7 @@ export function QuoteForm({ service, defaultType }: { service?: string; defaultT
     message: "",
     onSite: false,
   };
+  const contact = useContact();
   const [f, setF] = useState<Fields>(empty);
   const [status, setStatus] = useState<Status>("idle");
   const [trap, setTrap] = useState("");
@@ -175,7 +177,7 @@ export function QuoteForm({ service, defaultType }: { service?: string; defaultT
           {status === "sending" ? "Envoi…" : "Envoyer la demande"}
         </button>
         <a
-          href={whatsappUrl(compose(f, service))}
+          href={whatsappLink(contact, compose(f, service))}
           target="_blank"
           rel="noopener noreferrer"
           className={status === "error" ? "btn bg-[#25d366] text-white hover:bg-[#1ebe5b]" : "btn-outline"}

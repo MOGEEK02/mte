@@ -1,4 +1,7 @@
-/** Business facts shown across the site. Keep in sync with the JSON-LD in index.html. */
+/**
+ * Business facts shown across the site. Contact details are edited in /admin → Paramètres
+ * (see src/contact.ts); CONTACT is the built-in copy. Keep in sync with the JSON-LD in index.html.
+ */
 export const SITE_URL = "https://moutie.vercel.app";
 
 export const CONTACT = {
@@ -17,10 +20,6 @@ export const SOCIAL = {
   instagram: "https://www.instagram.com/mooutiem",
   github: "https://github.com/MOGEEK02",
 };
-
-export function whatsappUrl(text?: string) {
-  return `https://wa.me/${CONTACT.whatsapp}${text ? `?text=${encodeURIComponent(text)}` : ""}`;
-}
 
 export const STEPS = [
   { title: "Échange", text: "Vous décrivez la machine et le besoin : photos, code défaut, programme existant. Un premier avis rapide, souvent dès l’appel." },

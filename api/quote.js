@@ -5,11 +5,13 @@
 // Vercel environment variables:
 //   SUPABASE_SECRET_KEY  secret key of the website's Supabase project (saves the request)
 //   RESEND_API_KEY       API key from resend.com (sends the e-mail)
-//   QUOTE_TO_EMAIL       where requests arrive (default: moutie225@gmail.com, the Resend account)
+//   QUOTE_TO_EMAIL       fallback recipients, comma-separated, when /admin → Paramètres has none
+//                        (default: moutie225@gmail.com, the Resend account)
 //   QUOTE_FROM_EMAIL     sender; until a domain is verified in Resend, keep the default
 //                        "onboarding@resend.dev", which can only send to the Resend account's own e-mail.
 
-const TO = process.env.QUOTE_TO_EMAIL || 'moutie225@gmail.com';
+const FALLBACK_TO = (process.env.QUOTE_TO_EMAIL || 'moutie225@gmail.com').split(',').map((e) => e.trim()).filter(Boolean);
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const FROM = process.env.QUOTE_FROM_EMAIL || 'MTE – Site web <onboarding@resend.dev>';
 
 const LIMITS = { name: 120, company: 160, phone: 40, email: 160, equipment: 80, model: 160, service: 120, message: 4000 };
@@ -37,6 +39,26 @@ async function reason(r) {
 
 function escapeHtml(str) {
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+/** Addresses set in /admin → Paramètres ("admin_settings"), or the fallback. */
+async function recipients() {
+  const url = process.env.VITE_SUPABASE_URL;
+  const key = process.env.SUPABASE_SECRET_KEY;
+  if (url && key) {
+    try {
+      const r = await fetch(`${url}/rest/v1/admin_settings?select=notify_emails&id=eq.1`, {
+        headers: { apikey: key },
+        signal: AbortSignal.timeout(4000),
+      });
+      const [row] = r.ok ? await r.json() : [];
+      const list = (row?.notify_emails ?? []).map((e) => String(e).trim()).filter((e) => EMAIL.test(e));
+      if (list.length) return list;
+    } catch {
+      // Use the fallback below.
+    }
+  }
+  return FALLBACK_TO;
 }
 
 async function sendEmail(f, onSite, emailValid) {
@@ -76,13 +98,24 @@ async function sendEmail(f, onSite, emailValid) {
     <a href="https://moutie.vercel.app/admin" style="color:#0a2a4a">Ouvrir les demandes</a></p>
 </div>`;
 
+  // One message per address: without a verified domain, Resend refuses any address other than
+  // the account's own, and a refused address must not block the others.
+  const results = await Promise.all((await recipients()).map((to) => sendOne(key, to, f, text, html, emailValid)));
+  const failed = results.filter((r) => !r.ok);
+  if (failed.length === results.length) return { ok: false, reason: failed.map((r) => r.reason).join(' | ') };
+  return failed.length
+    ? { ok: true, reason: `${failed.length} adresse(s) refusée(s) : ${failed.map((r) => r.reason).join(' | ')}` }
+    : { ok: true };
+}
+
+async function sendOne(key, to, f, text, html, emailValid) {
   try {
     const r = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         from: FROM,
-        to: [TO],
+        to: [to],
         subject: `Demande de devis – ${f.equipment || f.service || 'site web'} – ${f.name}`,
         text,
         html,
@@ -154,7 +187,7 @@ export default async function handler(req, res) {
 
   const f = Object.fromEntries(Object.entries(LIMITS).map(([k, max]) => [k, clean(body[k], max)]));
   const onSite = body.onSite === true;
-  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email);
+  const emailValid = EMAIL.test(f.email);
   if (!f.name || !f.message || (!f.phone && !emailValid)) {
     return res.status(400).json({ error: 'invalid' });
   }
@@ -164,5 +197,5 @@ export default async function handler(req, res) {
   if (!email.ok && !save.ok) {
     return res.status(502).json({ error: 'send_failed', email: email.reason, save: save.reason });
   }
-  return res.status(200).json({ ok: true, ...(email.ok ? {} : { email: email.reason }), ...(save.ok ? {} : { save: save.reason }) });
+  return res.status(200).json({ ok: true, ...(email.reason ? { email: email.reason } : {}), ...(save.ok ? {} : { save: save.reason }) });
 }

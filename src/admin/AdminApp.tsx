@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, NavLink, Route, Routes } from "react-router-dom";
 import type { Session } from "@supabase/supabase-js";
-import { ExternalLink, FolderKanban, Inbox, LogOut, Wrench } from "lucide-react";
+import { ExternalLink, FolderKanban, Inbox, LogOut, Settings as SettingsIcon, Wrench } from "lucide-react";
 import { Seo } from "../ui/Seo";
 import { configured, errorMessage, isMissingSetup, supabase } from "./supabase";
 import { Button, Field, FlashProvider, inputClass, Loading, Notice } from "./ui";
@@ -10,6 +10,7 @@ import Projects from "./Projects";
 import ProjectEditor from "./ProjectEditor";
 import ServicesAdmin from "./ServicesAdmin";
 import ServiceEditor from "./ServiceEditor";
+import Settings from "./Settings";
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
@@ -102,6 +103,7 @@ const NAV = [
   { to: "/admin", end: true, label: "Demandes", icon: Inbox },
   { to: "/admin/realisations", end: false, label: "Réalisations", icon: FolderKanban },
   { to: "/admin/services", end: false, label: "Services", icon: Wrench },
+  { to: "/admin/parametres", end: false, label: "Paramètres", icon: SettingsIcon },
 ];
 
 function Layout({ email }: { email: string }) {
@@ -150,6 +152,7 @@ function Layout({ email }: { email: string }) {
             <Route path="realisations/:id" element={<ProjectEditor />} />
             <Route path="services" element={<ServicesAdmin />} />
             <Route path="services/:slug" element={<ServiceEditor />} />
+            <Route path="parametres" element={<Settings />} />
           </Routes>
           <div className="mt-12 flex gap-4 border-t border-slate-200 pt-4 text-sm lg:hidden">
             <a href="/" target="_blank" rel="noopener" className="text-slate-500">Voir le site</a>

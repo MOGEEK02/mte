@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom";
 import { Mail, MapPin, Phone } from "lucide-react";
-import { CONTACT, SOCIAL, whatsappUrl } from "../site";
+import { SOCIAL } from "../site";
+import { telHref, useContact, whatsappLink } from "../contact";
 import { useServices } from "../services";
 import { BrandIcon, type Brand } from "./BrandIcon";
 
 const SOCIAL_LINKS: { name: Brand; href: string }[] = [
-  { name: "WhatsApp", href: whatsappUrl() },
   { name: "LinkedIn", href: SOCIAL.linkedin },
   { name: "Facebook", href: SOCIAL.facebook },
   { name: "Instagram", href: SOCIAL.instagram },
@@ -14,6 +14,8 @@ const SOCIAL_LINKS: { name: Brand; href: string }[] = [
 
 export function Footer() {
   const { services } = useServices();
+  const contact = useContact();
+  const social = [{ name: "WhatsApp" as Brand, href: whatsappLink(contact) }, ...SOCIAL_LINKS];
   return (
     <footer className="bg-navy-950 text-slate-300">
       <div className="container-page grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
@@ -23,7 +25,7 @@ export function Footer() {
             Automatisme industriel : programmation PLC et IHM, dépannage d’armoires et mise en service, à Médéa et partout en Algérie.
           </p>
           <ul className="mt-5 flex gap-3">
-            {SOCIAL_LINKS.map((s) => (
+            {social.map((s) => (
               <li key={s.name}>
                 <a
                   href={s.href}
@@ -67,21 +69,21 @@ export function Footer() {
           <h2 className="eyebrow text-brand">Contact</h2>
           <ul className="mt-4 space-y-3 text-sm">
             <li>
-              <a href={CONTACT.phoneHref} className="flex items-start gap-2.5 hover:text-white">
+              <a href={telHref(contact.phone)} className="flex items-start gap-2.5 hover:text-white">
                 <Phone className="mt-0.5 size-4 shrink-0 text-brand" />
-                {CONTACT.phoneDisplay}
+                {contact.phone}
               </a>
             </li>
             <li>
-              <a href={`mailto:${CONTACT.email}`} className="flex items-start gap-2.5 break-all hover:text-white">
+              <a href={`mailto:${contact.email}`} className="flex items-start gap-2.5 break-all hover:text-white">
                 <Mail className="mt-0.5 size-4 shrink-0 text-brand" />
-                {CONTACT.email}
+                {contact.email}
               </a>
             </li>
             <li>
-              <a href={CONTACT.mapUrl} target="_blank" rel="noopener noreferrer" className="flex items-start gap-2.5 hover:text-white">
+              <a href={contact.mapUrl} target="_blank" rel="noopener noreferrer" className="flex items-start gap-2.5 hover:text-white">
                 <MapPin className="mt-0.5 size-4 shrink-0 text-brand" />
-                {CONTACT.address}
+                {contact.address}
               </a>
             </li>
           </ul>

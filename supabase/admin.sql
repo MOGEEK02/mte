@@ -81,6 +81,27 @@ create table if not exists public.quote_requests (
 create index if not exists quote_requests_created_at on public.quote_requests (created_at desc);
 
 -- ---------------------------------------------------------------------------
+-- 4b. Settings edited in /admin → Paramètres (one row each)
+-- ---------------------------------------------------------------------------
+-- Contact details shown on the site (public).
+create table if not exists public.site_settings (
+  id smallint primary key default 1 check (id = 1),
+  email text not null default '',
+  phone text not null default '',
+  whatsapp text not null default '',
+  address text not null default '',
+  map_url text not null default '',
+  hours text not null default '',
+  updated_at timestamptz not null default now()
+);
+-- Private: where quote requests are e-mailed (read by /api/quote with the secret key).
+create table if not exists public.admin_settings (
+  id smallint primary key default 1 check (id = 1),
+  notify_emails text[] not null default '{}',
+  updated_at timestamptz not null default now()
+);
+
+-- ---------------------------------------------------------------------------
 -- 5. Access rules. Existing policies on these tables are replaced.
 -- ---------------------------------------------------------------------------
 do $$
@@ -89,7 +110,7 @@ begin
   for r in
     select policyname, tablename from pg_policies
     where schemaname = 'public'
-      and tablename in ('portfolio', 'portfolio_media', 'services', 'quote_requests', 'resume_links', 'site_admins')
+      and tablename in ('portfolio', 'portfolio_media', 'services', 'quote_requests', 'resume_links', 'site_admins', 'site_settings', 'admin_settings')
   loop
     execute format('drop policy %I on public.%I', r.policyname, r.tablename);
   end loop;
@@ -131,6 +152,17 @@ create policy "read resume links" on public.resume_links for select using (true)
 create policy "admin manages resume links" on public.resume_links
   for all to authenticated using (public.is_site_admin()) with check (public.is_site_admin());
 
+alter table public.site_settings enable row level security;
+alter table public.admin_settings enable row level security;
+create policy "read contact details" on public.site_settings for select using (true);
+create policy "admin manages contact details" on public.site_settings
+  for all to authenticated using (public.is_site_admin()) with check (public.is_site_admin());
+create policy "admin manages private settings" on public.admin_settings
+  for all to authenticated using (public.is_site_admin()) with check (public.is_site_admin());
+
+grant select on public.site_settings to anon, authenticated;
+grant insert, update on public.site_settings to authenticated;
+grant select, insert, update on public.admin_settings to authenticated;
 grant select on public.services to anon, authenticated;
 grant insert, update, delete on public.services to authenticated;
 grant select, update, delete on public.quote_requests to authenticated;
@@ -184,6 +216,16 @@ values
    $q$[{"title":"Remplacer sans changer votre process","paragraphs":["Nous relevons les réglages de l’ancien variateur quand c’est possible, choisissons un modèle adapté au moteur et à l’application, puis reprenons le câblage et le paramétrage. La machine redémarre avec le même comportement."]},{"title":"Essais et réglages","paragraphs":["Chaque mise en service se termine par des essais en conditions réelles : sens de rotation, rampes, protections, sécurités. Les réglages importants sont notés pour vos futures interventions."]}]$q$::jsonb,
    array[$q$variateur$q$, $q$vfd$q$, $q$altivar$q$, $q$atv$q$, $q$acs$q$, $q$drive$q$, $q$démarreur$q$, $q$paramétrage$q$]::text[], $q$Variateur / mise en service$q$, 40)
 on conflict (slug) do nothing;
+
+-- ---------------------------------------------------------------------------
+-- 7b. Current contact details and notification address (kept if already set)
+-- ---------------------------------------------------------------------------
+insert into public.site_settings (id, email, phone, whatsapp, address, map_url, hours)
+values (1, 'moutiefekhar@gmail.com', '+213 778 46 16 82', '+213 778 46 16 82', 'Ain Dhab, Médéa 26011, Algérie',
+        'https://maps.app.goo.gl/o5DLijMqhsTaiac19', 'Samedi – jeudi, 8 h – 17 h')
+on conflict (id) do nothing;
+insert into public.admin_settings (id, notify_emails) values (1, array['moutie225@gmail.com'])
+on conflict (id) do nothing;
 
 -- ---------------------------------------------------------------------------
 -- 8. Make your account the admin (create it first in Authentication → Users)
