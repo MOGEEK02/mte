@@ -51,8 +51,8 @@ export default async function handler(req, res) {
     ['Entreprise', f.company],
     ['Téléphone', f.phone],
     ['E-mail', f.email],
-    ['Équipement', f.equipment],
-    ['Marque / modèle', f.model],
+    ['Besoin', f.equipment],
+    ['Matériel', f.model],
     ['Sur site', onSite ? 'Oui, intervention sur site souhaitée' : ''],
   ].filter(([, v]) => v);
 

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Mail, MapPin, Phone } from "lucide-react";
-import { CONTACT, SERVICES, SOCIAL, whatsappUrl } from "../site";
+import { CONTACT, SOCIAL, whatsappUrl } from "../site";
+import { SERVICE_PAGES } from "../services";
 import { BrandIcon, type Brand } from "./BrandIcon";
 
 const SOCIAL_LINKS: { name: Brand; href: string }[] = [
@@ -18,7 +19,7 @@ export function Footer() {
         <div className="lg:col-span-1">
           <img src="/images/logo%20white.png" alt="MTE Industrial Electronics" width={900} height={384} className="h-10 w-auto" loading="lazy" />
           <p className="mt-4 text-sm leading-relaxed text-slate-400">
-            Réparation et maintenance d’électronique industrielle à Médéa et partout en Algérie.
+            Automatisme industriel : programmation PLC et IHM, dépannage d’armoires et mise en service, à Médéa et partout en Algérie.
           </p>
           <ul className="mt-5 flex gap-3">
             {SOCIAL_LINKS.map((s) => (
@@ -40,9 +41,9 @@ export function Footer() {
         <div>
           <h2 className="eyebrow text-brand">Services</h2>
           <ul className="mt-4 space-y-2 text-sm">
-            {SERVICES.map((s) => (
-              <li key={s.id}>
-                <Link to="/#services" className="hover:text-white">
+            {SERVICE_PAGES.map((s) => (
+              <li key={s.slug}>
+                <Link to={`/services/${s.slug}`} className="hover:text-white">
                   {s.title}
                 </Link>
               </li>

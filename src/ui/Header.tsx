@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 
 const LINKS = [
-  { to: "/#services", label: "Services" },
+  { to: "/services", label: "Services" },
   { to: "/#methode", label: "Méthode" },
   { to: "/#a-propos", label: "À propos" },
   { to: "/portfolio", label: "Réalisations" },

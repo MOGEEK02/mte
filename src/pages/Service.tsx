@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowRight, Check, ChevronRight } from "lucide-react";
 import { findService, SERVICE_PAGES, type Service as ServiceData } from "../services";
-import { SERVICES as EQUIPMENT, whatsappUrl, CONTACT } from "../site";
+import { CONTACT, SITE_URL, whatsappUrl } from "../site";
 import { coverImage, fetchPortfolio, formatDate, type PortfolioItem } from "../portfolio";
 import { BrandIcon } from "../ui/BrandIcon";
 import { QuoteForm } from "../ui/QuoteForm";
+import { ServiceArt } from "../ui/ServiceArt";
 import { Seo } from "../ui/Seo";
 import NotFound from "./NotFound";
 
@@ -88,11 +89,11 @@ export default function Service() {
         title={service.seoTitle}
         description={service.seoDescription}
         path={`/services/${service.slug}`}
-        image={`https://moutie.vercel.app/images/web/og-${service.slug}.jpg`}
+        image={`${SITE_URL}/images/web/og-${service.slug}.png`}
       />
 
       {/* Hero */}
-      <section className="bg-navy-950 pt-28 pb-14 sm:pt-32 lg:pb-20">
+      <section className="bg-grid bg-navy-950 pt-28 pb-14 sm:pt-32 lg:pb-20">
         <div className="container-page grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
           <div>
             <nav aria-label="Fil d’Ariane" className="flex flex-wrap items-center gap-1 text-sm text-slate-400">
@@ -109,20 +110,18 @@ export default function Service() {
                 Demander un devis
                 <ArrowRight className="size-4" />
               </a>
-              <a href={whatsappUrl(`Bonjour MTE, j’ai une question sur : ${service.title}.`)} target="_blank" rel="noopener noreferrer" className="btn-outline-light px-6">
+              <a
+                href={whatsappUrl(`Bonjour MTE, j’ai une question sur : ${service.title}.`)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-outline-light px-6"
+              >
                 <BrandIcon name="WhatsApp" className="size-4" />
                 {CONTACT.phoneDisplay}
               </a>
             </div>
           </div>
-          <img
-            src={service.image}
-            alt={service.imageAlt}
-            width={1200}
-            height={800}
-            fetchPriority="high"
-            className="aspect-[3/2] w-full rounded-xl object-cover shadow-2xl ring-1 ring-white/10"
-          />
+          <ServiceArt kind={service.art} className="aspect-[5/3] w-full rounded-xl ring-1 ring-white/10" />
         </div>
       </section>
 
@@ -160,33 +159,13 @@ export default function Service() {
                   </li>
                 ))}
               </ul>
-              <a href="#devis" className="btn bg-navy-900 mt-7 w-full text-white hover:bg-navy-800">
+              <a href="#devis" className="btn mt-7 w-full bg-navy-900 text-white hover:bg-navy-800">
                 Parler de votre projet
               </a>
             </div>
           </aside>
         </div>
       </section>
-
-      {service.slug === "electronic-repairs" && (
-        <section className="border-t border-slate-200 py-16 sm:py-20">
-          <div className="container-page">
-            <p className="eyebrow text-navy-700">Atelier</p>
-            <h2 className="mt-2 text-2xl font-bold tracking-tight text-navy-900 sm:text-3xl">Équipements réparés régulièrement</h2>
-            <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {EQUIPMENT.map((e) => (
-                <li key={e.id} className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-                  <img src={e.image} alt={e.title} loading="lazy" className="aspect-[16/10] w-full object-cover" />
-                  <div className="p-5">
-                    <h3 className="font-semibold text-navy-900">{e.title}</h3>
-                    <p className="mt-1.5 text-sm leading-relaxed text-slate-600">{e.text}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-      )}
 
       <RelatedWork service={service} />
 
@@ -197,14 +176,17 @@ export default function Service() {
             <p className="eyebrow text-navy-700">Devis</p>
             <h2 className="mt-2 text-3xl font-bold tracking-tight text-navy-900">Parlons de votre besoin</h2>
             <p className="mt-4 leading-relaxed text-slate-600">
-              Décrivez votre installation ou la panne rencontrée. Nous revenons vers vous rapidement avec des questions
-              ou une proposition chiffrée.
+              Décrivez votre machine, la panne ou le projet. Nous revenons vers vous rapidement avec des questions ou une
+              proposition chiffrée.
             </p>
-            <h3 className="mt-10 eyebrow text-navy-700">Nos autres services</h3>
+            <h3 className="eyebrow mt-10 text-navy-700">Nos autres services</h3>
             <ul className="mt-4 space-y-2">
               {others.map((s) => (
                 <li key={s.slug}>
-                  <Link to={`/services/${s.slug}`} className="group flex items-center justify-between gap-3 rounded-lg border border-slate-200 px-4 py-3 font-medium text-navy-900 hover:border-navy-900">
+                  <Link
+                    to={`/services/${s.slug}`}
+                    className="group flex items-center justify-between gap-3 rounded-lg border border-slate-200 px-4 py-3 font-medium text-navy-900 hover:border-navy-900"
+                  >
                     {s.title}
                     <ArrowRight className="size-4 text-slate-400 transition group-hover:translate-x-0.5 group-hover:text-navy-900" />
                   </Link>
@@ -212,7 +194,7 @@ export default function Service() {
               ))}
             </ul>
           </div>
-          <QuoteForm key={service.slug} service={service.title} defaultEquipment={service.quoteEquipment} />
+          <QuoteForm key={service.slug} service={service.title} defaultType={service.requestType} />
         </div>
       </section>
     </>

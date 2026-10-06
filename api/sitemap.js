@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { SERVICES } from './_services.js';
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
 const supabaseKey = process.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY || process.env.VITE_SUPABASE_ANON_KEY || '';
@@ -16,6 +17,18 @@ function escapeXml(str) {
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
 }
 
+function serviceUrls(today) {
+  return ['/services', ...SERVICES.map((s) => `/services/${s.slug}`)]
+    .map((path) => `  <url>
+    <loc>${BASE_URL}${path}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+`)
+    .join('');
+}
+
 function buildStaticFallbackXml() {
   const today = new Date().toISOString().split('T')[0];
   return `<?xml version="1.0" encoding="UTF-8"?>
@@ -28,7 +41,7 @@ function buildStaticFallbackXml() {
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
-  <url>
+${serviceUrls(today)}  <url>
     <loc>${BASE_URL}/portfolio</loc>
     <lastmod>${today}</lastmod>
     <changefreq>weekly</changefreq>
@@ -165,6 +178,8 @@ export default async function handler(request, response) {
     // Homepage
     xml += `  <url>\n    <loc>${BASE_URL}/</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
     
+    xml += serviceUrls(today);
+
     // Portfolio hub
     xml += `  <url>\n    <loc>${BASE_URL}/portfolio</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
 

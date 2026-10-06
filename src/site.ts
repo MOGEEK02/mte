@@ -22,96 +22,51 @@ export function whatsappUrl(text?: string) {
   return `https://wa.me/${CONTACT.whatsapp}${text ? `?text=${encodeURIComponent(text)}` : ""}`;
 }
 
-export const SERVICES = [
-  {
-    id: "variateurs",
-    title: "Variateurs de vitesse (VFD)",
-    text: "Diagnostic, réparation et paramétrage de variateurs AC/DC et de contrôleurs moteur, de 0,37 kW à plus de 500 kW.",
-    brands: "ABB · Schneider Altivar · Siemens · Danfoss",
-    image: "/images/web/variateurs.webp",
-  },
-  {
-    id: "automates",
-    title: "Automates programmables (PLC)",
-    text: "Dépannage, programmation et sauvegarde de programmes. Remise en service de lignes arrêtées.",
-    brands: "Siemens S7 · Modicon · Omron · Fatek",
-    image: "/images/web/automates.webp",
-  },
-  {
-    id: "cartes",
-    title: "Cartes électroniques",
-    text: "Réparation au niveau composant : CMS, circuits de puissance, rétro-ingénierie quand le schéma n’existe pas.",
-    brands: "Cartes de commande et de puissance",
-    image: "/images/web/cartes.webp",
-  },
-  {
-    id: "ihm",
-    title: "Écrans IHM",
-    text: "Réparation, configuration et remplacement de pupitres opérateur et d’écrans tactiles industriels.",
-    brands: "Pupitres tactiles et terminaux",
-    image: "/images/web/ihm.webp",
-  },
-  {
-    id: "alimentations",
-    title: "Alimentations et stabilisateurs",
-    text: "Alimentations AC/DC, onduleurs et stabilisateurs de tension : diagnostic, réparation et essais.",
-    brands: "Alimentations à découpage · onduleurs",
-    image: "/images/web/alimentations.webp",
-  },
-  {
-    id: "capteurs",
-    title: "Capteurs et transmetteurs",
-    text: "Diagnostic et remplacement de sondes de température, de pression et de débit.",
-    brands: "Instrumentation de process",
-    image: "/images/web/capteurs.webp",
-  },
-] as const;
-
 export const STEPS = [
-  { title: "Diagnostic", text: "Réception de l’équipement ou visite sur site. Diagnostic sous 24 à 48 heures." },
-  { title: "Devis", text: "Un devis clair avant toute réparation : panne constatée, pièces et délai." },
-  { title: "Réparation", text: "Intervention au niveau composant, avec des pièces d’origine ou équivalentes." },
-  { title: "Essais et remise en service", text: "Tests de fonctionnement avant restitution, et remise en service sur site si besoin." },
+  { title: "Échange", text: "Vous décrivez la machine et le besoin : photos, code défaut, programme existant. Un premier avis rapide, souvent dès l’appel." },
+  { title: "Diagnostic ou étude", text: "Recherche de la panne sur site, ou étude du besoin pour un nouveau programme ou une modification." },
+  { title: "Proposition", text: "Un devis clair avant d’intervenir : travaux, délai et matériel éventuel." },
+  { title: "Intervention et mise en service", text: "Programmation, dépannage ou installation, essais avec vos équipes, puis sauvegarde du programme." },
 ] as const;
 
 export const BRANDS = [
-  { name: "ABB", logo: "/images/web/marque-abb.webp" },
-  { name: "Schneider Electric", logo: "/images/web/marque-schneider.webp" },
   { name: "Siemens", logo: "/images/web/marque-siemens.webp" },
+  { name: "Schneider Electric", logo: "/images/web/marque-schneider.webp" },
   { name: "Omron", logo: "/images/web/marque-omron.webp" },
+  { name: "ABB", logo: "/images/web/marque-abb.webp" },
   { name: "Fatek", logo: "/images/web/marque-fatek.webp" },
 ] as const;
 
 /** Visible on the home page; the FAQPage JSON-LD in index.html mirrors it. */
 export const FAQ = [
   {
-    q: "Où se trouve MTE ?",
-    a: "MTE est basé à Ain Dhab, Médéa (wilaya 26). Nous intervenons sur tout le territoire national, en atelier ou sur site.",
+    q: "Quels automates programmez-vous ?",
+    a: "Siemens (S7-200, S7-300, S7-1200, S7-1500, LOGO!), Schneider Electric (Modicon, Zelio), Omron et Fatek, ainsi que les écrans IHM associés. Pour une autre marque, contactez-nous : nous vous disons rapidement si nous pouvons intervenir.",
   },
   {
-    q: "Quels variateurs de vitesse réparez-vous ?",
-    a: "Tous types de variateurs de fréquence : ABB ACS, Schneider Altivar, Siemens SINAMICS, Danfoss VLT, ainsi que les marques chinoises et internationales, de 0,37 kW à plus de 500 kW.",
-  },
-  {
-    q: "Quel est le délai de réparation ?",
-    a: "Le diagnostic est réalisé sous 24 à 48 heures. La réparation dépend de la panne et de la disponibilité des pièces ; nous visons 3 à 7 jours pour la plupart des interventions.",
+    q: "Le programme de ma machine est perdu, que faire ?",
+    a: "Nous récupérons le programme de l’automate quand c’est possible, ou le réécrivons à partir du fonctionnement de la machine. Vous recevez ensuite une sauvegarde pour ne plus dépendre d’une seule copie.",
   },
   {
     q: "Intervenez-vous sur site ?",
-    a: "Oui, nous intervenons sur site partout en Algérie pour l’installation, le paramétrage et le dépannage d’équipements industriels.",
+    a: "Oui, partout en Algérie, depuis Médéa. Pour une machine à l’arrêt, envoyez-nous des photos de l’armoire et le code défaut affiché : cela permet souvent de préparer l’intervention avant de se déplacer.",
+  },
+  {
+    q: "Réparez-vous encore les cartes électroniques ?",
+    a: "Ponctuellement, quand c’est la solution la plus rapide pour relancer une machine. Notre activité principale est l’automatisme : programmation, diagnostic d’armoires et mise en service.",
   },
   {
     q: "Comment obtenir un devis ?",
-    a: "Envoyez une description de la panne (marque, modèle, symptômes, photos si possible) via le formulaire de contact ou WhatsApp. Un devis vous est remis avant toute réparation.",
+    a: "Décrivez votre besoin via le formulaire de contact ou WhatsApp. Vous recevez un devis avant toute intervention.",
   },
 ] as const;
 
-export const EQUIPMENT_TYPES = [
-  "Variateur de vitesse",
-  "Automate (PLC)",
-  "Carte électronique",
-  "Écran IHM",
-  "Alimentation / stabilisateur",
-  "Capteur",
+/** Choices for "Type de besoin" in the quote form. */
+export const REQUEST_TYPES = [
+  "Programmation PLC / IHM",
+  "Machine ou armoire en panne",
+  "Nouvelle armoire / rétrofit",
+  "Variateur / mise en service",
+  "Réparation de carte",
   "Autre",
 ] as const;

@@ -1,6 +1,6 @@
 import { useRef, useState, type FormEvent } from "react";
 import { CheckCircle2, Loader2, Send } from "lucide-react";
-import { EQUIPMENT_TYPES, whatsappUrl } from "../site";
+import { REQUEST_TYPES, whatsappUrl } from "../site";
 import { BrandIcon } from "./BrandIcon";
 
 type Fields = {
@@ -21,8 +21,8 @@ function compose(f: Fields, service?: string) {
     f.company.trim() && `Entreprise : ${f.company.trim()}`,
     f.phone.trim() && `Téléphone : ${f.phone.trim()}`,
     f.email.trim() && `E-mail : ${f.email.trim()}`,
-    `Équipement : ${f.equipment}`,
-    f.model.trim() && `Marque / modèle : ${f.model.trim()}`,
+    `Besoin : ${f.equipment}`,
+    f.model.trim() && `Matériel : ${f.model.trim()}`,
     f.onSite && "Intervention sur site souhaitée",
   ].filter(Boolean);
   return ["Bonjour MTE, je souhaite un devis.", "", ...details, "", f.message.trim()].join("\n");
@@ -35,13 +35,13 @@ const label = "block text-sm font-medium text-slate-700";
 type Status = "idle" | "sending" | "sent" | "error";
 
 /** Quote request, e-mailed to MTE by /api/quote. WhatsApp stays available as a direct alternative. */
-export function QuoteForm({ service, defaultEquipment }: { service?: string; defaultEquipment?: string }) {
+export function QuoteForm({ service, defaultType }: { service?: string; defaultType?: string }) {
   const empty: Fields = {
     name: "",
     company: "",
     phone: "",
     email: "",
-    equipment: defaultEquipment ?? EQUIPMENT_TYPES[0],
+    equipment: defaultType ?? REQUEST_TYPES[0],
     model: "",
     message: "",
     onSite: false,
@@ -103,8 +103,8 @@ export function QuoteForm({ service, defaultEquipment }: { service?: string; def
     >
       <h3 className="text-xl font-semibold text-navy-900">Demander un devis</h3>
       <p className="mt-1 text-sm text-slate-500">
-        {service ? `${service} : décrivez votre besoin` : "Décrivez la panne ou le projet"}, nous vous répondons avec un
-        diagnostic ou une proposition.
+        {service ? `${service} : décrivez votre besoin` : "Décrivez la panne ou le projet"}, nous vous répondons
+        rapidement avec des questions ou une proposition.
       </p>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
@@ -128,16 +128,16 @@ export function QuoteForm({ service, defaultEquipment }: { service?: string; def
           Indiquez au moins un téléphone ou un e-mail pour que nous puissions vous répondre.
         </p>
         <div>
-          <label htmlFor="q-equipment" className={label}>Équipement</label>
+          <label htmlFor="q-equipment" className={label}>Type de besoin</label>
           <select id="q-equipment" className={input} value={f.equipment} onChange={(e) => set("equipment", e.target.value)}>
-            {EQUIPMENT_TYPES.map((t) => (
+            {REQUEST_TYPES.map((t) => (
               <option key={t}>{t}</option>
             ))}
           </select>
         </div>
         <div>
-          <label htmlFor="q-model" className={label}>Marque et modèle</label>
-          <input id="q-model" maxLength={160} placeholder="ex. Altivar ATV320, 7,5 kW" className={input} value={f.model} onChange={(e) => set("model", e.target.value)} />
+          <label htmlFor="q-model" className={label}>Automate / matériel</label>
+          <input id="q-model" maxLength={160} placeholder="ex. Siemens S7-1200, Schneider M221" className={input} value={f.model} onChange={(e) => set("model", e.target.value)} />
         </div>
         <div className="sm:col-span-2">
           <label htmlFor="q-message" className={label}>Description *</label>
@@ -146,7 +146,7 @@ export function QuoteForm({ service, defaultEquipment }: { service?: string; def
             required
             rows={4}
             maxLength={4000}
-            placeholder="Symptômes, code défaut affiché, ou description du projet…"
+            placeholder="Machine concernée, symptômes ou code défaut, ou description du projet…"
             className={input}
             value={f.message}
             onChange={(e) => set("message", e.target.value)}

@@ -2,38 +2,34 @@
 // Files starting with "_" are not deployed as functions. Keep in sync with src/services.ts.
 
 export const SERVICES_PAGE = {
-  title: 'Services – automatisme, installation, réparation, programmation | MTE Algérie',
+  title: 'Services – programmation PLC, dépannage d’armoires, rétrofit, variateurs | MTE Algérie',
   description:
-    'Armoires de commande sur mesure, installation et mise en service, réparation électronique au niveau composant, programmation d’automates et d’écrans IHM. Médéa et toute l’Algérie.',
+    'Programmation d’automates et d’écrans IHM, diagnostic et dépannage d’armoires de commande, conception et rétrofit, paramétrage de variateurs. Médéa et toute l’Algérie.',
 };
 
 export const SERVICES = [
   {
-    slug: 'control-automation',
-    title: 'Armoires de commande et automatisme industriel en Algérie | MTE',
-    description:
-      'Conception, câblage et mise en service d’armoires de commande sur mesure, programmation PLC/IHM, supervision SCADA et intégration de variateurs. Médéa et toute l’Algérie.',
-    image: '/images/web/og-control-automation.jpg',
-  },
-  {
-    slug: 'installation',
-    title: 'Installation électrique industrielle et mise en service en Algérie | MTE',
-    description:
-      'Installation et raccordement d’armoires industrielles, variateurs, démarreurs progressifs, moteurs, automates et IHM. Câblage de puissance et de commande, mise en service sur site partout en Algérie.',
-    image: '/images/web/og-installation.jpg',
-  },
-  {
-    slug: 'electronic-repairs',
-    title: 'Réparation électronique industrielle : variateurs, automates, cartes | MTE Algérie',
-    description:
-      'Réparation au niveau composant de variateurs AC/DC, automates, écrans IHM, capteurs, convertisseurs DC-DC et démarreurs progressifs. Diagnostic sous 24 à 48 h, devis avant réparation.',
-    image: '/images/web/og-electronic-repairs.jpg',
-  },
-  {
-    slug: 'plc-hmi-programming',
+    slug: 'plc-programming',
     title: 'Programmation d’automates PLC et d’écrans IHM en Algérie | MTE',
     description:
-      'Programmation, intégration, réparation et maintenance d’automates PLC et d’écrans IHM : Siemens, Schneider, Omron, Fatek. Projets sur mesure et maintenance sur site partout en Algérie.',
-    image: '/images/web/og-plc-hmi-programming.jpg',
+      'Création et modification de programmes PLC et IHM, récupération de programmes perdus, migration d’automates obsolètes : Siemens, Schneider, Omron, Fatek. Intervention partout en Algérie.',
   },
-];
+  {
+    slug: 'control-panel-diagnostics',
+    title: 'Dépannage d’armoires électriques et diagnostic de pannes machines en Algérie | MTE',
+    description:
+      'Recherche de pannes sur armoires de commande et machines industrielles : défauts automate, entrées/sorties, capteurs, variateurs, communications. Intervention sur site partout en Algérie.',
+  },
+  {
+    slug: 'control-automation',
+    title: 'Conception d’armoires de commande et rétrofit d’automatismes en Algérie | MTE',
+    description:
+      'Étude, réalisation et mise en service d’armoires de commande sur mesure. Rétrofit d’automates et d’IHM obsolètes, intégration de variateurs et supervision. Médéa et toute l’Algérie.',
+  },
+  {
+    slug: 'drives-commissioning',
+    title: 'Paramétrage et mise en service de variateurs de fréquence en Algérie | MTE',
+    description:
+      'Paramétrage et intégration de variateurs ABB, Schneider Altivar, Siemens, Danfoss, LS. Remplacement par un équivalent disponible, liaison avec l’automate, essais et mise en service.',
+  },
+].map((s) => ({ ...s, image: `/images/web/og-${s.slug}.png` }));

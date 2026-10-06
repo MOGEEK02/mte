@@ -8,20 +8,20 @@ export default function Services() {
   return (
     <>
       <Seo
-        title="Services – automatisme, installation, réparation, programmation | MTE Algérie"
-        description="Armoires de commande sur mesure, installation et mise en service, réparation électronique au niveau composant, programmation d’automates et d’écrans IHM. Médéa et toute l’Algérie."
+        title="Services – programmation PLC, dépannage d’armoires, rétrofit, variateurs | MTE Algérie"
+        description="Programmation d’automates et d’écrans IHM, diagnostic et dépannage d’armoires de commande, conception et rétrofit, paramétrage de variateurs. Médéa et toute l’Algérie."
         path="/services"
       />
 
-      <section className="bg-navy-950 pt-32 pb-14 sm:pt-36 sm:pb-16">
+      <section className="bg-grid bg-navy-950 pt-32 pb-14 sm:pt-36 sm:pb-16">
         <div className="container-page">
           <p className="eyebrow text-brand">Services</p>
           <h1 className="mt-3 max-w-3xl text-4xl font-bold tracking-tight text-white sm:text-5xl">
-            De la conception à la réparation, un seul interlocuteur
+            L’automatisme de vos machines, du programme à l’armoire
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-300">
-            Automatisme, installation, électronique et programmation : nous intervenons sur toute la chaîne de commande de
-            vos machines, en atelier et sur site partout en Algérie.
+            Programmation d’automates, recherche de pannes, modernisation d’armoires et mise en service de variateurs :
+            nous intervenons sur toute la partie commande de vos machines, sur site partout en Algérie.
           </p>
         </div>
       </section>
@@ -46,7 +46,7 @@ export default function Services() {
           </ol>
           <div className="mt-12 flex flex-col items-start justify-between gap-5 rounded-xl bg-navy-900 p-6 sm:flex-row sm:items-center sm:p-8">
             <div>
-              <h2 className="text-lg font-semibold text-white">Un projet ou une panne ?</h2>
+              <h2 className="text-lg font-semibold text-white">Une machine à l’arrêt ou un projet d’automatisme ?</h2>
               <p className="mt-1 text-sm text-slate-300">Décrivez votre besoin : nous revenons vers vous rapidement.</p>
             </div>
             <Link to="/#contact" className="btn-primary shrink-0">
