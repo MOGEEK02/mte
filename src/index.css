@@ -12,6 +12,17 @@
   --color-brand: #f0b91a;
   --color-brand-600: #d9a40c;
   --color-ink: #0f1b2a;
+
+  /* Gallery slideshow: the bar fills while a photo is shown; the next slide comes when it ends. */
+  --animate-slide-progress: slide-progress 5s linear forwards;
+  @keyframes slide-progress {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
 }
 
 @layer base {
