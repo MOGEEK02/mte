@@ -4,100 +4,49 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0a2a4a">
 
-  <!-- Titre SEO optimisé (French + English keywords) -->
-  <title>MTE – Réparation Électronique Industrielle en Algérie | Repair VFD, PLC, PCB Algeria</title>
+  <!-- Default page tags (home). Removed by src/main.tsx once the app runs; each page then sets its own.
+       api/portfolio-page.js swaps this block for project pages so link previews show the project. -->
+  <title data-seo>MTE – Réparation électronique industrielle en Algérie | Variateurs, PLC, cartes</title>
+  <meta data-seo name="description" content="Réparation de variateurs de vitesse (VFD), automates PLC, cartes électroniques et écrans IHM à Médéa et partout en Algérie. Diagnostic sous 24 à 48 h, devis avant réparation.">
+  <link data-seo rel="canonical" href="https://moutie.vercel.app/">
+  <meta data-seo property="og:type" content="website">
+  <meta data-seo property="og:url" content="https://moutie.vercel.app/">
+  <meta data-seo property="og:title" content="MTE – Réparation électronique industrielle en Algérie">
+  <meta data-seo property="og:description" content="Réparation de variateurs de vitesse, automates PLC, cartes électroniques et écrans IHM partout en Algérie. Diagnostic sous 24 à 48 h.">
+  <meta data-seo property="og:image" content="https://moutie.vercel.app/images/web/og-default.png">
+  <meta data-seo name="twitter:title" content="MTE – Réparation électronique industrielle en Algérie">
+  <meta data-seo name="twitter:description" content="Réparation de variateurs de vitesse, automates PLC, cartes électroniques et écrans IHM partout en Algérie.">
+  <meta data-seo name="twitter:image" content="https://moutie.vercel.app/images/web/og-default.png">
+  <!-- /default page tags -->
 
-  <!-- Meta description (bilingual targeting) -->
-  <meta name="description"
-    content="MTE – Expert en réparation électronique industrielle en Algérie. Réparation variateurs de vitesse (VFD), automates PLC, cartes électroniques PCB, panneaux HMI. Service professionnel à Médéa et partout en Algérie. Industrial electronics repair Algeria.">
+  <meta name="keywords" content="réparation électronique industrielle Algérie, réparation variateur de vitesse, VFD repair Algeria, réparation automate PLC, réparation carte électronique, réparation IHM, maintenance industrielle, Médéa, Siemens, Schneider, ABB">
+  <meta name="author" content="Fekhar Moutie">
+  <meta name="geo.region" content="DZ-26">
+  <meta name="geo.placename" content="Médéa, Algérie">
+  <meta property="og:site_name" content="MTE Industrial Electronics">
+  <meta property="og:locale" content="fr_DZ">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="google-site-verification" content="1sFft2G_iFpOg_leck4tIj4OG_LKwwEieC41GGyfTfk">
 
-  <!-- Mots-clés (French + English) -->
-  <meta name="keywords"
-    content="réparation électronique industrielle Algérie, repair VFD Algeria, réparation variateur de vitesse, reparation electronique industrielle algerie, industrial electronics repair Algeria, réparation PLC Algérie, PLC repair Algeria, réparation carte électronique, PCB repair Algeria, maintenance industrielle Algérie, réparation HMI, Médéa, réparation Siemens Algérie, réparation Schneider Algérie, réparation ABB Algérie, VFD repair Algeria, variable frequency drive repair, dépannage automate programmable">
+  <link rel="icon" type="image/png" href="/images/logo.png">
+  <link rel="apple-touch-icon" href="/images/logo.png">
 
-  <!-- Robots -->
-  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-  <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-
-  <!-- Canonical -->
-  <link rel="canonical" href="https://moutie.vercel.app/" />
-
-  <!-- hreflang (bilingual targeting) -->
-  <link rel="alternate" hreflang="fr-DZ" href="https://moutie.vercel.app/" />
-  <link rel="alternate" hreflang="fr" href="https://moutie.vercel.app/" />
-  <link rel="alternate" hreflang="en" href="https://moutie.vercel.app/" />
-  <link rel="alternate" hreflang="ar-DZ" href="https://moutie.vercel.app/" />
-  <link rel="alternate" hreflang="x-default" href="https://moutie.vercel.app/" />
-
-  <!-- SEO local / Geo -->
-  <meta name="geo.region" content="DZ-26" />
-  <meta name="geo.placename" content="Médéa, Algérie" />
-  <meta name="author" content="Fekhar Moutie" />
-
-  <!-- Open Graph -->
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://moutie.vercel.app/" />
-  <meta property="og:title" content="MTE – Réparation Électronique Industrielle en Algérie | Industrial Electronics Repair Algeria" />
-  <meta property="og:description" content="Expert en réparation de variateurs de vitesse (VFD), automates PLC et cartes électroniques en Algérie. Service professionnel, rapide et fiable." />
-  <meta property="og:image" content="https://moutie.vercel.app/images/logo.png" />
-  <meta property="og:locale" content="fr_DZ" />
-  <meta property="og:locale:alternate" content="en_US" />
-  <meta property="og:locale:alternate" content="ar_DZ" />
-  <meta property="og:site_name" content="MTE – Industrial Electronics Repair Algeria" />
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="MTE – Réparation Électronique Industrielle Algérie | Repair VFD Algeria" />
-  <meta name="twitter:description" content="Réparation variateurs de vitesse, automates PLC et cartes électroniques en Algérie. Professional industrial electronics repair service." />
-  <meta name="twitter:image" content="https://moutie.vercel.app/images/logo.png" />
-
-  <!-- Google Search Verification -->
-  <meta name="google-site-verification" content="1sFft2G_iFpOg_leck4tIj4OG_LKwwEieC41GGyfTfk" />
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="/images/logo.png" />
-
-  <!-- Polices Google -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
-
-  <!-- Feuilles de style -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-  <link rel="stylesheet" href="/assets/css/animate.css" />
-  <link rel="stylesheet" href="/assets/css/nice-select.css" />
-  <link rel="stylesheet" href="/assets/css/LineIcons.2.0.css" />
-  <link rel="stylesheet" href="/assets/css/default.css" />
-  <link rel="stylesheet" href="/assets/css/style.css" />
-  <link href="/src/style.css" rel="stylesheet">
-
-  <!-- Scripts -->
-  <script src="/assets/js/vendor/jquery-1.12.4.min.js"></script>
-  <script src="/assets/js/vendor/modernizr-3.7.1.min.js"></script>
-  <script src="/assets/js/popper.min.js"></script>
-  <script src="/assets/js/bootstrap.4.5.2.min.js"></script>
-  <script src="/assets/js/jquery.easing.min.js"></script>
-  <script src="/assets/js/scrolling-nav.js"></script>
-  <script src="/assets/js/waypoints.min.js"></script>
-  <script src="/assets/js/jquery.counterup.min.js"></script>
-  <script src="/assets/js/jquery.nice-select.min.js"></script>
-  <script src="/assets/js/wow.min.js"></script>
-  <script src="/assets/js/main.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preload" as="image" href="/images/web/hero.webp" type="image/webp">
 </head>
 
 <body>
   <div id="root"></div>
 
-  <!--
-    ======================================================================
-    SEO CRAWLABLE CONTENT — VISIBLE TO GOOGLE, HIDDEN WHEN JS LOADS
-    This content is critical for search engine indexing of this SPA.
-    ======================================================================
-  -->
+  <!-- Fallback content for visitors and crawlers without JavaScript. -->
   <noscript>
-    <div style="max-width:960px;margin:0 auto;padding:40px 20px;font-family:Ubuntu,sans-serif;line-height:1.8;color:#333;">
+    <div style="max-width:960px;margin:0 auto;padding:40px 20px;font-family:Inter,system-ui,sans-serif;line-height:1.8;color:#333;">
 
       <header style="text-align:center;margin-bottom:40px;">
         <img src="/images/logo.png" alt="MTE Logo – Réparation Électronique Industrielle Algérie" width="120" height="120" style="margin-bottom:20px;">
@@ -196,193 +145,83 @@
     </div>
   </noscript>
 
-  <!-- Données structurées JSON-LD : LocalBusiness -->
+  <!-- Structured data. Keep in sync with src/site.ts (contact details, services, FAQ). -->
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
+  "@id": "https://moutie.vercel.app/#business",
+  "name": "MTE Industrial Electronics",
+  "alternateName": ["MTE Algérie", "MTE – Réparation électronique industrielle"],
+  "description": "Réparation de variateurs de vitesse (VFD), automates PLC, cartes électroniques industrielles et écrans IHM en Algérie.",
   "url": "https://moutie.vercel.app/",
-  "sameAs": [
-    "https://wa.me/213778461682",
-    "https://www.instagram.com/mooutiem",
-    "https://www.linkedin.com/in/moutie/",
-    "https://www.facebook.com/mogeek02",
-    "https://github.com/MOGEEK02"
-  ],
   "logo": "https://moutie.vercel.app/images/logo.png",
-  "image": "https://moutie.vercel.app/images/logo.png",
-  "name": "MTE – Réparation Électronique Industrielle Algérie",
-  "alternateName": ["MTE Algeria", "MTE Industrial Electronics Repair", "MTE Médéa"],
-  "description": "MTE est un spécialiste en réparation de variateurs de vitesse (VFD), automates PLC, cartes électroniques industrielles et panneaux HMI en Algérie. Professional industrial electronics repair service in Algeria.",
+  "image": "https://moutie.vercel.app/images/web/og-default.png",
   "email": "moutiefekhar@gmail.com",
-  "telephone": "+213-778-46-16-82",
+  "telephone": "+213778461682",
+  "founder": { "@type": "Person", "name": "Fekhar Moutie", "jobTitle": "Ingénieur en automatisme et électronique" },
+  "foundingDate": "2020",
   "address": {
     "@type": "PostalAddress",
-    "streetAddress": "Ain Dhab, Médéa",
+    "streetAddress": "Ain Dhab",
     "addressLocality": "Médéa",
-    "addressCountry": "DZ",
     "addressRegion": "Médéa",
-    "postalCode": "26011"
+    "postalCode": "26011",
+    "addressCountry": "DZ"
   },
-  "geo": {
-    "@type": "GeoCoordinates",
-    "latitude": "36.2675",
-    "longitude": "2.7539"
+  "geo": { "@type": "GeoCoordinates", "latitude": 36.2675, "longitude": 2.7539 },
+  "openingHoursSpecification": {
+    "@type": "OpeningHoursSpecification",
+    "dayOfWeek": ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"],
+    "opens": "08:00",
+    "closes": "17:00"
   },
-  "founder": "Fekhar Moutie",
-  "foundingDate": "2020",
-  "priceRange": "$$",
-  "openingHours": "Sa-Th 08:00-17:00",
-  "areaServed": {
-    "@type": "Country",
-    "name": "Algeria"
-  },
-  "contactPoint": {
-    "@type": "ContactPoint",
-    "telephone": "+213-778-46-16-82",
-    "contactType": "customer service",
-    "areaServed": "DZ",
-    "availableLanguage": ["French", "Arabic", "English"]
-  },
+  "areaServed": { "@type": "Country", "name": "Algérie" },
+  "sameAs": [
+    "https://www.linkedin.com/in/moutie/",
+    "https://www.facebook.com/mogeek02",
+    "https://www.instagram.com/mooutiem",
+    "https://github.com/MOGEEK02"
+  ],
   "hasOfferCatalog": {
     "@type": "OfferCatalog",
-    "name": "Industrial Electronics Repair Services",
+    "name": "Réparation électronique industrielle",
     "itemListElement": [
-      {
-        "@type": "Offer",
-        "itemOffered": {
-          "@type": "Service",
-          "name": "Réparation variateurs de vitesse (VFD) – VFD Repair Algeria",
-          "description": "Repair, calibration and replacement of AC/DC variable frequency drives. ABB, Schneider, Siemens, Danfoss."
-        }
-      },
-      {
-        "@type": "Offer",
-        "itemOffered": {
-          "@type": "Service",
-          "name": "Réparation et programmation automates PLC – PLC Repair Algeria",
-          "description": "PLC troubleshooting, programming and repair. Siemens S7, Schneider Modicon, Omron, Fatek."
-        }
-      },
-      {
-        "@type": "Offer",
-        "itemOffered": {
-          "@type": "Service",
-          "name": "Réparation cartes électroniques industrielles – PCB Repair Algeria",
-          "description": "Professional industrial PCB repair, reverse engineering and component-level diagnostics."
-        }
-      },
-      {
-        "@type": "Offer",
-        "itemOffered": {
-          "@type": "Service",
-          "name": "Réparation et configuration panneaux HMI – HMI Repair Algeria",
-          "description": "HMI touch panel repair, configuration and installation for industrial automation."
-        }
-      },
-      {
-        "@type": "Offer",
-        "itemOffered": {
-          "@type": "Service",
-          "name": "Réparation alimentations industrielles – Power Supply Repair",
-          "description": "Industrial power supply repair, replacement and testing."
-        }
-      },
-      {
-        "@type": "Offer",
-        "itemOffered": {
-          "@type": "Service",
-          "name": "Diagnostic et réparation capteurs industriels – Sensor Repair",
-          "description": "Industrial sensor calibration, repair and replacement."
-        }
-      }
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Réparation de variateurs de vitesse (VFD)" } },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Réparation et programmation d’automates (PLC)" } },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Réparation de cartes électroniques industrielles" } },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Réparation et configuration d’écrans IHM" } },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Réparation d’alimentations et de stabilisateurs" } },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Diagnostic et remplacement de capteurs" } }
     ]
   }
 }
-</script>
-
-  <!-- Données structurées JSON-LD : FAQPage (targeting search queries) -->
+  </script>
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "Where can I repair a VFD (Variable Frequency Drive) in Algeria?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "MTE provides professional VFD repair services across Algeria. Based in Médéa, we repair all brands including ABB, Schneider Altivar, Siemens SINAMICS, and Danfoss VLT. Contact us at +213 778 46 16 82 or WhatsApp for a free diagnostic."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Où réparer un variateur de vitesse en Algérie ?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "MTE est spécialisé dans la réparation de variateurs de vitesse (VFD) en Algérie. Basé à Médéa, nous intervenons sur tout le territoire national. Réparation de variateurs ABB, Schneider Altivar, Siemens SINAMICS, Danfoss. Appelez le +213 778 46 16 82."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "How much does industrial electronics repair cost in Algeria?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "The cost depends on the equipment type and damage extent. MTE offers free initial diagnostics within 24-48 hours. VFD repairs typically range from competitive rates depending on the drive size and fault. Contact us for a quote."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Réparation électronique industrielle en Algérie – quel service contacter ?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "MTE Algérie est votre partenaire pour toute réparation électronique industrielle : variateurs de vitesse, automates PLC, cartes électroniques, panneaux HMI et alimentations. Intervention sur site partout en Algérie. Téléphone : +213 778 46 16 82."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Do you repair Schneider Altivar and Siemens SINAMICS drives in Algeria?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Yes, MTE repairs all models of Schneider Electric Altivar (ATV12, ATV310, ATV610, ATV630, ATV930) and Siemens SINAMICS (G110, G120, S120, V20) variable frequency drives in Algeria. We also handle ABB ACS and Danfoss VLT drives."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Can you repair PLC controllers in Algeria?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Yes, MTE provides PLC repair, programming and troubleshooting services for Siemens S7-200/300/1200/1500, Schneider Modicon, Omron CJ/CP, and Fatek FBs series programmable logic controllers across Algeria."
-      }
-    }
+    { "@type": "Question", "name": "Où se trouve MTE ?", "acceptedAnswer": { "@type": "Answer", "text": "MTE est basé à Ain Dhab, Médéa (wilaya 26). Nous intervenons sur tout le territoire national, en atelier ou sur site." } },
+    { "@type": "Question", "name": "Quels variateurs de vitesse réparez-vous ?", "acceptedAnswer": { "@type": "Answer", "text": "Tous types de variateurs de fréquence : ABB ACS, Schneider Altivar, Siemens SINAMICS, Danfoss VLT, ainsi que les marques chinoises et internationales, de 0,37 kW à plus de 500 kW." } },
+    { "@type": "Question", "name": "Quel est le délai de réparation ?", "acceptedAnswer": { "@type": "Answer", "text": "Le diagnostic est réalisé sous 24 à 48 heures. La réparation dépend de la panne et de la disponibilité des pièces ; nous visons 3 à 7 jours pour la plupart des interventions." } },
+    { "@type": "Question", "name": "Intervenez-vous sur site ?", "acceptedAnswer": { "@type": "Answer", "text": "Oui, nous intervenons sur site partout en Algérie pour l’installation, le paramétrage et le dépannage d’équipements industriels." } },
+    { "@type": "Question", "name": "Comment obtenir un devis ?", "acceptedAnswer": { "@type": "Answer", "text": "Envoyez une description de la panne (marque, modèle, symptômes, photos si possible) via le formulaire de contact ou WhatsApp. Un devis vous est remis avant toute réparation." } }
   ]
 }
-</script>
-
-  <!-- Données structurées JSON-LD : WebSite (for sitelinks search) -->
+  </script>
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "WebSite",
   "url": "https://moutie.vercel.app/",
-  "name": "MTE – Industrial Electronics Repair Algeria",
-  "alternateName": "MTE Algérie",
-  "description": "Professional industrial electronics repair service in Algeria. VFD, PLC, PCB repair.",
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": "https://moutie.vercel.app/portfolio?q={search_term_string}",
-    "query-input": "required name=search_term_string"
-  }
+  "name": "MTE Industrial Electronics",
+  "inLanguage": "fr-DZ",
+  "publisher": { "@id": "https://moutie.vercel.app/#business" }
 }
-</script>
+  </script>
 
-  <!-- H1 caché pour SEO -->
-  <h1 class="visually-hidden">MTE – Service de réparation électronique industrielle en Algérie – Médéa | Industrial Electronics Repair VFD PLC Algeria</h1>
   <script type="module" src="/src/main.tsx"></script>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-    crossorigin="anonymous"></script>
 </body>
 
 </html>

@@ -15,9 +15,18 @@
       ]
     },
     {
+      "source": "/images/web/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=2592000, stale-while-revalidate=86400" }
+      ]
+    },
+    {
       "source": "/(.*)",
       "headers": [
-        { "key": "X-Robots-Tag", "value": "index, follow" }
+        { "key": "X-Robots-Tag", "value": "index, follow" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" }
       ]
     },
     {
@@ -32,6 +41,7 @@
     { "source": "/robots.txt", "destination": "/robots.txt" },
     { "source": "/gestion", "destination": "https://mte-facturation.vercel.app/gestion" },
     { "source": "/gestion/:path*", "destination": "https://mte-facturation.vercel.app/gestion/:path*" },
-    { "source": "/:path*", "destination": "/index.html" }
+    { "source": "/portfolio", "destination": "/api/portfolio-page" },
+    { "source": "/portfolio/:id", "destination": "/api/portfolio-page?id=:id" }
   ]
 }

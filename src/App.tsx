@@ -1,41 +1,24 @@
-
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
-import Navbar from "./components/Navbar";
-import CompanyLogosShowcase from "./components/company";
-import AboutUs from "./components/about";
-import ExpertiseSection from "./components/ExpertiseSection";
-import Contact from "./components/Contact";
-import Footer from "./components/footer";
-import Portfolio from "./components/Portfolio";
-import SinglePortfolioPost from "./components/SinglePortfolioPost";
-import '@fortawesome/fontawesome-free/css/all.min.css';
+import { Layout } from "./ui/Layout";
+import Home from "./pages/Home";
+import Portfolio from "./pages/Portfolio";
+import PortfolioPost from "./pages/PortfolioPost";
+import NotFound from "./pages/NotFound";
 
-function HomePage() {
-  return (
-    <div>
-      <Navbar />
-      <AboutUs />
-      <CompanyLogosShowcase />
-      <ExpertiseSection />
-      <Contact />
-      <Footer />
-    </div>
-  );
-}
-
-function App() {
+export default function App() {
   return (
     <HelmetProvider>
-      <Router>
+      <BrowserRouter>
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/portfolio" element={<Portfolio />} />
-          <Route path="/portfolio/:id" element={<SinglePortfolioPost />} />
+          <Route element={<Layout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/portfolio" element={<Portfolio />} />
+            <Route path="/portfolio/:id" element={<PortfolioPost />} />
+            <Route path="*" element={<NotFound />} />
+          </Route>
         </Routes>
-      </Router>
+      </BrowserRouter>
     </HelmetProvider>
   );
 }
-
-export default App;

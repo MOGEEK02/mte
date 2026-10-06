@@ -18,7 +18,7 @@ MTE is a professional industrial electronics repair service based in Médéa, Al
 
 * **Frontend Framework:** React 19
 * **Build Tool:** Vite
-* **Styling:** Tailwind CSS v4 + Bootstrap (legacy support components)
+* **Styling:** Tailwind CSS v4 (brand colours and fonts in `src/index.css`)
 * **Language:** TypeScript
 * **Routing:** React Router v7
 * **Database/Backend:** Supabase (PostgreSQL)
@@ -42,7 +42,7 @@ MTE is a professional industrial electronics repair service based in Médéa, Al
    Create a `.env` file in the root directory and add your Supabase credentials:
    ```env
    VITE_SUPABASE_URL=your_supabase_url
-   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY=your_supabase_publishable_key
    ```
 
 4. **Start the development server:**

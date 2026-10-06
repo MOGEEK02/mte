@@ -1,3 +1,52 @@
-
 @import "tailwindcss";
- 
+
+/* MTE brand: the navy and yellow of the logo. */
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Barlow Condensed", "Inter", ui-sans-serif, sans-serif;
+
+  --color-navy-950: #051526;
+  --color-navy-900: #0a2a4a;
+  --color-navy-800: #12385f;
+  --color-navy-700: #1d4b7a;
+  --color-brand: #f0b91a;
+  --color-brand-600: #d9a40c;
+  --color-ink: #0f1b2a;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+  body {
+    @apply bg-white font-sans text-ink antialiased;
+  }
+  ::selection {
+    @apply bg-brand text-navy-950;
+  }
+}
+
+@utility eyebrow {
+  @apply font-display text-sm font-semibold tracking-[0.18em] uppercase;
+}
+
+@utility container-page {
+  @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+}
+
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-3 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand;
+}
+
+@utility btn-primary {
+  @apply btn bg-brand text-navy-950 hover:bg-brand-600;
+}
+
+@utility btn-outline-light {
+  @apply btn border border-white/40 text-white hover:border-white hover:bg-white/10;
+}
+
+@utility btn-outline {
+  @apply btn border border-navy-900/20 text-navy-900 hover:border-navy-900 hover:bg-navy-900/5;
+}

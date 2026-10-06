@@ -1,0 +1,84 @@
+import { select } from "./db";
+import { getOptimizedImageUrl, isVideoMedia } from "./utils/imageOptimizer";
+
+export interface MediaItem {
+  id: number;
+  media_url: string;
+  media_type: "image" | "video";
+  sort_order: number;
+}
+
+export interface PortfolioItem {
+  id: number;
+  title: string;
+  description: string;
+  created_at: string;
+  portfolio_media: MediaItem[];
+}
+
+const SELECT = "id,title,description,created_at,portfolio_media(id,media_url,media_type,sort_order)";
+
+export function fetchPortfolio(limit?: number): Promise<PortfolioItem[]> {
+  return select<PortfolioItem>("portfolio", {
+    select: SELECT,
+    order: "created_at.desc",
+    ...(limit ? { limit: String(limit) } : {}),
+  });
+}
+
+export async function fetchPortfolioItem(id: string): Promise<PortfolioItem | null> {
+  if (!/^\d+$/.test(id)) return null;
+  const [item] = await select<PortfolioItem>("portfolio", { select: SELECT, id: `eq.${id}` });
+  return item ?? null;
+}
+
+export function getYouTubeId(url: string): string | null {
+  const match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  return match ? match[1] : null;
+}
+
+export function sortedMedia(item: PortfolioItem): MediaItem[] {
+  return [...(item.portfolio_media ?? [])].sort((a, b) => a.sort_order - b.sort_order);
+}
+
+const IMGUR_VIDEO = /^https?:\/\/(?:i\.)?imgur\.com\/([a-zA-Z0-9]+)\.(mp4|gifv|webm)/i;
+const IMGUR_IMAGE = /^https?:\/\/(?:i\.)?imgur\.com\/([a-zA-Z0-9]+)\.(jpe?g|png|webp)/i;
+
+/** Imgur resized copies: "l" ≈ 640 px wide, "h" ≈ 1024 px. Video ids give a still frame. */
+export type StillSize = "l" | "h";
+
+/** A still image for a media item: the photo itself, or a frame of the video when the host provides one. */
+export function stillImage(m: MediaItem, size: StillSize = "l"): string | null {
+  const yt = getYouTubeId(m.media_url);
+  if (yt) return `https://img.youtube.com/vi/${yt}/hqdefault.jpg`;
+  const imgur = m.media_url.trim().match(IMGUR_VIDEO) ?? m.media_url.trim().match(IMGUR_IMAGE);
+  if (imgur) return `https://i.imgur.com/${imgur[1]}${size}.jpg`;
+  return isVideoMedia(m.media_url, m.media_type) ? null : getOptimizedImageUrl(m.media_url);
+}
+
+/** Direct file URL for a hosted video ("imgur.com/x.mp4" only redirects; "i.imgur.com" serves the file). */
+export function videoSource(url: string): string {
+  const imgur = url.match(IMGUR_VIDEO);
+  return imgur ? `https://i.imgur.com/${imgur[1]}.mp4` : url;
+}
+
+/** The first still image of a project, for cards and link previews. */
+export function coverImage(item: PortfolioItem): string | null {
+  for (const m of sortedMedia(item)) {
+    const still = stillImage(m);
+    if (still) return still;
+  }
+  return null;
+}
+
+const HASHTAG = /#[\p{L}\p{N}_]+/gu;
+
+export function splitDescription(text: string) {
+  const tags = (text || "").match(HASHTAG) ?? [];
+  const body = (text || "").replace(HASHTAG, "").replace(/[ \t]+\n/g, "\n").trim();
+  return { body, tags: [...new Set(tags)] };
+}
+
+export function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+}
