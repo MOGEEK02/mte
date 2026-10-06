@@ -189,7 +189,7 @@ on conflict (slug) do nothing;
 -- 8. Make your account the admin (create it first in Authentication → Users)
 -- ---------------------------------------------------------------------------
 insert into public.site_admins (user_id)
-select id from auth.users where lower(email) = lower('moutiefekhar@gmail.com')
+select id from auth.users where lower(email) = lower('moutie225@gmail.com')
 on conflict do nothing;
 
 select case when exists (select 1 from public.site_admins)

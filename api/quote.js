@@ -5,11 +5,11 @@
 // Vercel environment variables:
 //   SUPABASE_SECRET_KEY  secret key of the website's Supabase project (saves the request)
 //   RESEND_API_KEY       API key from resend.com (sends the e-mail)
-//   QUOTE_TO_EMAIL       where requests arrive (default: moutiefekhar@gmail.com)
+//   QUOTE_TO_EMAIL       where requests arrive (default: moutie225@gmail.com, the Resend account)
 //   QUOTE_FROM_EMAIL     sender; until a domain is verified in Resend, keep the default
 //                        "onboarding@resend.dev", which can only send to the Resend account's own e-mail.
 
-const TO = process.env.QUOTE_TO_EMAIL || 'moutiefekhar@gmail.com';
+const TO = process.env.QUOTE_TO_EMAIL || 'moutie225@gmail.com';
 const FROM = process.env.QUOTE_FROM_EMAIL || 'MTE – Site web <onboarding@resend.dev>';
 
 const LIMITS = { name: 120, company: 160, phone: 40, email: 160, equipment: 80, model: 160, service: 120, message: 4000 };
