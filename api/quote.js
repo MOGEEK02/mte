@@ -18,6 +18,23 @@ function clean(value, max) {
   return typeof value === 'string' ? value.replace(/\r\n?/g, '\n').trim().slice(0, max) : '';
 }
 
+/** Short, non-secret reason for a failed step (status and message, e-mail addresses masked). */
+async function reason(r) {
+  let detail = '';
+  try {
+    const body = await r.text();
+    try {
+      const j = JSON.parse(body);
+      detail = j.message || j.msg || j.error || j.name || body;
+    } catch {
+      detail = body;
+    }
+  } catch {
+    // no body
+  }
+  return `http_${r.status}: ${String(detail).replace(/[\w.+-]+@[\w-]+(\.[\w-]+)+/g, '[e-mail]').slice(0, 140)}`;
+}
+
 function escapeHtml(str) {
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
@@ -26,7 +43,7 @@ async function sendEmail(f, onSite, emailValid) {
   const key = process.env.RESEND_API_KEY;
   if (!key) {
     console.error('quote: RESEND_API_KEY is not set');
-    return false;
+    return { ok: false, reason: 'RESEND_API_KEY manquant' };
   }
   const rows = [
     ['Service', f.service],
@@ -74,13 +91,14 @@ async function sendEmail(f, onSite, emailValid) {
       signal: AbortSignal.timeout(8000),
     });
     if (!r.ok) {
-      console.error('quote: Resend error', r.status, await r.text());
-      return false;
+      const why = await reason(r);
+      console.error('quote: Resend error', why);
+      return { ok: false, reason: why };
     }
-    return true;
+    return { ok: true };
   } catch (err) {
     console.error('quote: Resend unreachable', err);
-    return false;
+    return { ok: false, reason: 'Resend injoignable' };
   }
 }
 
@@ -89,7 +107,7 @@ async function saveRequest(f, onSite, emailSent) {
   const key = process.env.SUPABASE_SECRET_KEY;
   if (!url || !key) {
     console.error('quote: SUPABASE_SECRET_KEY or VITE_SUPABASE_URL is not set');
-    return false;
+    return { ok: false, reason: key ? 'VITE_SUPABASE_URL manquant' : 'SUPABASE_SECRET_KEY manquant' };
   }
   try {
     const r = await fetch(`${url}/rest/v1/quote_requests`, {
@@ -110,13 +128,14 @@ async function saveRequest(f, onSite, emailSent) {
       signal: AbortSignal.timeout(8000),
     });
     if (!r.ok) {
-      console.error('quote: save failed', r.status, await r.text());
-      return false;
+      const why = await reason(r);
+      console.error('quote: save failed', why);
+      return { ok: false, reason: why };
     }
-    return true;
+    return { ok: true };
   } catch (err) {
     console.error('quote: database unreachable', err);
-    return false;
+    return { ok: false, reason: 'Supabase injoignable' };
   }
 }
 
@@ -140,8 +159,10 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'invalid' });
   }
 
-  const emailSent = await sendEmail(f, onSite, emailValid);
-  const saved = await saveRequest(f, onSite, emailSent);
-  if (!emailSent && !saved) return res.status(502).json({ error: 'send_failed' });
-  return res.status(200).json({ ok: true });
+  const email = await sendEmail(f, onSite, emailValid);
+  const save = await saveRequest(f, onSite, email.ok);
+  if (!email.ok && !save.ok) {
+    return res.status(502).json({ error: 'send_failed', email: email.reason, save: save.reason });
+  }
+  return res.status(200).json({ ok: true, ...(email.ok ? {} : { email: email.reason }), ...(save.ok ? {} : { save: save.reason }) });
 }
