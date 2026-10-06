@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Globe, Menu, X } from "lucide-react";
-import { basePath, localePath, useLang, useT } from "../i18n";
+import { Menu, X } from "lucide-react";
+import { basePath, LANG_LABELS, LANGS, localePath, useLang, useT } from "../i18n";
+
+const DICT_LOCALE = { fr: "fr", en: "en", ar: "ar" } as const;
 
 /** Transparent over the home hero, solid everywhere else and once scrolled. */
 export function Header() {
@@ -36,14 +38,30 @@ export function Header() {
     { to: to("/portfolio"), label: t.nav.work },
     { to: to("/#faq"), label: t.nav.faq },
   ];
-  const otherLang = lang === "fr" ? "en" : "fr";
-  const switchHref = localePath(otherLang, base) + hash;
-
-  const switcher = (className: string) => (
-    <Link to={switchHref} hrefLang={otherLang} lang={otherLang} title={t.switchTo.title} className={className}>
-      <Globe className="size-4" />
-      {t.switchTo.label}
-    </Link>
+  // FR · EN · عربي — the same page in each language. The Arabic label uses the system font so
+  // French and English pages don't download the Arabic web font just for it.
+  const switcher = (light: boolean) => (
+    <ul aria-label={t.languages} className="flex items-center gap-0.5 text-sm font-semibold">
+      {LANGS.map((l) => (
+        <li key={l}>
+          {l === lang ? (
+            <span aria-current="true" className={`block rounded-md px-1.5 py-1 ${light ? "text-white" : "text-navy-900"} underline decoration-brand decoration-2 underline-offset-4`}>
+              {LANG_LABELS[l].short}
+            </span>
+          ) : (
+            <Link
+              to={localePath(l, base) + hash}
+              hrefLang={DICT_LOCALE[l]}
+              lang={DICT_LOCALE[l]}
+              title={LANG_LABELS[l].name}
+              className={`block rounded-md px-1.5 py-1 transition-colors ${light ? "text-white/70 hover:text-white" : "text-slate-500 hover:text-navy-900"} ${l === "ar" ? "font-[system-ui]" : ""}`}
+            >
+              {LANG_LABELS[l].short}
+            </Link>
+          )}
+        </li>
+      ))}
+    </ul>
   );
 
   return (
@@ -73,18 +91,14 @@ export function Header() {
               {l.label}
             </Link>
           ))}
-          {switcher(
-            `inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-sm font-semibold transition-colors ${
-              solid ? "text-navy-900 hover:bg-slate-100" : "text-white hover:bg-white/10"
-            }`,
-          )}
+          {switcher(!solid)}
           <Link to={to("/#contact")} className="btn-primary py-2.5">
             {t.nav.quote}
           </Link>
         </nav>
 
         <div className="flex items-center gap-1 lg:hidden">
-          {switcher(`inline-flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm font-semibold ${solid ? "text-navy-900" : "text-white"}`)}
+          {switcher(!solid)}
           <button
             type="button"
             onClick={() => setOpen((o) => !o)}

@@ -1,40 +1,41 @@
-import { DICT, localePath, type Lang } from "./i18n";
+import { DICT, LANGS, localePath, type Lang } from "./i18n";
 import { BUSINESS, EXPERTISE, SITE_URL, SOCIAL } from "./site";
 import type { Contact } from "./contact";
 import type { Service } from "./services";
-import { coverImage, projectText, splitDescription, type PortfolioItem } from "./portfolio";
+import { coverImage, projectLangs, projectPath, projectText, splitDescription, type PortfolioItem } from "./portfolio";
 
 /** What a page tells search engines. Shared by <Seo> (browser) and the pre-renderer (HTML). */
 export type PageMeta = {
   lang: Lang;
-  /** Path without the language prefix: "/", "/portfolio", "/portfolio/14". */
+  /** Path without the language prefix: "/", "/portfolio", "/portfolio/plc-programming-…". */
   path: string;
   title: string;
   description: string;
   image?: string | null;
   type?: "website" | "article";
   noindex?: boolean;
-  /** False when the English page only repeats the French text: it then points to the French page. */
-  translated?: boolean;
-  /** False when the page has no English version yet: no hreflang alternates. */
-  bilingual?: boolean;
+  /** Languages this page is written in (default: all). Other language URLs point to the French page. */
+  available?: Lang[];
 };
 
 export const DEFAULT_IMAGE = `${SITE_URL}/images/web/og-default.png`;
 
 export const urlFor = (lang: Lang, path: string) => SITE_URL + localePath(lang, path);
 
+const availableFor = (m: PageMeta) => m.available ?? LANGS;
+
 export function canonicalFor(m: PageMeta) {
-  return urlFor(m.translated === false ? "fr" : m.lang, m.path);
+  return urlFor(availableFor(m).includes(m.lang) ? m.lang : "fr", m.path);
 }
 
-/** hreflang alternates, or none when the page exists in one language only. */
+const HREFLANG: Record<Lang, string[]> = { fr: ["fr-DZ", "fr"], en: ["en"], ar: ["ar-DZ", "ar"] };
+
+/** hreflang alternates for every language the page exists in, or none for a single-language page. */
 export function alternatesFor(m: PageMeta): { hreflang: string; href: string }[] {
-  if (m.noindex || m.translated === false || m.bilingual === false) return [];
+  const langs = availableFor(m);
+  if (m.noindex || langs.length < 2 || !langs.includes(m.lang)) return [];
   return [
-    { hreflang: "fr-DZ", href: urlFor("fr", m.path) },
-    { hreflang: "fr", href: urlFor("fr", m.path) },
-    { hreflang: "en", href: urlFor("en", m.path) },
+    ...langs.flatMap((l) => HREFLANG[l].map((hreflang) => ({ hreflang, href: urlFor(l, m.path) }))),
     { hreflang: "x-default", href: urlFor("fr", m.path) },
   ];
 }
@@ -44,8 +45,8 @@ const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replac
 /** Head tags for a pre-rendered page (marked data-seo: the app replaces them once it runs). */
 export function headHtml(m: PageMeta): string {
   const t = DICT[m.lang];
-  const other = DICT[m.lang === "fr" ? "en" : "fr"];
   const image = m.image || DEFAULT_IMAGE;
+  const others = availableFor(m).filter((l) => l !== m.lang);
   const tags = [
     `<title data-seo>${esc(m.title)}</title>`,
     `<meta data-seo name="description" content="${esc(m.description)}">`,
@@ -57,7 +58,7 @@ export function headHtml(m: PageMeta): string {
     `<meta data-seo property="og:description" content="${esc(m.description)}">`,
     `<meta data-seo property="og:image" content="${esc(image)}">`,
     `<meta data-seo property="og:locale" content="${t.ogLocale}">`,
-    `<meta data-seo property="og:locale:alternate" content="${other.ogLocale}">`,
+    ...others.map((l) => `<meta data-seo property="og:locale:alternate" content="${DICT[l].ogLocale}">`),
     `<meta data-seo name="twitter:title" content="${esc(m.title)}">`,
     `<meta data-seo name="twitter:description" content="${esc(m.description)}">`,
     `<meta data-seo name="twitter:image" content="${esc(image)}">`,
@@ -67,7 +68,10 @@ export function headHtml(m: PageMeta): string {
 
 /** Short plain-text summary for meta descriptions. */
 export function summarize(text: string, max = 158) {
-  const flat = splitDescription(text).body.replace(/\p{Extended_Pictographic}|️|[→•]/gu, "").replace(/\s+/g, " ").trim();
+  const flat = splitDescription(text)
+    .body.replace(/\p{Extended_Pictographic}|️|[→•]/gu, "")
+    .replace(/\s+/g, " ")
+    .trim();
   if (flat.length <= max) return flat;
   const cut = flat.slice(0, max);
   return `${cut.slice(0, cut.lastIndexOf(" "))}…`;
@@ -78,14 +82,13 @@ export function projectMeta(item: PortfolioItem, lang: Lang): PageMeta {
   const cover = coverImage(item);
   return {
     lang,
-    path: `/portfolio/${item.id}`,
+    path: projectPath(item),
     title: `${text.title} | ${DICT[lang].seo.projectSuffix}`,
     description: summarize(text.description) || text.title,
     // Imgur "h" copy (1024 px): originals are often too heavy for WhatsApp previews.
     image: cover?.replace(/l\.jpg$/, "h.jpg") ?? null,
     type: "article",
-    translated: text.translated,
-    bilingual: Boolean(item.title_en?.trim()),
+    available: projectLangs(item),
   };
 }
 
@@ -97,6 +100,14 @@ const BUSINESS_ID = `${SITE_URL}/#business`;
 const FOUNDER_ID = `${SITE_URL}/#founder`;
 const WEBSITE_ID = `${SITE_URL}/#website`;
 
+const COUNTRY: Record<Lang, string> = { fr: "Algérie", en: "Algeria", ar: "الجزائر" };
+const HOME: Record<Lang, string> = { fr: "Accueil", en: "Home", ar: "الرئيسية" };
+const JOB: Record<Lang, string> = {
+  fr: "Ingénieur en automatisme et électronique",
+  en: "Automation and electronics engineer",
+  ar: "مهندس في الأتمتة والإلكترونيات",
+};
+
 export function businessJsonLd(lang: Lang, contact: Contact, services: Service[]) {
   const t = DICT[lang];
   const phone = `+${contact.phone.replace(/\D/g, "").replace(/^0/, "213")}`;
@@ -107,7 +118,7 @@ export function businessJsonLd(lang: Lang, contact: Contact, services: Service[]
         "@type": ["LocalBusiness", "ProfessionalService"],
         "@id": BUSINESS_ID,
         name: BUSINESS.name,
-        alternateName: ["MTE", "MTE Algérie", "MTE Médéa"],
+        alternateName: ["MTE", "MTE Algérie", "MTE Médéa", "MTE الجزائر"],
         description: t.seo.homeDescription,
         url: urlFor(lang, "/"),
         logo: BUSINESS.logo,
@@ -133,7 +144,7 @@ export function businessJsonLd(lang: Lang, contact: Contact, services: Service[]
           closes: BUSINESS.closes,
         },
         areaServed: [
-          { "@type": "Country", name: lang === "en" ? "Algeria" : "Algérie" },
+          { "@type": "Country", name: COUNTRY[lang] },
           ...t.reach.areas.map((name) => ({ "@type": "AdministrativeArea", name, containedInPlace: { "@type": "Country", name: "DZ" } })),
         ],
         knowsAbout: EXPERTISE,
@@ -162,7 +173,7 @@ export function businessJsonLd(lang: Lang, contact: Contact, services: Service[]
         "@type": "Person",
         "@id": FOUNDER_ID,
         name: BUSINESS.founder,
-        jobTitle: lang === "en" ? "Automation and electronics engineer" : "Ingénieur en automatisme et électronique",
+        jobTitle: JOB[lang],
         worksFor: { "@id": BUSINESS_ID },
         sameAs: [SOCIAL.linkedin, SOCIAL.github],
       },
@@ -171,7 +182,7 @@ export function businessJsonLd(lang: Lang, contact: Contact, services: Service[]
         "@id": WEBSITE_ID,
         url: `${SITE_URL}/`,
         name: BUSINESS.name,
-        inLanguage: ["fr-DZ", "en"],
+        inLanguage: LANGS.map((l) => DICT[l].locale),
         publisher: { "@id": BUSINESS_ID },
       },
     ],
@@ -212,13 +223,13 @@ export function portfolioJsonLd(lang: Lang, items: PortfolioItem[]) {
         itemListElement: items.map((p, i) => ({
           "@type": "ListItem",
           position: i + 1,
-          url: urlFor(lang, `/portfolio/${p.id}`),
+          url: canonicalFor(projectMeta(p, lang)),
           name: projectText(p, lang).title,
         })),
       },
     },
     breadcrumb(lang, [
-      { name: lang === "en" ? "Home" : "Accueil", path: "/" },
+      { name: HOME[lang], path: "/" },
       { name: t.work.eyebrow, path: "/portfolio" },
     ]),
   ];
@@ -237,17 +248,17 @@ export function projectJsonLd(lang: Lang, item: PortfolioItem) {
       image: meta.image ?? DEFAULT_IMAGE,
       datePublished: item.created_at,
       dateModified: (item as { updated_at?: string }).updated_at ?? item.created_at,
-      inLanguage: text.translated ? t.locale : "fr-DZ",
+      inLanguage: text.translated ? t.locale : DICT.fr.locale,
       url: canonicalFor(meta),
       author: { "@id": FOUNDER_ID, "@type": "Person", name: BUSINESS.founder },
       publisher: { "@id": BUSINESS_ID, "@type": "Organization", name: BUSINESS.name, logo: BUSINESS.logo },
       about: splitDescription(text.description).tags.map((tag) => tag.slice(1)),
-      locationCreated: { "@type": "Country", name: "Algeria" },
+      locationCreated: { "@type": "Country", name: COUNTRY[lang] },
     },
     breadcrumb(lang, [
-      { name: lang === "en" ? "Home" : "Accueil", path: "/" },
+      { name: HOME[lang], path: "/" },
       { name: t.work.eyebrow, path: "/portfolio" },
-      { name: text.title, path: `/portfolio/${item.id}` },
+      { name: text.title, path: projectPath(item) },
     ]),
   ];
 }

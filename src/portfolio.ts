@@ -1,5 +1,5 @@
 import { select } from "./db";
-import { DICT, type Lang } from "./i18n";
+import { DICT, LANGS, type Lang } from "./i18n";
 import { createStore } from "./store";
 import { getOptimizedImageUrl, isVideoMedia } from "./utils/imageOptimizer";
 
@@ -15,9 +15,13 @@ export interface PortfolioItem {
   title: string;
   description: string;
   created_at: string;
-  /** English version, edited in /admin (empty: the French text is shown). */
+  /** Address of the project page: /portfolio/<slug> (edited in /admin; the id until it is set). */
+  slug?: string | null;
+  /** English and Arabic versions, edited in /admin (empty: the French text is shown). */
   title_en?: string | null;
   description_en?: string | null;
+  title_ar?: string | null;
+  description_ar?: string | null;
   /** Set in /admin (columns added by supabase/admin.sql). */
   service_slug?: string | null;
   published?: boolean;
@@ -35,9 +39,11 @@ export function fetchPortfolio(limit?: number): Promise<PortfolioItem[]> {
   });
 }
 
-export async function fetchPortfolioItem(id: string): Promise<PortfolioItem | null> {
-  if (!/^\d+$/.test(id)) return null;
-  const [item] = await select<PortfolioItem>("portfolio", { select: SELECT, id: `eq.${id}` });
+/** A project by its address segment: the slug, or the numeric id of older links. */
+export async function fetchPortfolioItem(key: string): Promise<PortfolioItem | null> {
+  if (!/^[a-z0-9-]+$/.test(key)) return null;
+  const filter: Record<string, string> = /^\d+$/.test(key) ? { id: `eq.${key}` } : { slug: `eq.${key}` };
+  const [item] = await select<PortfolioItem>("portfolio", { select: SELECT, ...filter });
   return item ?? null;
 }
 
@@ -93,12 +99,28 @@ export function formatDate(iso: string, lang: Lang = "fr") {
   return new Date(iso).toLocaleDateString(DICT[lang].dateLocale, { day: "numeric", month: "long", year: "numeric", timeZone: "Africa/Algiers" });
 }
 
-/** Title and description in the page's language; `translated` is false when English falls back to French. */
+/** Title and description in the page's language; `translated` is false when it falls back to French. */
 export function projectText(item: PortfolioItem, lang: Lang) {
-  if (lang === "en" && item.title_en?.trim()) {
-    return { title: item.title_en.trim(), description: item.description_en?.trim() || item.description, translated: true };
+  if (lang !== "fr") {
+    const title = item[`title_${lang}`]?.trim();
+    if (title) return { title, description: item[`description_${lang}`]?.trim() || item.description, translated: true };
   }
   return { title: item.title.trim(), description: item.description, translated: lang === "fr" };
+}
+
+/** Languages the project is written in (French always). */
+export function projectLangs(item: PortfolioItem): Lang[] {
+  return LANGS.filter((l) => l === "fr" || Boolean(item[`title_${l}`]?.trim()));
+}
+
+/** "/portfolio/plc-programming-industrial-vacuum-system" (or "/portfolio/18" before a slug is set). */
+export function projectPath(item: PortfolioItem) {
+  return `/portfolio/${item.slug?.trim() || item.id}`;
+}
+
+/** Finds a project by its address segment: the slug, or the numeric id of older links. */
+export function findProject(items: PortfolioItem[], key: string) {
+  return items.find((p) => p.slug === key) ?? (/^\d+$/.test(key) ? items.find((p) => String(p.id) === key) : undefined);
 }
 
 /** All published projects, newest first; null until loaded. */

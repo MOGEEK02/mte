@@ -1,11 +1,13 @@
 import { useEffect, useState, type TouchEvent } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, Navigate, useParams } from "react-router-dom";
 import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, ImageOff, Languages } from "lucide-react";
 import {
   fetchPortfolioItem,
+  findProject,
   formatDate,
   getYouTubeId,
   portfolioStore,
+  projectPath,
   projectText,
   sortedMedia,
   splitDescription,
@@ -87,13 +89,13 @@ function Gallery({ item, title }: { item: PortfolioItem; title: string }) {
         ))}
         {media.length > 1 && (
           <>
-            <button type="button" onClick={() => go(-1)} aria-label={t.prev} className="absolute top-1/2 left-3 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/85 text-navy-950 shadow hover:bg-white">
-              <ChevronLeft className="size-5" />
+            <button type="button" onClick={() => go(-1)} aria-label={t.prev} className="absolute top-1/2 start-3 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/85 text-navy-950 shadow hover:bg-white">
+              <ChevronLeft className="size-5 rtl:-scale-x-100" />
             </button>
-            <button type="button" onClick={() => go(1)} aria-label={t.next} className="absolute top-1/2 right-3 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/85 text-navy-950 shadow hover:bg-white">
-              <ChevronRight className="size-5" />
+            <button type="button" onClick={() => go(1)} aria-label={t.next} className="absolute top-1/2 end-3 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/85 text-navy-950 shadow hover:bg-white">
+              <ChevronRight className="size-5 rtl:-scale-x-100" />
             </button>
-            <span className="absolute top-3 right-3 rounded-full bg-navy-950/70 px-2.5 py-1 text-xs font-semibold text-white">
+            <span className="absolute top-3 end-3 rounded-full bg-navy-950/70 px-2.5 py-1 text-xs font-semibold text-white">
               {index + 1} / {media.length}
             </span>
           </>
@@ -127,7 +129,7 @@ function Gallery({ item, title }: { item: PortfolioItem; title: string }) {
 /** A project not in the loaded list (new, or opened from an old link) is fetched on its own. */
 function useProject(id: string) {
   const all = portfolioStore.use();
-  const listed = all?.find((p) => String(p.id) === id) ?? null;
+  const listed = (all && findProject(all, id)) ?? null;
   const [single, setSingle] = useState<{ id: string; item: PortfolioItem | null } | null>(null);
   const needFetch = all !== null && !listed;
   useEffect(() => {
@@ -158,6 +160,8 @@ export default function PortfolioPost() {
     );
   }
   if (!item) return <NotFound />;
+  // Old links by number (/portfolio/18) lead to the project's readable address.
+  if (item.slug && id !== item.slug) return <Navigate to={localePath(lang, projectPath(item))} replace />;
 
   const text = projectText(item, lang);
   const { body, tags } = splitDescription(text.description);
@@ -166,9 +170,9 @@ export default function PortfolioPost() {
     <>
       <Seo {...projectMeta(item, lang)} />
 
-      <article className="container-page max-w-4xl pt-28 pb-20 sm:pt-32" lang={text.translated ? undefined : "fr"}>
+      <article className="container-page max-w-4xl pt-28 pb-20 sm:pt-32" lang={text.translated ? undefined : "fr"} dir={text.translated ? undefined : "ltr"}>
         <Link to={localePath(lang, "/portfolio")} className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-navy-900">
-          <ArrowLeft className="size-4" />
+          <ArrowLeft className="size-4 rtl:-scale-x-100" />
           {t.back}
         </Link>
         <header className="mt-5">
@@ -177,7 +181,7 @@ export default function PortfolioPost() {
           </p>
           <h1 className="mt-2 text-3xl leading-tight font-bold tracking-tight text-navy-900 sm:text-4xl">{text.title}</h1>
           {!text.translated && t.originalLanguage && (
-            <p className="mt-3 inline-flex items-center gap-1.5 rounded bg-slate-100 px-2.5 py-1 text-xs text-slate-600" lang="en">
+            <p className="mt-3 inline-flex items-center gap-1.5 rounded bg-slate-100 px-2.5 py-1 text-xs text-slate-600" lang={lang} dir={lang === "ar" ? "rtl" : "ltr"}>
               <Languages className="size-3.5" />
               {t.originalLanguage}
             </p>
@@ -206,7 +210,7 @@ export default function PortfolioPost() {
           </div>
           <Link to={localePath(lang, "/#contact")} className="btn-primary shrink-0">
             {nav.quote}
-            <ArrowRight className="size-4" />
+            <ArrowRight className="size-4 rtl:-scale-x-100" />
           </Link>
         </aside>
       </article>

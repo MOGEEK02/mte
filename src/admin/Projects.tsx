@@ -86,7 +86,7 @@ export default function Projects() {
                   <div className="hidden sm:block">
                     <Toggle checked={p.published !== false} onChange={(v) => setPublished(p, v)} label="Visible" />
                   </div>
-                  <a href={`/portfolio/${p.id}`} target="_blank" rel="noopener" aria-label="Voir sur le site" className="rounded-md p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700">
+                  <a href={`/portfolio/${p.slug || p.id}`} target="_blank" rel="noopener" aria-label="Voir sur le site" className="rounded-md p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700">
                     <ExternalLink className="size-4" />
                   </a>
                   <Link to={`/admin/realisations/${p.id}`} aria-label="Modifier" className="rounded-md p-2 text-slate-500 hover:bg-slate-100 hover:text-navy-900">

@@ -3,7 +3,7 @@ import { Mail, MapPin, Phone } from "lucide-react";
 import { SOCIAL } from "../site";
 import { telHref, useContact, whatsappLink } from "../contact";
 import { useServices } from "../services";
-import { localePath, useLang, useT } from "../i18n";
+import { LANG_LABELS, LANGS, localePath, useLang, useT } from "../i18n";
 import { BrandIcon, type Brand } from "./BrandIcon";
 
 const SOCIAL_LINKS: { name: Brand; href: string }[] = [
@@ -64,11 +64,13 @@ export function Footer() {
             <li><Link to={to("/portfolio")} className="hover:text-white">{t.nav.work}</Link></li>
             <li><Link to={to("/#faq")} className="hover:text-white">{t.footer.faq}</Link></li>
             <li><Link to={to("/#contact")} className="hover:text-white">{t.nav.quote}</Link></li>
-            <li>
-              <Link to={localePath(lang === "fr" ? "en" : "fr", "/")} hrefLang={lang === "fr" ? "en" : "fr"} className="hover:text-white">
-                {lang === "fr" ? "English" : "Français"}
-              </Link>
-            </li>
+            {LANGS.filter((l) => l !== lang).map((l) => (
+              <li key={l}>
+                <Link to={localePath(l, "/")} hrefLang={l} lang={l} className="hover:text-white">
+                  {LANG_LABELS[l].name}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
 
@@ -78,13 +80,13 @@ export function Footer() {
             <li>
               <a href={telHref(contact.phone)} className="flex items-start gap-2.5 hover:text-white">
                 <Phone className="mt-0.5 size-4 shrink-0 text-brand" />
-                {contact.phone}
+                <span dir="ltr">{contact.phone}</span>
               </a>
             </li>
             <li>
               <a href={`mailto:${contact.email}`} className="flex items-start gap-2.5 break-all hover:text-white">
                 <Mail className="mt-0.5 size-4 shrink-0 text-brand" />
-                {contact.email}
+                <span dir="ltr">{contact.email}</span>
               </a>
             </li>
             <li>
@@ -99,7 +101,9 @@ export function Footer() {
 
       <div className="border-t border-white/10">
         <div className="container-page flex flex-col gap-2 py-5 text-xs text-slate-500 sm:flex-row sm:justify-between">
-          <p>© {new Date().getFullYear()} MTE Industrial Electronics — Fekhar Moutie. {t.footer.rights}</p>
+          <p>
+            <span dir="ltr">© {new Date().getFullYear()} MTE Industrial Electronics — Fekhar Moutie.</span> {t.footer.rights}
+          </p>
           <p>{t.footer.place}</p>
         </div>
       </div>

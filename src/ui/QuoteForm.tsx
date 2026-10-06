@@ -107,11 +107,11 @@ export function QuoteForm() {
         </div>
         <div>
           <label htmlFor="q-phone" className={label}>{t.phone}</label>
-          <input id="q-phone" type="tel" maxLength={40} autoComplete="tel" inputMode="tel" className={input} value={f.phone} onChange={(e) => set("phone", e.target.value)} />
+          <input id="q-phone" dir="ltr" type="tel" maxLength={40} autoComplete="tel" inputMode="tel" className={input} value={f.phone} onChange={(e) => set("phone", e.target.value)} />
         </div>
         <div>
           <label htmlFor="q-email" className={label}>{t.email}</label>
-          <input id="q-email" type="email" maxLength={160} autoComplete="email" className={input} value={f.email} onChange={(e) => set("email", e.target.value)} />
+          <input id="q-email" dir="ltr" type="email" maxLength={160} autoComplete="email" className={input} value={f.email} onChange={(e) => set("email", e.target.value)} />
         </div>
         <p className={`-mt-2 text-xs sm:col-span-2 ${noContact ? "text-slate-500" : "text-transparent"}`} aria-live="polite">
           {t.needContact}
@@ -142,7 +142,7 @@ export function QuoteForm() {
           />
         </div>
         {/* Left empty by people; bots that fill every field are ignored by the server. */}
-        <div aria-hidden="true" className="absolute -left-[9999px] h-0 overflow-hidden">
+        <div aria-hidden="true" className="sr-only">
           <label htmlFor="q-website">{t.honeypot}</label>
           <input id="q-website" tabIndex={-1} autoComplete="off" value={trap} onChange={(e) => setTrap(e.target.value)} />
         </div>

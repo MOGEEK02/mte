@@ -1,7 +1,9 @@
-// Fallback for project pages that did not exist at the last deployment (pre-rendered pages are
-// served as static files and never reach this function): /portfolio/:id and /en/portfolio/:id.
-// Serves the app shell with that project's title, description, preview image and language
-// already in the HTML, or a 404. The browser then runs the app as usual.
+// Project pages that are not pre-rendered files (pre-rendered pages are served as static files
+// and never reach this function): /portfolio/:key, /en/portfolio/:key, /ar/portfolio/:key.
+// - an old numeric link (/portfolio/18) is redirected permanently to the project's address
+//   (/portfolio/plc-programming-industrial-vacuum-system);
+// - a project added since the last deployment gets the app shell with its title, description,
+//   preview image and languages already in the HTML; an unknown address gets a 404.
 
 const BASE_URL = 'https://moutie.vercel.app';
 const DEFAULT_IMAGE = `${BASE_URL}/images/web/og-default.png`;
@@ -10,9 +12,11 @@ const supabaseKey = process.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY || process
 
 const BLOCK = /<title data-seo>[\s\S]*?(?=\s*<!-- \/default page tags -->)/;
 const TEXT = {
-  fr: { locale: 'fr-DZ', og: 'fr_DZ', suffix: 'Réalisations MTE', notFound: 'Page introuvable | MTE', notFoundText: 'Cette page n’existe pas ou a été déplacée.' },
-  en: { locale: 'en', og: 'en_US', suffix: 'MTE Projects', notFound: 'Page not found | MTE', notFoundText: 'This page does not exist or has moved.' },
+  fr: { locale: 'fr-DZ', dir: 'ltr', og: 'fr_DZ', hreflang: ['fr-DZ', 'fr'], suffix: 'Réalisations MTE', notFound: 'Page introuvable | MTE', notFoundText: 'Cette page n’existe pas ou a été déplacée.' },
+  en: { locale: 'en', dir: 'ltr', og: 'en_US', hreflang: ['en'], suffix: 'MTE Projects', notFound: 'Page not found | MTE', notFoundText: 'This page does not exist or has moved.' },
+  ar: { locale: 'ar-DZ', dir: 'rtl', og: 'ar_DZ', hreflang: ['ar-DZ', 'ar'], suffix: 'إنجازات MTE', notFound: 'الصفحة غير موجودة | MTE', notFoundText: 'هذه الصفحة غير موجودة أو تم نقلها.' },
 };
+const LANGS = ['fr', 'en', 'ar'];
 
 let shellCache = null;
 
@@ -34,7 +38,8 @@ function escapeHtml(str) {
   return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-const urlFor = (lang, path) => `${BASE_URL}${lang === 'en' ? `/en${path}` : path}`;
+const pathFor = (lang, path) => (lang === 'fr' ? path : `/${lang}${path}`);
+const urlFor = (lang, path) => `${BASE_URL}${pathFor(lang, path)}`;
 
 function getYouTubeId(url) {
   const match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
@@ -56,14 +61,14 @@ function coverImage(media) {
   return null;
 }
 
-function tags({ lang, title, description, path, image, type = 'website', noindex = false, bilingual = true, canonicalLang = lang }) {
+function tags({ lang, title, description, path, image, type = 'website', noindex = false, available = LANGS }) {
   const t = TEXT[lang];
-  const other = TEXT[lang === 'fr' ? 'en' : 'fr'];
-  const canonical = escapeHtml(urlFor(canonicalLang, path));
+  const canonical = escapeHtml(urlFor(available.includes(lang) ? lang : 'fr', path));
   const i = escapeHtml(image || DEFAULT_IMAGE);
-  const alternates = noindex || !bilingual ? [] : [
-    ['fr-DZ', urlFor('fr', path)], ['fr', urlFor('fr', path)], ['en', urlFor('en', path)], ['x-default', urlFor('fr', path)],
-  ];
+  const alternates =
+    noindex || available.length < 2 || !available.includes(lang)
+      ? []
+      : [...available.flatMap((l) => TEXT[l].hreflang.map((h) => [h, urlFor(l, path)])), ['x-default', urlFor('fr', path)]];
   return [
     `<title data-seo>${escapeHtml(title)}</title>`,
     `<meta data-seo name="description" content="${escapeHtml(description)}">`,
@@ -75,7 +80,6 @@ function tags({ lang, title, description, path, image, type = 'website', noindex
     `<meta data-seo property="og:description" content="${escapeHtml(description)}">`,
     `<meta data-seo property="og:image" content="${i}">`,
     `<meta data-seo property="og:locale" content="${t.og}">`,
-    `<meta data-seo property="og:locale:alternate" content="${other.og}">`,
     `<meta data-seo name="twitter:title" content="${escapeHtml(title)}">`,
     `<meta data-seo name="twitter:description" content="${escapeHtml(description)}">`,
     `<meta data-seo name="twitter:image" content="${i}">`,
@@ -87,41 +91,63 @@ function summary(text, max = 158) {
   return flat.length <= max ? flat : `${flat.slice(0, flat.slice(0, max).lastIndexOf(' '))}…`;
 }
 
-async function projectPage(id, lang) {
+async function fetchProject(key) {
+  const filter = /^\d+$/.test(key) ? `id=eq.${key}` : `slug=eq.${encodeURIComponent(key)}`;
+  const res = await fetch(`${supabaseUrl}/rest/v1/portfolio?select=*,portfolio_media(media_url,media_type,sort_order)&${filter}`, {
+    headers: { apikey: supabaseKey },
+    signal: AbortSignal.timeout(5000),
+  });
+  if (!res.ok) throw new Error(`portfolio ${res.status}`);
+  const [item] = await res.json();
+  return item ?? null;
+}
+
+async function projectPage(key, lang) {
   const t = TEXT[lang];
-  const path = `/portfolio/${id}`;
+  const path = `/portfolio/${key}`;
   const notFound = { status: 404, html: tags({ lang, title: t.notFound, description: t.notFoundText, path, noindex: true }) };
-  if (!/^\d+$/.test(id)) return notFound;
+  if (!/^[a-z0-9-]+$/.test(key)) return notFound;
   if (!supabaseUrl || !supabaseKey) return null;
 
-  const res = await fetch(
-    `${supabaseUrl}/rest/v1/portfolio?select=*,portfolio_media(media_url,media_type,sort_order)&id=eq.${id}`,
-    { headers: { apikey: supabaseKey }, signal: AbortSignal.timeout(5000) },
-  );
-  if (!res.ok) return null;
-  const [item] = await res.json();
+  const item = await fetchProject(key);
   if (!item) return notFound;
+  const slug = (item.slug || '').trim();
+  if (slug && slug !== key) return { redirect: pathFor(lang, `/portfolio/${slug}`) };
 
-  const hasEn = Boolean(item.title_en && item.title_en.trim());
-  const useEn = lang === 'en' && hasEn;
-  const title = (useEn ? item.title_en : item.title).trim();
-  const description = summary(useEn ? item.description_en || item.description : item.description) || title;
+  const available = LANGS.filter((l) => l === 'fr' || (item[`title_${l}`] || '').trim());
+  const own = lang !== 'fr' && available.includes(lang);
+  const title = (own ? item[`title_${lang}`] : item.title).trim();
+  const description = summary(own ? item[`description_${lang}`] || item.description : item.description) || title;
   return {
     status: 200,
     html: tags({
       lang,
       title: `${title} | ${t.suffix}`,
       description,
-      path,
+      path: `/portfolio/${slug || item.id}`,
       image: coverImage(item.portfolio_media),
       type: 'article',
-      bilingual: hasEn,
-      canonicalLang: lang === 'en' && !hasEn ? 'fr' : lang,
+      available,
     }),
   };
 }
 
 export default async function handler(req, res) {
+  const lang = LANGS.includes(req.query.lang) ? req.query.lang : 'fr';
+  const key = typeof req.query.id === 'string' ? req.query.id : '';
+  let page = null;
+  try {
+    page = await projectPage(key, lang);
+  } catch (err) {
+    console.error('page: lookup failed', err);
+  }
+
+  if (page?.redirect) {
+    res.setHeader('Location', page.redirect);
+    res.setHeader('Cache-Control', 'public, s-maxage=86400');
+    return res.status(301).end();
+  }
+
   let shell;
   try {
     shell = await loadShell(req);
@@ -131,17 +157,8 @@ export default async function handler(req, res) {
     return res.status(503).send('Service momentanément indisponible. Réessayez dans un instant.');
   }
 
-  const lang = req.query.lang === 'en' ? 'en' : 'fr';
-  const id = typeof req.query.id === 'string' ? req.query.id : '';
-  let page = null;
-  try {
-    page = await projectPage(id, lang);
-  } catch (err) {
-    console.error('page: lookup failed', err);
-  }
-
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  const html = shell.replace(/<html lang="[^"]*">/, `<html lang="${TEXT[lang].locale}">`);
+  const html = shell.replace(/<html lang="[^"]*">/, `<html lang="${TEXT[lang].locale}" dir="${TEXT[lang].dir}">`);
   // Without page data, serve the shell unchanged: the app still renders the page.
   if (!page) {
     res.setHeader('Cache-Control', 'public, s-maxage=60');

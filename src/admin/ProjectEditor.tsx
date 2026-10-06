@@ -4,6 +4,7 @@ import { ArrowLeft, ChevronLeft, ChevronRight, ExternalLink, Film, ImagePlus, Li
 import { stillImage, type PortfolioItem } from "../portfolio";
 import { isVideoMedia } from "../utils/imageOptimizer";
 import { compressImage } from "./image";
+import { slugify } from "./slug";
 import { BUCKET, errorMessage, storagePath, supabase } from "./supabase";
 import { Button, Field, inputClass, Loading, Notice, PageHeader, Toggle, useFlash } from "./ui";
 
@@ -17,7 +18,17 @@ type MediaDraft = {
   preview?: string;
 };
 
-type Form = { title: string; date: string; description: string; titleEn: string; descriptionEn: string; published: boolean };
+type Form = {
+  title: string;
+  date: string;
+  description: string;
+  slug: string;
+  titleEn: string;
+  descriptionEn: string;
+  titleAr: string;
+  descriptionAr: string;
+  published: boolean;
+};
 
 const today = () => new Date().toISOString().slice(0, 10);
 const newKey = () => Math.random().toString(36).slice(2);
@@ -33,7 +44,7 @@ export default function ProjectEditor() {
   const flash = useFlash();
 
   const [original, setOriginal] = useState<PortfolioItem | null>(null);
-  const [form, setForm] = useState<Form>({ title: "", date: today(), description: "", titleEn: "", descriptionEn: "", published: true });
+  const [form, setForm] = useState<Form>({ title: "", date: today(), description: "", slug: "", titleEn: "", descriptionEn: "", titleAr: "", descriptionAr: "", published: true });
   const [media, setMedia] = useState<MediaDraft[]>([]);
   const [saved, setSaved] = useState<string>("");
   const [loading, setLoading] = useState(!isNew);
@@ -46,7 +57,7 @@ export default function ProjectEditor() {
 
   useEffect(() => {
     if (isNew) {
-      setSaved(snapshot({ title: "", date: today(), description: "", titleEn: "", descriptionEn: "", published: true }, []));
+      setSaved(snapshot({ title: "", date: today(), description: "", slug: "", titleEn: "", descriptionEn: "", titleAr: "", descriptionAr: "", published: true }, []));
       return;
     }
     supabase
@@ -63,8 +74,11 @@ export default function ProjectEditor() {
           title: p.title ?? "",
           date: (p.created_at ?? "").slice(0, 10) || today(),
           description: p.description ?? "",
+          slug: p.slug ?? "",
           titleEn: p.title_en ?? "",
           descriptionEn: p.description_en ?? "",
+          titleAr: p.title_ar ?? "",
+          descriptionAr: p.description_ar ?? "",
           published: p.published !== false,
         };
         const m: MediaDraft[] = [...(p.portfolio_media ?? [])]
@@ -121,14 +135,19 @@ export default function ProjectEditor() {
 
   const save = async () => {
     if (!form.title.trim()) return flash("Le titre est obligatoire.", "error");
+    const slug = slugify(form.slug || form.titleEn || form.title);
+    if (!slug) return flash("Adresse de la page invalide.", "error");
     setBusy("save");
     try {
       const keptDate = original && original.created_at.slice(0, 10) === form.date;
       const row = {
         title: form.title.trim(),
         description: form.description.trim(),
+        slug,
         title_en: form.titleEn.trim() || null,
         description_en: form.descriptionEn.trim() || null,
+        title_ar: form.titleAr.trim() || null,
+        description_ar: form.descriptionAr.trim() || null,
         created_at: keptDate ? original!.created_at : `${form.date}T12:00:00Z`,
         published: form.published,
         updated_at: new Date().toISOString(),
@@ -184,7 +203,8 @@ export default function ProjectEditor() {
       }
 
       flash("Projet enregistré");
-      setSaved(snapshot(form, media));
+      setForm((f) => ({ ...f, slug }));
+      setSaved(snapshot({ ...form, slug }, media));
       if (isNew) navigate(`/admin/realisations/${projectId}`, { replace: true });
       else {
         // Reload to pick up the new media ids.
@@ -200,7 +220,8 @@ export default function ProjectEditor() {
         }
       }
     } catch (e) {
-      flash(errorMessage(e as { message?: string; code?: string }), "error");
+      const err = e as { message?: string; code?: string };
+      flash(err.code === "23505" ? "Cette adresse est déjà utilisée par un autre projet : modifiez-la." : errorMessage(err), "error");
     } finally {
       setBusy("");
     }
@@ -238,7 +259,7 @@ export default function ProjectEditor() {
           title={isNew ? "Nouveau projet" : form.title || "Projet"}
           actions={
             !isNew && (
-              <a href={`/portfolio/${id}`} target="_blank" rel="noopener" className="inline-flex items-center gap-2 rounded-md border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-800 hover:bg-slate-50">
+              <a href={`/portfolio/${original?.slug || id}`} target="_blank" rel="noopener" className="inline-flex items-center gap-2 rounded-md border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-800 hover:bg-slate-50">
                 <ExternalLink className="size-4" /> Voir sur le site
               </a>
             )
@@ -266,12 +287,38 @@ export default function ProjectEditor() {
           <Field label="Description" htmlFor="p-desc-en">
             <textarea id="p-desc-en" lang="en" rows={8} className={inputClass} value={form.descriptionEn} onChange={(e) => set("descriptionEn", e.target.value)} />
           </Field>
+          <div className="border-t border-slate-200 pt-5">
+            <h2 className="font-semibold text-navy-900">Version arabe (/ar)</h2>
+            <p className="mt-0.5 text-xs text-slate-500">Vide : la page arabe montre le texte français et renvoie Google vers la page française.</p>
+          </div>
+          <Field label="العنوان" htmlFor="p-title-ar">
+            <input id="p-title-ar" lang="ar" dir="rtl" className={inputClass} value={form.titleAr} onChange={(e) => set("titleAr", e.target.value)} />
+          </Field>
+          <Field label="الوصف" htmlFor="p-desc-ar">
+            <textarea id="p-desc-ar" lang="ar" dir="rtl" rows={8} className={inputClass} value={form.descriptionAr} onChange={(e) => set("descriptionAr", e.target.value)} />
+          </Field>
         </section>
 
         <section className="space-y-5 rounded-xl border border-slate-200 bg-white p-5 sm:p-6 lg:self-start">
           <Toggle checked={form.published} onChange={(v) => set("published", v)} label={form.published ? "Visible sur le site" : "Masqué du site"} />
           <Field label="Date d’intervention" htmlFor="p-date">
             <input id="p-date" type="date" className={inputClass} value={form.date} onChange={(e) => set("date", e.target.value || today())} />
+          </Field>
+          <Field
+            label="Adresse de la page"
+            htmlFor="p-slug"
+            hint="Vide : créée à partir du titre anglais (ou français). Les anciens liens /portfolio/numéro continuent de fonctionner, mais changer une adresse casse les liens déjà partagés avec elle."
+          >
+            <div className="flex items-center rounded-md border border-slate-300 bg-slate-50 pl-3 text-sm text-slate-500 focus-within:border-navy-700">
+              /portfolio/
+              <input
+                id="p-slug"
+                className="min-w-0 flex-1 rounded-r-md bg-white px-2 py-2 font-mono text-xs text-ink outline-none"
+                value={form.slug}
+                placeholder={slugify(form.titleEn || form.title)}
+                onChange={(e) => set("slug", e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-"))}
+              />
+            </div>
           </Field>
         </section>
       </div>

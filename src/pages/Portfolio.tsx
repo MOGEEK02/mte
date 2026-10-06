@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, ImageOff, Play } from "lucide-react";
-import { coverImage, formatDate, getYouTubeId, portfolioStore, projectText, sortedMedia, splitDescription, type PortfolioItem } from "../portfolio";
+import { coverImage, formatDate, getYouTubeId, portfolioStore, projectPath, projectText, sortedMedia, splitDescription, type PortfolioItem } from "../portfolio";
 import { localePath, useLang, useT } from "../i18n";
 import { isVideoMedia } from "../utils/imageOptimizer";
 import { Seo } from "../ui/Seo";
@@ -17,8 +17,9 @@ function Card({ item }: { item: PortfolioItem }) {
   return (
     <li>
       <Link
-        to={localePath(lang, `/portfolio/${item.id}`)}
+        to={localePath(lang, projectPath(item))}
         lang={text.translated ? undefined : "fr"}
+        dir={text.translated ? undefined : "ltr"}
         className="group flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xs transition hover:shadow-md"
       >
         <div className="relative aspect-video overflow-hidden bg-slate-200">
@@ -30,12 +31,12 @@ function Card({ item }: { item: PortfolioItem }) {
             </div>
           )}
           {hasVideo && (
-            <span className="absolute top-3 left-3 inline-flex items-center gap-1 rounded bg-navy-950/75 px-2 py-1 text-[11px] font-semibold text-white">
+            <span className="absolute top-3 start-3 inline-flex items-center gap-1 rounded bg-navy-950/75 px-2 py-1 text-[11px] font-semibold text-white">
               <Play className="size-3" fill="currentColor" /> {t.video}
             </span>
           )}
           {media.length > 1 && (
-            <span className="absolute top-3 right-3 rounded bg-navy-950/75 px-2 py-1 text-[11px] font-semibold text-white">{t.media(media.length)}</span>
+            <span className="absolute top-3 end-3 rounded bg-navy-950/75 px-2 py-1 text-[11px] font-semibold text-white">{t.media(media.length)}</span>
           )}
         </div>
         <div className="flex flex-1 flex-col p-6">
@@ -53,7 +54,7 @@ function Card({ item }: { item: PortfolioItem }) {
           )}
           <span className="mt-auto inline-flex items-center gap-1.5 pt-5 text-sm font-semibold text-navy-900">
             {t.open}
-            <ArrowRight className="size-4 transition group-hover:translate-x-0.5" />
+            <ArrowRight className="size-4 transition group-hover:translate-x-0.5 rtl:-scale-x-100 rtl:group-hover:-translate-x-0.5" />
           </span>
         </div>
       </Link>

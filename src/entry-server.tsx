@@ -3,10 +3,10 @@ import { renderToString } from "react-dom/server";
 import { StaticRouter } from "react-router";
 import { HelmetProvider } from "react-helmet-async";
 import { AppRoutes } from "./App";
-import { DICT, type Lang } from "./i18n";
+import { DICT, LANGS, type Lang } from "./i18n";
 import { contactStore, cvStore, DEFAULT_CONTACT, fetchContact, fetchCv, type Contact, type CvLinks } from "./contact";
 import { DEFAULT_SERVICES, fetchServices, servicesStore, type Service } from "./services";
-import { fetchPortfolio, portfolioStore, projectText, type PortfolioItem } from "./portfolio";
+import { fetchPortfolio, portfolioStore, projectPath, projectText, type PortfolioItem } from "./portfolio";
 import {
   businessJsonLd,
   faqJsonLd,
@@ -40,12 +40,12 @@ export async function loadData(): Promise<SiteData> {
 
 export type Page = { url: string; lang: Lang; meta: PageMeta; jsonLd: object[] };
 
-/** Every public page, in both languages. */
+/** Every public page, in every language. */
 export function pages(data: SiteData): Page[] {
   const out: Page[] = [];
-  for (const lang of ["fr", "en"] as Lang[]) {
+  for (const lang of LANGS) {
     const t = DICT[lang];
-    const prefix = lang === "en" ? "/en" : "";
+    const prefix = lang === "fr" ? "" : `/${lang}`;
     const business = businessJsonLd(lang, data.contact, data.services);
     out.push({
       url: prefix || "/",
@@ -60,7 +60,7 @@ export function pages(data: SiteData): Page[] {
       jsonLd: [business, ...portfolioJsonLd(lang, data.portfolio)],
     });
     for (const item of data.portfolio) {
-      out.push({ url: `${prefix}/portfolio/${item.id}`, lang, meta: projectMeta(item, lang), jsonLd: [business, ...projectJsonLd(lang, item)] });
+      out.push({ url: `${prefix}${projectPath(item)}`, lang, meta: projectMeta(item, lang), jsonLd: [business, ...projectJsonLd(lang, item)] });
     }
   }
   return out;
@@ -94,6 +94,7 @@ export { headHtml, DICT };
 export function llmsTxt(data: SiteData, full = false) {
   const en = DICT.en;
   const fr = DICT.fr;
+  const ar = DICT.ar;
   const lines = [
     `# ${BUSINESS.name}`,
     "",
@@ -103,6 +104,7 @@ export function llmsTxt(data: SiteData, full = false) {
     "",
     `- Website (French): ${SITE_URL}/`,
     `- Website (English): ${SITE_URL}/en`,
+    `- Website (Arabic): ${SITE_URL}/ar`,
     `- Phone / WhatsApp: ${data.contact.phone}`,
     `- Email: ${data.contact.email}`,
     `- Address: ${data.contact.address}`,
@@ -124,7 +126,7 @@ export function llmsTxt(data: SiteData, full = false) {
     "",
     ...data.portfolio.map((p) => {
       const text = projectText(p, "en");
-      const base = `- [${text.title}](${urlFor(text.translated ? "en" : "fr", `/portfolio/${p.id}`)}) (${p.created_at.slice(0, 10)})`;
+      const base = `- [${text.title}](${urlFor(text.translated ? "en" : "fr", projectPath(p))}) (${p.created_at.slice(0, 10)})`;
       return full ? `${base}\n\n  ${text.description.replace(/\n+/g, "\n  ")}\n` : `${base}: ${summarize(text.description, 200)}`;
     }),
     "",
@@ -132,6 +134,13 @@ export function llmsTxt(data: SiteData, full = false) {
     "",
     `- [Full project descriptions](${SITE_URL}/llms-full.txt)`,
     `- [Site en français](${SITE_URL}/) — ${fr.seo.homeDescription}`,
+    `- [الموقع بالعربية](${SITE_URL}/ar) — ${ar.seo.homeDescription}`,
+    "",
+    "## بالعربية",
+    "",
+    `${BUSINESS.name} (MTE): ${ar.seo.homeDescription}`,
+    "",
+    ...data.services.map((s) => `- ${s.ar.title}: ${s.ar.summary}`),
     "",
   ];
   return lines.join("\n");

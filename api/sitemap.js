@@ -1,11 +1,13 @@
-// GET /sitemap.xml — every public page in French and English, with hreflang alternates
+// GET /sitemap.xml — every public page in French, English and Arabic, with hreflang alternates
 // (xhtml:link) and project images, always up to date with the database.
 
 const BASE_URL = 'https://moutie.vercel.app';
 const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
 const supabaseKey = process.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY || process.env.VITE_SUPABASE_ANON_KEY || '';
 
-const urlFor = (lang, path) => `${BASE_URL}${lang === 'en' ? (path === '/' ? '/en' : `/en${path}`) : path}`;
+const LANGS = ['fr', 'en', 'ar'];
+const HREFLANG = { fr: ['fr-DZ', 'fr'], en: ['en'], ar: ['ar-DZ', 'ar'] };
+const urlFor = (lang, path) => `${BASE_URL}${lang === 'fr' ? path : path === '/' ? `/${lang}` : `/${lang}${path}`}`;
 
 function escapeXml(str) {
   return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
@@ -20,17 +22,15 @@ function imageUrl(m) {
   return m.media_type === 'image' && /^https?:\/\//.test(url) ? url : null;
 }
 
-/** One <url> per language; both carry the same alternates when the page is translated. */
-function entries(path, { lastmod, priority, changefreq = 'monthly', bilingual = true, images = [] }) {
-  const langs = bilingual ? ['fr', 'en'] : ['fr'];
-  const alternates = bilingual
-    ? [
-        `    <xhtml:link rel="alternate" hreflang="fr-DZ" href="${urlFor('fr', path)}"/>`,
-        `    <xhtml:link rel="alternate" hreflang="fr" href="${urlFor('fr', path)}"/>`,
-        `    <xhtml:link rel="alternate" hreflang="en" href="${urlFor('en', path)}"/>`,
-        `    <xhtml:link rel="alternate" hreflang="x-default" href="${urlFor('fr', path)}"/>`,
-      ]
-    : [];
+/** One <url> per language the page exists in; all carry the same alternates. */
+function entries(path, { lastmod, priority, changefreq = 'monthly', langs = LANGS, images = [] }) {
+  const alternates =
+    langs.length > 1
+      ? [
+          ...langs.flatMap((l) => HREFLANG[l].map((h) => `    <xhtml:link rel="alternate" hreflang="${h}" href="${urlFor(l, path)}"/>`)),
+          `    <xhtml:link rel="alternate" hreflang="x-default" href="${urlFor('fr', path)}"/>`,
+        ]
+      : [];
   return langs
     .map((lang) =>
       [
@@ -40,7 +40,9 @@ function entries(path, { lastmod, priority, changefreq = 'monthly', bilingual = 
         `    <lastmod>${lastmod}</lastmod>`,
         `    <changefreq>${changefreq}</changefreq>`,
         `    <priority>${priority}</priority>`,
-        ...images.map((img) => `    <image:image>\n      <image:loc>${escapeXml(img.loc)}</image:loc>\n      <image:title>${escapeXml(lang === 'en' ? img.titleEn : img.title)}</image:title>\n    </image:image>`),
+        ...images.map((img) =>
+          ['    <image:image>', `      <image:loc>${escapeXml(img.loc)}</image:loc>`, `      <image:title>${escapeXml(img.titles[lang])}</image:title>`, '    </image:image>'].join('\n'),
+        ),
         '  </url>',
       ].join('\n'),
     )
@@ -74,17 +76,17 @@ export default async function handler(request, response) {
     entries('/', { lastmod: newest, priority: '1.0', changefreq: 'weekly' }),
     entries('/portfolio', { lastmod: newest, priority: '0.9', changefreq: 'weekly' }),
     ...items.map((p) => {
-      const titleEn = (p.title_en || '').trim();
-      return entries(`/portfolio/${p.id}`, {
+      const titles = Object.fromEntries(LANGS.map((l) => [l, (l === 'fr' ? p.title : p[`title_${l}`] || '').trim()]));
+      return entries(`/portfolio/${(p.slug || '').trim() || p.id}`, {
         lastmod: (p.updated_at || p.created_at).slice(0, 10),
         priority: '0.8',
-        bilingual: Boolean(titleEn),
+        langs: LANGS.filter((l) => titles[l]),
         images: [...(p.portfolio_media || [])]
           .sort((a, b) => a.sort_order - b.sort_order)
           .map(imageUrl)
           .filter(Boolean)
           .slice(0, 10)
-          .map((loc) => ({ loc, title: p.title, titleEn: titleEn || p.title })),
+          .map((loc) => ({ loc, titles: Object.fromEntries(LANGS.map((l) => [l, titles[l] || titles.fr])) })),
       });
     }),
   ];

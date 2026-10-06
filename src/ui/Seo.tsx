@@ -17,7 +17,7 @@ export function Seo(meta: PageMeta) {
   const image = meta.image || DEFAULT_IMAGE;
   const canonical = canonicalFor(meta);
   return (
-    <Helmet htmlAttributes={{ lang: DICT[meta.lang].locale }}>
+    <Helmet htmlAttributes={{ lang: DICT[meta.lang].locale, dir: DICT[meta.lang].dir }}>
       <title>{meta.title}</title>
       <meta name="description" content={meta.description} />
       {meta.noindex ? <meta name="robots" content="noindex, follow" /> : <link rel="canonical" href={canonical} />}

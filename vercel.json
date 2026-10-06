@@ -71,6 +71,7 @@
     { "source": "/admin", "destination": "/shell.html" },
     { "source": "/admin/:path*", "destination": "/shell.html" },
     { "source": "/portfolio/:id", "destination": "/api/page?id=:id" },
-    { "source": "/en/portfolio/:id", "destination": "/api/page?lang=en&id=:id" }
+    { "source": "/en/portfolio/:id", "destination": "/api/page?lang=en&id=:id" },
+    { "source": "/ar/portfolio/:id", "destination": "/api/page?lang=ar&id=:id" }
   ]
 }

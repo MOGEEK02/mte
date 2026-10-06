@@ -29,6 +29,7 @@ export const CONTACT = {
   mapUrl: "https://maps.app.goo.gl/o5DLijMqhsTaiac19",
   hours: "Samedi – jeudi, 8 h – 17 h",
   hoursEn: "Saturday – Thursday, 8 am – 5 pm",
+  hoursAr: "من السبت إلى الخميس، 8:00 – 17:00",
 };
 
 export const SOCIAL = {

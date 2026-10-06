@@ -50,3 +50,14 @@
 @utility btn-outline {
   @apply btn border border-navy-900/20 text-navy-900 hover:border-navy-900 hover:bg-navy-900/5;
 }
+
+/* Arabic pages (/ar): Arabic typeface, no letter-spacing or capitals (they break Arabic script).
+   Outside any layer so it wins over the utilities above. */
+html[lang^="ar"] body,
+html[lang^="ar"] .font-display {
+  font-family: "IBM Plex Sans Arabic", "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+html[lang^="ar"] .eyebrow {
+  letter-spacing: 0;
+  text-transform: none;
+}

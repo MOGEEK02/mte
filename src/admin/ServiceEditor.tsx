@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, ImagePlus, Trash2 } from "lucide-react";
 import { DEFAULT_SERVICES, fromRow, type ServiceRow } from "../services";
 import { compressImage } from "./image";
+import { slugify } from "./slug";
 import { BUCKET, errorMessage, storagePath, supabase } from "./supabase";
 import { Button, Field, inputClass, Loading, Notice, PageHeader, Toggle, useFlash } from "./ui";
 
@@ -14,26 +15,19 @@ type Form = {
   titleEn: string;
   summaryEn: string;
   taglineEn: string;
+  titleAr: string;
+  summaryAr: string;
+  taglineAr: string;
   image: string;
   published: boolean;
 };
 
-const EMPTY: Form = { title: "", slug: "", summary: "", tagline: "", titleEn: "", summaryEn: "", taglineEn: "", image: "", published: true };
+const EMPTY: Form = { title: "", slug: "", summary: "", tagline: "", titleEn: "", summaryEn: "", taglineEn: "", titleAr: "", summaryAr: "", taglineAr: "", image: "", published: true };
 
 /** Photos already on the site, to pick without uploading. */
 const SITE_PHOTOS = [
   ...new Set([...DEFAULT_SERVICES.map((s) => s.image), "/images/web/capteurs.webp", "/images/web/hero.webp"]),
 ];
-
-function slugify(text: string) {
-  return text
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 60);
-}
 
 export default function ServiceEditor() {
   const { slug: param = "nouveau" } = useParams();
@@ -60,7 +54,7 @@ export default function ServiceEditor() {
         if (!data) return setError("Service introuvable.");
         const r = data as ServiceRow;
         // English starts from the built-in translation when the database has none yet.
-        const en = fromRow(r).en;
+        const { en, ar } = fromRow(r);
         const f: Form = {
           title: r.title,
           slug: r.slug,
@@ -69,6 +63,9 @@ export default function ServiceEditor() {
           titleEn: r.title_en ?? (en.title !== r.title ? en.title : ""),
           summaryEn: r.summary_en ?? (en.summary !== r.summary ? en.summary : ""),
           taglineEn: r.tagline_en ?? (en.tagline !== (r.tagline ?? "") ? en.tagline : ""),
+          titleAr: r.title_ar ?? (ar.title !== r.title ? ar.title : ""),
+          summaryAr: r.summary_ar ?? (ar.summary !== r.summary ? ar.summary : ""),
+          taglineAr: r.tagline_ar ?? (ar.tagline !== (r.tagline ?? "") ? ar.tagline : ""),
           image: fromRow(r).image,
           published: r.published,
         };
@@ -117,6 +114,9 @@ export default function ServiceEditor() {
       title_en: form.titleEn.trim(),
       summary_en: form.summaryEn.trim(),
       tagline_en: form.taglineEn.trim(),
+      title_ar: form.titleAr.trim(),
+      summary_ar: form.summaryAr.trim(),
+      tagline_ar: form.taglineAr.trim(),
       image: form.image,
       published: form.published,
       updated_at: new Date().toISOString(),
@@ -192,6 +192,22 @@ export default function ServiceEditor() {
           </Field>
           <Field label="Bottom line" htmlFor="s-tagline-en">
             <input id="s-tagline-en" lang="en" className={inputClass} value={form.taglineEn} onChange={(e) => set("taglineEn", e.target.value)} placeholder={form.tagline} />
+          </Field>
+        </section>
+
+        <section className="space-y-5 rounded-xl border border-slate-200 bg-white p-5 sm:p-6 lg:col-start-1">
+          <div>
+            <h2 className="font-semibold text-navy-900">Version arabe (/ar)</h2>
+            <p className="mt-0.5 text-xs text-slate-500">Affichée sur le site en arabe. Vide : le texte français est utilisé.</p>
+          </div>
+          <Field label="العنوان" htmlFor="s-title-ar">
+            <input id="s-title-ar" lang="ar" dir="rtl" className={inputClass} value={form.titleAr} onChange={(e) => set("titleAr", e.target.value)} />
+          </Field>
+          <Field label="النص" htmlFor="s-summary-ar">
+            <textarea id="s-summary-ar" lang="ar" dir="rtl" rows={4} className={inputClass} value={form.summaryAr} onChange={(e) => set("summaryAr", e.target.value)} />
+          </Field>
+          <Field label="السطر السفلي" htmlFor="s-tagline-ar">
+            <input id="s-tagline-ar" lang="ar" dir="rtl" className={inputClass} value={form.taglineAr} onChange={(e) => set("taglineAr", e.target.value)} placeholder={form.tagline} />
           </Field>
         </section>
 

@@ -30,7 +30,7 @@ function readCache<T>(key: string): T | undefined {
  */
 export function createStore<T>(opts: { key: string; fallback: T; load: () => Promise<T | undefined> }) {
   const embedded = !isServer ? (window.__MTE_DATA__?.[opts.key] as T | undefined) : undefined;
-  let snapshot: T = embedded ?? readCache<T>(`mte-${opts.key}-v3`) ?? opts.fallback;
+  let snapshot: T = embedded ?? readCache<T>(`mte-${opts.key}-v4`) ?? opts.fallback;
   let started = isServer;
   const listeners = new Set<() => void>();
 
@@ -45,7 +45,7 @@ export function createStore<T>(opts: { key: string; fallback: T; load: () => Pro
     opts.load().then((value) => {
       if (value === undefined) return;
       try {
-        localStorage.setItem(`mte-${opts.key}-v3`, JSON.stringify(value));
+        localStorage.setItem(`mte-${opts.key}-v4`, JSON.stringify(value));
       } catch {
         // Storage unavailable: fetched again next visit.
       }

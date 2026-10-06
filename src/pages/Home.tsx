@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Check, Clock, Factory, FileText, Mail, MapPin, Phone, Plus } from "lucide-react";
 import { BRANDS } from "../site";
 import { cvStore, hoursFor, telHref, useContact, whatsappLink } from "../contact";
-import { coverImage, formatDate, portfolioStore, projectText } from "../portfolio";
+import { coverImage, formatDate, portfolioStore, projectPath, projectText } from "../portfolio";
 import { useServices } from "../services";
 import { localePath, useLang, useT } from "../i18n";
 import { BrandIcon } from "../ui/BrandIcon";
@@ -33,7 +33,7 @@ function Hero() {
         fetchPriority="high"
         className="absolute inset-0 -z-10 size-full object-cover opacity-45"
       />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-navy-950 via-navy-950/85 to-navy-950/30" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-navy-950 via-navy-950/85 to-navy-950/30 rtl:bg-gradient-to-l" />
       <div className="container-page pt-32 pb-20 sm:pt-40 sm:pb-28 lg:pt-44 lg:pb-32">
         <div className="max-w-2xl">
           <p className="eyebrow text-brand">{t.eyebrow}</p>
@@ -42,11 +42,11 @@ function Hero() {
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
             <Link to={localePath(lang, "/#contact")} className="btn-primary px-6">
               {nav.quote}
-              <ArrowRight className="size-4" />
+              <ArrowRight className="size-4 rtl:-scale-x-100" />
             </Link>
             <a href={whatsappLink(contact)} target="_blank" rel="noopener noreferrer" className="btn-outline-light px-6">
               <BrandIcon name="WhatsApp" className="size-4" />
-              {contact.whatsapp}
+              <span dir="ltr">{contact.whatsapp}</span>
             </a>
           </div>
           <ul className="mt-10 grid gap-3 text-sm text-slate-300 sm:grid-cols-3 sm:gap-6">
@@ -191,7 +191,7 @@ function About() {
             loading="lazy"
             className="aspect-[4/5] w-full rounded-xl object-cover shadow-lg"
           />
-          <div className="absolute -bottom-5 left-5 rounded-lg bg-brand px-5 py-3 shadow-md sm:-right-5 sm:left-auto">
+          <div className="absolute -bottom-5 start-5 rounded-lg bg-brand px-5 py-3 shadow-md sm:-end-5 sm:start-auto">
             <p className="font-display text-2xl leading-none font-semibold text-navy-950">{t.since}</p>
             <p className="mt-1 text-xs font-medium text-navy-900">{t.sinceText}</p>
           </div>
@@ -210,7 +210,7 @@ function About() {
           <div className="mt-8 flex flex-wrap gap-3">
             <Link to={localePath(lang, "/portfolio")} className="btn bg-navy-900 text-white hover:bg-navy-800">
               {t.work}
-              <ArrowRight className="size-4" />
+              <ArrowRight className="size-4 rtl:-scale-x-100" />
             </Link>
             {cv.fr && (
               <a href={cv.fr} target="_blank" rel="noopener noreferrer" className="btn-outline">
@@ -245,7 +245,7 @@ function LatestWork() {
           <SectionTitle eyebrow={t.eyebrow} title={t.title} />
           <Link to={localePath(lang, "/portfolio")} className="inline-flex items-center gap-1.5 text-sm font-semibold text-navy-900 hover:text-navy-700">
             {t.all}
-            <ArrowRight className="size-4" />
+            <ArrowRight className="size-4 rtl:-scale-x-100" />
           </Link>
         </div>
         <ul className="mt-10 grid gap-6 md:grid-cols-3">
@@ -263,11 +263,11 @@ function LatestWork() {
               );
             }
             const cover = coverImage(item);
-            const { title } = projectText(item, lang);
+            const { title, translated } = projectText(item, lang);
             return (
               <li key={item.id}>
                 <Link
-                  to={localePath(lang, `/portfolio/${item.id}`)}
+                  to={localePath(lang, projectPath(item))}
                   className="group block overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xs transition hover:shadow-md"
                 >
                   <div className="aspect-video overflow-hidden bg-slate-200">
@@ -277,7 +277,9 @@ function LatestWork() {
                   </div>
                   <div className="p-5">
                     <p className="text-xs text-slate-500">{formatDate(item.created_at, lang)}</p>
-                    <h3 className="mt-1.5 line-clamp-2 font-semibold text-navy-900 group-hover:text-navy-700">{title}</h3>
+                    <h3 className="mt-1.5 line-clamp-2 font-semibold text-navy-900 group-hover:text-navy-700" dir={translated ? undefined : "auto"}>
+                      {title}
+                    </h3>
                   </div>
                 </Link>
               </li>
@@ -316,9 +318,9 @@ function Contact() {
   const t = useT().contact;
   const contact = useContact();
   const rows = [
-    { icon: <BrandIcon name="WhatsApp" className="size-5" />, label: t.whatsapp, value: contact.whatsapp, href: whatsappLink(contact), external: true },
-    { icon: <Phone className="size-5" />, label: t.phone, value: contact.phone, href: telHref(contact.phone) },
-    { icon: <Mail className="size-5" />, label: t.email, value: contact.email, href: `mailto:${contact.email}` },
+    { icon: <BrandIcon name="WhatsApp" className="size-5" />, label: t.whatsapp, value: contact.whatsapp, href: whatsappLink(contact), external: true, ltr: true },
+    { icon: <Phone className="size-5" />, label: t.phone, value: contact.phone, href: telHref(contact.phone), ltr: true },
+    { icon: <Mail className="size-5" />, label: t.email, value: contact.email, href: `mailto:${contact.email}`, ltr: true },
     { icon: <MapPin className="size-5" />, label: t.address, value: contact.address, href: contact.mapUrl, external: true },
     { icon: <Clock className="size-5" />, label: t.hours, value: hoursFor(contact, lang) },
   ];
@@ -334,7 +336,9 @@ function Contact() {
                   <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-navy-900 text-brand">{r.icon}</span>
                   <span>
                     <span className="block text-xs font-medium tracking-wide text-slate-500 uppercase">{r.label}</span>
-                    <span className="block font-medium break-all text-navy-900">{r.value}</span>
+                    <span className="block font-medium break-all text-navy-900" dir={r.ltr ? "ltr" : undefined}>
+                      {r.value}
+                    </span>
                   </span>
                 </>
               );

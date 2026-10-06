@@ -362,6 +362,144 @@ Pour obtenir le fichier BIN ou pour un problème similaire, contactez-nous sur W
 where id = 15 and trim(title) = 'Diagnosing and Reprogramming Corrupted EEPROM in Honeywell VFD (HONVFD05P5K)' and coalesce(title_en, '') = '';
 
 -- ---------------------------------------------------------------------------
+-- 10. Readable project addresses (/portfolio/<slug>) and Arabic version (/ar)
+-- ---------------------------------------------------------------------------
+alter table public.portfolio add column if not exists slug text;
+create unique index if not exists portfolio_slug_key on public.portfolio (slug);
+
+-- Addresses of the published projects (only where none is set yet; editable in /admin).
+update public.portfolio p set slug = v.s
+from (values
+  (18, 'plc-programming-industrial-vacuum-system'),
+  (17, 'generator-40-kva-repair-recommissioning'),
+  (16, 'plc-hmi-retrofit-carton-production-line'),
+  (15, 'honeywell-vfd-eeprom-reprogramming'),
+  (1, 'vfd-repair-120-kw'),
+  (4, 'abb-acs150-drive-installation-sew-replacement'),
+  (3, 'ls-vfd-repair-plastic-injection-machine'),
+  (7, 'ultrasonic-cutting-machine-repair'),
+  (9, 'andeli-30-kva-voltage-stabiliser-overhaul'),
+  (13, 'schneider-altivar-atv930-commissioning'),
+  (11, 'siemens-et200-ktp1200-upgrade-algiers-metro'),
+  (14, 'vfd-control-panel-repair-jh21-45t-press'),
+  (8, 'treadmill-power-board-pcb-reverse-engineering')
+) as v(id, s)
+where p.id = v.id and p.slug is null
+  and not exists (select 1 from public.portfolio o where o.slug = v.s);
+
+-- Any other project: an address made from its title, plus its number to stay unique.
+update public.portfolio
+set slug = trim(both '-' from regexp_replace(
+      lower(translate(coalesce(nullif(trim(title_en), ''), title),
+        'àâäáãåçéèêëíìîïñóòôöõúùûüýÿÀÂÄÁÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝ',
+        'aaaaaaceeeeiiiinooooouuuuyyAAAAAACEEEEIIIINOOOOOUUUUY')),
+      '[^a-z0-9]+', '-', 'g')) || '-' || id
+where slug is null;
+
+alter table public.services add column if not exists title_ar text not null default '';
+alter table public.services add column if not exists summary_ar text not null default '';
+alter table public.services add column if not exists tagline_ar text not null default '';
+alter table public.portfolio add column if not exists title_ar text;
+alter table public.portfolio add column if not exists description_ar text;
+alter table public.site_settings add column if not exists hours_ar text not null default '';
+
+update public.site_settings set hours_ar = 'من السبت إلى الخميس، 8:00 – 17:00' where id = 1 and hours_ar = '';
+
+-- Arabic texts of the six services (only where still empty).
+update public.services s set title_ar = v.t, summary_ar = v.s, tagline_ar = v.g
+from (values
+  ('plc-programming', $q$برمجة المتحكمات PLC وواجهات HMI$q$,
+   $q$كتابة وتعديل وضبط برامج المتحكمات المنطقية وشاشات التشغيل. استرجاع البرامج الضائعة وترحيل المتحكمات القديمة إلى أجيال حديثة.$q$,
+   $q$Siemens S7 · TIA Portal · Modicon · Omron · Fatek$q$),
+  ('control-panel-diagnostics', $q$تصليح أعطال خزائن التحكم$q$,
+   $q$آلة متوقفة أو عطل متقطع: بحث منهجي عن العطل داخل الخزانة (المتحكم، المداخل والمخارج، الحساسات، المرحلات) وإعادة الإنتاج.$q$,
+   $q$تدخل في الموقع عبر كامل الجزائر$q$),
+  ('electrical-study', $q$الدراسات الكهربائية$q$,
+   $q$المخططات الكهربائية، حصيلة القدرة، اختيار أجهزة الحماية والكوابل، تصميم خزائن التحكم وتحديث التركيبات القائمة.$q$,
+   $q$الخزائن · الحماية · التحديث$q$),
+  ('drives-repair', $q$مغيرات السرعة (VFD)$q$,
+   $q$تشخيص وتصليح وضبط واستبدال مغيرات السرعة AC/DC والمشغلات التدريجية، من 0,37 كيلوواط إلى أكثر من 500 كيلوواط.$q$,
+   $q$ABB · Schneider Altivar · Siemens · Danfoss · LS$q$),
+  ('electronic-repair', $q$تصليح البطاقات الإلكترونية$q$,
+   $q$تصليح على مستوى المكونات لبطاقات التحكم والقدرة، مع الهندسة العكسية عند غياب المخطط.$q$,
+   $q$بطاقات التحكم والقدرة$q$),
+  ('power-sensors', $q$مزودات الطاقة والحساسات$q$,
+   $q$مزودات الطاقة AC/DC، أجهزة UPS ومنظمات الجهد؛ تشخيص واستبدال الحساسات والمرسلات.$q$,
+   $q$مزودات الطاقة · الحساسات · أجهزة القياس$q$)
+) as v(slug, t, s, g)
+where s.slug = v.slug and s.title_ar = '';
+
+-- Arabic translations of the published projects (only where still empty; edit them in /admin).
+update public.portfolio p set title_ar = v.t, description_ar = v.d
+from (values
+  (18, $q$برمجة متحكم PLC — نظام تفريغ (Vacuum) صناعي | أتمتة الجزائر$q$,
+   $q$تصميم وبرمجة نظام تحكم آلي لتركيبة تفريغ صناعية تضم ثلاثة محركات: مضخة تفريغ رئيسية (11 كيلوواط) ونافختان من نوع Roots (7 كيلوواط و5,5 كيلوواط)، يتحكم فيها متحكم منطقي Mitsubishi FX.
+
+يتضمن برنامج Ladder المطوَّر:
+
+→ تسلسل تشغيل آلي انطلاقًا من حساسات الضغط
+→ نمطان للتشغيل: آلي ويدوي
+→ حماية من أعطال الطور (مرحّل حراري)
+→ مراقبة درجة الحرارة بواسطة منظم Omron E5CC
+→ التحكم في صمام كهربائي لكسر التفريغ (fail-safe)
+→ تأخير زمني عند الإقلاع لحماية الأجزاء الميكانيكية
+→ إقفال متبادل (Interlock): لا يمكن تشغيل النافختين دون المضخة الرئيسية
+→ إعادة ضبط الإنذارات مع حفظ الأعطال
+
+إنجاز MTE Industrial Electronics — الجزائر.
+مختصون في الأتمتة الصناعية، برمجة المتحكمات PLC، مغيرات التردد والصيانة الإلكترونية على مستوى المكونات.$q$),
+  (17, $q$تصليح وإعادة تشغيل مولد كهربائي بقدرة 40 كيلوفولط أمبير$q$,
+   $q$تشخيص وتصليح كامل لمولد كهربائي بقدرة 40 كيلوفولط أمبير. الأشغال المنجزة: استبدال الملامس الرئيسي، تصليح وحدة التحكم في المحرك (شاشة المولد)، تصليح شاحن البطارية، إعادة كاملة لتوصيلات خزانة التحكم مع تصحيح المخطط الكهربائي، تصليح حساس مستوى الوقود، تفريغ واستبدال سائل التبريد، تشخيص وتصليح دارة المازوت، ثم إعادة التشغيل والاختبار تحت الحمل. أُنجز التدخل في 4 أيام — بعد أن عجز تقنيون سابقون عن حل العطل لأكثر من شهر.$q$),
+  (16, $q$تحديث كامل للمتحكم PLC وواجهة HMI على خط إنتاج الكرتون Hebei Huayu$q$,
+   $q$وصل خط إنتاج الكرتون بعطل كارثي: دارة قصيرة بين 24 فولط DC وطور 230 فولط AC أتلفت معظم المكونات الكهربائية والإلكترونية في الآلة. لم يسلم شيء تقريبًا.
+شمل التدخل كل الأضرار:
+
+🔍 تشخيص السبب: تتبّع مسار الدارة القصيرة داخل الخزانة وتحديد كل مكوّن متضرر
+⚡ تصليح مغيرات السرعة: تصليح على مستوى المكونات لمغيرات التردد المتضررة
+🔧 تركيب وتشغيل مغيرات السرعة: تركيب مغيرات بديلة وبرمجة كل الإعدادات (التسارع، التباطؤ، حدود التردد، نمط التحكم)
+🖥️ تصليح واجهة HMI: تشخيص وتصليح واجهة التشغيل المتضررة
+🧠 متحكم جديد: استبدال المتحكم المعطّل بـ Schneider Electric Modicon TM221 وإعادة كتابة برنامج Ladder بالكامل
+🔌 إعادة التوصيل بالكامل: نزع كل توصيلات الخزانة وإعادة إنجازها وفق المعايير الصناعية
+
+انتقلت الآلة من توقف تام إلى العودة للإنتاج — دون وثائق أصلية ودون نسخة احتياطية من البرنامج، انطلاقًا من الصفر.$q$),
+  (15, $q$تشخيص وإعادة برمجة ذاكرة EEPROM تالفة في مغير سرعة Honeywell (HONVFD05P5K)$q$,
+   $q$تصليح مغير تردد عالي الأداء Honeywell HONVFD05P5K كان يُظهر عطلًا دائمًا.
+
+بفضل تشخيص منهجي، تم تحديد السبب: ذاكرة EEPROM من نوع M24C64 تالفة.
+تم نزع الذاكرة وتحليل محتواها، ثم إعادة برمجتها بملف ثنائي (BIN) سليم.
+
+بعد إعادة تركيب الذاكرة، عاد مغير السرعة إلى العمل بشكل طبيعي، ما يؤكد الحل الكامل للعطل.
+
+يبرز هذا المشروع:
+
+تشخيص الأعطال على مستوى العتاد والبرنامج الثابت (firmware)
+التعامل مع ذاكرات EEPROM وإعادة برمجتها
+استعمال المبرمجات الخارجية واسترجاع البيانات الثنائية
+التصليح العملي لمعدات التحكم الصناعية
+
+للحصول على ملف BIN أو لمشكلة مماثلة، تواصلوا معنا عبر واتساب.$q$),
+  (1, $q$تصليح مغير سرعة بقدرة 120 كيلوواط$q$,
+   $q$تصليح مغير سرعة بقدرة 120 كيلوواط.$q$),
+  (4, $q$تركيب مغير سرعة ABB ACS150 | استبدال مغير SEW$q$,
+   $q$تركيب ناجح لمغير سرعة ABB ACS150 في وحدة تعبئة قارورات المياه. تم استبدال مغير قديم من نوع SEW خارج الخدمة بنموذج ABB ACS150-03E-08A8-4 (1,5 كيلوواط / 2 حصان). أُعيد استعمال مقاومة الكبح الموجودة، وتم التشغيل لضمان عمل موثوق ومحسَّن.$q$),
+  (3, $q$تصليح مغير سرعة LS (VFD) | آلة حقن البلاستيك لنعال الأحذية$q$,
+   $q$تدخل كامل (تشخيص، تصليح واختبار) على مغيرات السرعة LS لآلة حقن البلاستيك الخاصة بنعال الأحذية. استبدال جسر التقويم ثلاثي الأطوار، ووحدة IGBT (مقطّع الكبح)، والمكثفات، ووحدة Semikron SKDH 146/16-L75. أُعيد التشغيل بأداء محسَّن وموثوقية صناعية.$q$),
+  (7, $q$تصليح آلة قطع بالموجات فوق الصوتية$q$,
+   $q$تشخيص وتصليح واختبار آلة قطع بالموجات فوق الصوتية. تدخل على المكونات الإلكترونية (المولّد، المحوِّل، بطاقة القدرة) وضبط إعدادات التشغيل. أُعيد التشغيل بأداء مستقر وقطع دقيق.$q$),
+  (9, $q$ترميم وتجديد منظم جهد Andeli بقدرة 30 كيلوفولط أمبير (ثلاثي الأطوار)$q$,
+   $q$تجديد كامل لمنظم جهد ثلاثي الأطوار Andeli بقدرة 30 كيلوفولط أمبير. تشخيص معمّق وتجديد شامل، يشمل استبدال المحركات المؤازرة (servo) ومعايرة دارات التنظيم. من حالة مستعملة إلى حالة كالجديد، لضمان حماية كهربائية عالية الأداء واستقرار أمثل للجهد.$q$),
+  (13, $q$تركيب وضبط مغير السرعة Schneider Altivar Process ATV930$q$,
+   $q$تشغيل مغير سرعة صناعي Schneider Electric ATV930 (22 كيلوواط / 30 حصان). إدماج في الموقع يشمل توصيلات التحكم، ضبط منحدرات التسارع وتحسين استهلاك المحرك للطاقة. حل عالي الأداء للتحكم في الضخ أو التهوية الصناعية في الجزائر.$q$),
+  (11, $q$تحديث أتمتة Siemens ET200 وKTP1200 – ميترو الجزائر$q$,
+   $q$تحسين نظام التحكم والقيادة السككي. تطوير على TIA Portal لمتحكم Siemens ET200 وواجهة KTP1200. إدماج وظائف تشخيص متقدمة ومراقبة آنية لحالات وحدة المعالجة (RUN/STOP) من أجل صيانة وقائية أفضل للشبكة.$q$),
+  (14, $q$ضبط مغير السرعة وتصليح لوحة التحكم | مكبس هوائي JH21-45T$q$,
+   $q$تدخل على مكبس هوائي JH21-45T لثقب الصفائح المعدنية. ضبط مغير السرعة (VFD) وتصليح لوحة التحكم لضمان عمل موثوق ومستقر للآلة.$q$),
+  (8, $q$هندسة عكسية وتصليح بطاقة إلكترونية: بطاقة القدرة لجهاز المشي$q$,
+   $q$خبرة متقدمة في الإلكترونيات الدقيقة على منصة الاختبار. تشخيص معقّد بالهندسة العكسية لتحديد واستبدال مكونات القدرة المحترقة في وحدة التحكم لجهاز المشي (Treadmill). ترميم دقيق للدارة المطبوعة (PCB) وإعادتها للخدمة دون الحاجة إلى استبدال البطاقة كاملة.$q$)
+) as v(id, t, d)
+where p.id = v.id and coalesce(p.title_ar, '') = '';
+
+-- ---------------------------------------------------------------------------
 -- 8. Make your account the admin (create it first in Authentication → Users)
 -- ---------------------------------------------------------------------------
 insert into public.site_admins (user_id)

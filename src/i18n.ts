@@ -1,36 +1,48 @@
 import { createContext, useContext } from "react";
 
 /**
- * Site languages. French lives at "/", English under "/en".
+ * Site languages. French lives at "/", English under "/en", Arabic (right-to-left) under "/ar".
  * Every text of the public pages is here; content edited in /admin (services, projects,
  * contact details) has its own French and English fields.
  */
-export type Lang = "fr" | "en";
-export const LANGS: Lang[] = ["fr", "en"];
+export type Lang = "fr" | "en" | "ar";
+export const LANGS: Lang[] = ["fr", "en", "ar"];
+
+/** Labels of the language switcher, always written in their own language. */
+export const LANG_LABELS: Record<Lang, { short: string; name: string }> = {
+  fr: { short: "FR", name: "Français" },
+  en: { short: "EN", name: "English" },
+  ar: { short: "عربي", name: "العربية" },
+};
 
 export const LangContext = createContext<Lang>("fr");
 export const useLang = () => useContext(LangContext);
 export const useT = () => DICT[useContext(LangContext)];
 
-/** "/portfolio" → "/en/portfolio"; "/#contact" → "/en#contact". */
+/** "/portfolio" → "/en/portfolio"; "/#contact" → "/ar#contact". */
 export function localePath(lang: Lang, path: string) {
   if (lang === "fr") return path;
-  if (path === "/") return "/en";
-  if (path.startsWith("/#")) return `/en${path.slice(1)}`;
-  return `/en${path}`;
+  const prefix = `/${lang}`;
+  if (path === "/") return prefix;
+  if (path.startsWith("/#")) return `${prefix}${path.slice(1)}`;
+  return `${prefix}${path}`;
 }
 
 /** The current page's path without the language prefix. */
 export function basePath(pathname: string) {
-  if (pathname === "/en") return "/";
-  return pathname.startsWith("/en/") ? pathname.slice(3) : pathname;
+  for (const lang of ["en", "ar"]) {
+    if (pathname === `/${lang}`) return "/";
+    if (pathname.startsWith(`/${lang}/`)) return pathname.slice(lang.length + 1);
+  }
+  return pathname;
 }
 
 const fr = {
   locale: "fr-DZ",
+  dir: "ltr" as "ltr" | "rtl",
   dateLocale: "fr-FR",
   ogLocale: "fr_DZ",
-  switchTo: { label: "EN", title: "English version" },
+  languages: "Langue",
   skip: "Aller au contenu",
   nav: {
     services: "Services",
@@ -240,9 +252,10 @@ export type Dict = typeof fr;
 
 const en: Dict = {
   locale: "en",
+  dir: "ltr",
   dateLocale: "en-GB",
   ogLocale: "en_US",
-  switchTo: { label: "FR", title: "Version française" },
+  languages: "Language",
   skip: "Skip to content",
   nav: {
     services: "Services",
@@ -429,4 +442,215 @@ const en: Dict = {
   },
 };
 
-export const DICT: Record<Lang, Dict> = { fr, en };
+const ar: Dict = {
+  locale: "ar-DZ",
+  dir: "rtl",
+  dateLocale: "ar-DZ",
+  ogLocale: "ar_DZ",
+  languages: "اللغة",
+  skip: "الانتقال إلى المحتوى",
+  nav: {
+    services: "الخدمات",
+    method: "طريقة العمل",
+    about: "من نحن",
+    work: "إنجازاتنا",
+    faq: "الأسئلة الشائعة",
+    quote: "اطلب عرض سعر",
+    main: "القائمة الرئيسية",
+    mobile: "قائمة الهاتف",
+    open: "فتح القائمة",
+    close: "إغلاق القائمة",
+    home: "MTE – الصفحة الرئيسية",
+  },
+  seo: {
+    homeTitle: "MTE – الأتمتة والإلكترونيات الصناعية في الجزائر | برمجة PLC، خزائن التحكم، مغيرات السرعة",
+    homeDescription:
+      "برمجة المتحكمات PLC وواجهات HMI، تصليح أعطال خزائن التحكم، الدراسات الكهربائية، تصليح مغيرات السرعة والبطاقات الإلكترونية. مقرنا بالمدية ونتدخل في كامل التراب الجزائري.",
+    workTitle: "إنجازاتنا – الأتمتة والتصليح الصناعي | MTE الجزائر",
+    workDescription:
+      "تدخلات حقيقية لـ MTE في الجزائر: برمجة المتحكمات، تحديث خطوط الإنتاج، تشغيل وتصليح مغيرات السرعة، وتصليح البطاقات الإلكترونية.",
+    projectSuffix: "إنجازات MTE",
+    notFoundTitle: "الصفحة غير موجودة | MTE",
+    notFoundDescription: "هذه الصفحة غير موجودة أو تم نقلها.",
+  },
+  hero: {
+    eyebrow: "المدية · نتدخل في كامل التراب الجزائري",
+    title: "الأتمتة والإلكترونيات الصناعية",
+    text: "برمجة المتحكمات المنطقية، تصليح أعطال خزائن التحكم، الدراسات الكهربائية، تصليح مغيرات السرعة والبطاقات الإلكترونية: محاور واحد لإعادة آلاتكم إلى الإنتاج.",
+    checks: ["تشخيص خلال 24 إلى 48 ساعة", "عرض سعر قبل أي تدخل", "جميع العلامات التجارية"],
+  },
+  brands: { label: "العلامات التي نتعامل معها", text: "معدات من جميع العلامات، منها" },
+  services: {
+    eyebrow: "الخدمات",
+    title: "ما نقوم به",
+    text: "من برمجة المتحكمات إلى التصليح على مستوى المكونات، في الورشة أو في الموقع.",
+  },
+  reach: {
+    eyebrow: "المناطق والقطاعات",
+    title: "في خدمة الصناعة الجزائرية",
+    text: "انطلاقًا من المدية، نتدخل في الموقع عبر كامل التراب الجزائري ونستقبل في ورشتنا المعدات المرسلة من جميع الولايات.",
+    sectorsTitle: "القطاعات التي نعمل فيها",
+    sectors: [
+      "الصناعات الغذائية والتعبئة",
+      "البلاستيك والحقن",
+      "التغليف وصناعة الكرتون",
+      "النقل بالسكك الحديدية",
+      "الطاقة: المولدات الكهربائية ومنظمات الجهد",
+      "صناعة المعادن: المكابس والقطع",
+      "الضخ والتهوية والتفريغ الصناعي",
+    ],
+    areasTitle: "الولايات التي نخدمها، منها",
+    areas: [
+      "المدية",
+      "الجزائر العاصمة",
+      "البليدة",
+      "بومرداس",
+      "تيبازة",
+      "البويرة",
+      "عين الدفلى",
+      "الجلفة",
+      "المسيلة",
+      "تيزي وزو",
+      "بجاية",
+      "سطيف",
+      "برج بوعريريج",
+      "الشلف",
+      "تيارت",
+      "وهران",
+      "قسنطينة",
+      "عنابة",
+    ],
+    everywhere: "… وفي أي مكان آخر في الجزائر حسب الطلب.",
+  },
+  method: {
+    eyebrow: "طريقة العمل",
+    title: "تدخل واضح، من العطل إلى إعادة التشغيل",
+    text: "في كل مرحلة تعرفون ما تم اكتشافه، وما سيتم إنجازه، وفي أي أجل.",
+    steps: [
+      { title: "التواصل", text: "تصفون الآلة والحاجة: صور، رمز العطل، البرنامج الحالي. رأي أولي سريع، غالبًا منذ المكالمة الأولى." },
+      { title: "التشخيص أو الدراسة", text: "البحث عن العطل في الموقع، أو دراسة الحاجة لبرنامج جديد أو لتعديل." },
+      { title: "العرض", text: "عرض سعر واضح قبل التدخل: الأشغال، الآجال والعتاد المحتمل." },
+      { title: "التدخل والتشغيل", text: "برمجة أو تصليح أو تركيب، اختبارات مع فرقكم، ثم حفظ نسخة احتياطية من البرنامج." },
+    ],
+  },
+  about: {
+    eyebrow: "من نحن",
+    title: "مهندس، من المتحكم إلى المكوّن الإلكتروني",
+    photoAlt: "Fekhar Moutie في موقع صناعي بالجزائر",
+    since: "منذ 2020",
+    sinceText: "في خدمة الصناعة",
+    p1a: "أسّس ",
+    p1b: " شركة MTE، وهو مهندس في الأتمتة والإلكترونيات، لمرافقة الصناعيين في كل ما يخص جانب التحكم في آلاتهم: المتحكمات، الشاشات، الخزائن، مغيرات السرعة والبطاقات الإلكترونية.",
+    p2: "الجمع بين البرمجة والإلكترونيات يسمح بالتصليح بسرعة: قراءة البرنامج مباشرة، قياس الإشارات داخل الخزانة، وفهم ما يحدث على البطاقة عند الحاجة.",
+    p3: "التزامنا: تدخلات محضّرة جيدًا، شروحات واضحة، وبرامج محفوظة وموثّقة.",
+    work: "شاهد إنجازاتنا",
+    cvFr: "السيرة الذاتية (بالفرنسية)",
+    cvEn: "السيرة الذاتية (بالإنجليزية)",
+  },
+  latest: { eyebrow: "إنجازاتنا", title: "تدخلات حديثة", all: "كل الإنجازات" },
+  faq: {
+    eyebrow: "الأسئلة الشائعة",
+    title: "أسئلة متكررة",
+    text: "سؤال آخر؟ اتصلوا بنا أو راسلونا عبر واتساب.",
+    items: [
+      {
+        q: "ما هي المتحكمات التي تبرمجونها؟",
+        a: "Siemens (S7-200، S7-300، S7-1200، S7-1500، LOGO!)، وSchneider Electric (Modicon، Zelio)، وMitsubishi وOmron وFatek، بالإضافة إلى شاشات HMI المرتبطة بها. لعلامة أخرى، تواصلوا معنا: نخبركم بسرعة إن كان بإمكاننا التدخل.",
+      },
+      {
+        q: "برنامج آلتي ضاع، ماذا أفعل؟",
+        a: "نسترجع برنامج المتحكم عندما يكون ذلك ممكنًا، أو نعيد كتابته انطلاقًا من طريقة عمل الآلة. ثم تحصلون على نسخة احتياطية حتى لا تعتمدوا على نسخة واحدة فقط.",
+      },
+      {
+        q: "هل تصلحون مغيرات السرعة؟",
+        a: "نعم: تشخيص، تصليح على مستوى المكونات وضبط إعدادات مغيرات السرعة ABB وSchneider Altivar وSiemens وDanfoss وLS وغيرها، من 0,37 كيلوواط إلى أكثر من 500 كيلوواط. يتم التشخيص خلال 24 إلى 48 ساعة.",
+      },
+      {
+        q: "هل تنجزون دراسات كهربائية؟",
+        a: "نعم: المخططات الكهربائية، حصيلة القدرة، اختيار أجهزة الحماية والكوابل، تصميم الخزائن وتحديث التركيبات القائمة. أرسلوا لنا دفتر الشروط أو وصفًا للتركيبة.",
+      },
+      {
+        q: "هل تتدخلون في الموقع؟",
+        a: "نعم، في كامل التراب الجزائري انطلاقًا من المدية. إذا كانت الآلة متوقفة، أرسلوا لنا صورًا للخزانة ورمز العطل الظاهر: هذا يسمح غالبًا بتحضير التدخل قبل التنقل.",
+      },
+      {
+        q: "كيف أحصل على عرض سعر؟",
+        a: "صفوا حاجتكم عبر استمارة الاتصال أو واتساب. تحصلون على عرض سعر قبل أي تدخل.",
+      },
+    ],
+  },
+  contact: {
+    eyebrow: "اتصل بنا",
+    title: "آلة متوقفة أو مشروع جديد؟",
+    text: "أرسلوا صورة للخزانة، أو رمز العطل الظاهر، أو وصف مشروعكم: نعود إليكم بسرعة.",
+    whatsapp: "واتساب",
+    phone: "الهاتف",
+    email: "البريد الإلكتروني",
+    address: "العنوان",
+    hours: "أوقات العمل",
+  },
+  form: {
+    title: "طلب عرض سعر",
+    intro: "صفوا العطل أو المشروع، ونرد عليكم بسرعة بأسئلة أو باقتراح.",
+    name: "الاسم *",
+    company: "المؤسسة",
+    phone: "الهاتف",
+    email: "البريد الإلكتروني",
+    needContact: "يرجى إدخال رقم هاتف أو بريد إلكتروني على الأقل حتى نتمكن من الرد عليكم.",
+    type: "نوع الحاجة",
+    types: ["برمجة PLC / HMI", "آلة أو خزانة معطّلة", "دراسة كهربائية", "تصليح مغيّر سرعة", "تصليح بطاقة إلكترونية", "أخرى"],
+    model: "المتحكم / العتاد",
+    modelPlaceholder: "مثال: Siemens S7-1200، Schneider M221",
+    message: "الوصف *",
+    messagePlaceholder: "الآلة المعنية، الأعراض أو رمز العطل، أو وصف المشروع…",
+    onSite: "أرغب في تدخل بالموقع",
+    send: "إرسال الطلب",
+    sending: "جارٍ الإرسال…",
+    whatsapp: "إرسال عبر واتساب",
+    error: "تعذّر الإرسال. أعيدوا المحاولة بعد قليل، أو أرسلوا نفس الطلب عبر واتساب.",
+    sentTitle: "تم إرسال الطلب",
+    sentText: (name: string, byPhone: boolean) =>
+      `شكرًا ${name}. استلمنا طلبكم وسنعود إليكم بسرعة ${byPhone ? "عبر الهاتف" : "عبر البريد الإلكتروني"}.`,
+    another: "إرسال طلب آخر",
+    honeypot: "الموقع الإلكتروني",
+    waIntro: "السلام عليكم MTE، أرغب في الحصول على عرض سعر.",
+    waLabels: { name: "الاسم", company: "المؤسسة", phone: "الهاتف", email: "البريد", type: "الحاجة", model: "العتاد", onSite: "أرغب في تدخل بالموقع" },
+  },
+  footer: {
+    text: "الأتمتة والإلكترونيات الصناعية: برمجة PLC، تصليح خزائن التحكم، الدراسات الكهربائية والتصليح، بالمدية وفي كامل الجزائر.",
+    services: "الخدمات",
+    navigation: "روابط",
+    contact: "اتصل بنا",
+    faq: "الأسئلة الشائعة",
+    rights: "جميع الحقوق محفوظة.",
+    place: "المدية، الجزائر",
+  },
+  work: {
+    eyebrow: "إنجازاتنا",
+    title: "تدخلاتنا في الميدان",
+    text: "متحكمات، مغيرات سرعة، بطاقات قدرة، آلات إنتاج: مجموعة من التدخلات المنجزة لزبائننا في الجزائر.",
+    loading: "جارٍ التحميل",
+    empty: "سيتم نشر الإنجازات قريبًا.",
+    video: "فيديو",
+    media: (n: number) => `${n} وسائط`,
+    open: "عرض المشروع",
+  },
+  post: {
+    back: "كل الإنجازات",
+    prev: "الصورة السابقة",
+    next: "الصورة التالية",
+    show: (n: number) => `عرض الصورة ${n}`,
+    ctaTitle: "حاجة مماثلة؟",
+    ctaText: "صفوا لنا آلتكم أو مشروعكم: نرد عليكم بتشخيص وعرض سعر.",
+    originalLanguage: "وصف هذا المشروع متوفر بالفرنسية فقط.",
+  },
+  notFound: {
+    eyebrow: "خطأ 404",
+    title: "الصفحة غير موجودة",
+    text: "هذه الصفحة غير موجودة أو تم نقلها.",
+    home: "العودة إلى الصفحة الرئيسية",
+    work: "شاهد إنجازاتنا",
+  },
+};
+
+export const DICT: Record<Lang, Dict> = { fr, en, ar };

@@ -4,7 +4,7 @@ import { fromContactRow, whatsappDigits, type ContactRow } from "../contact";
 import { errorMessage, supabase } from "./supabase";
 import { Button, Field, inputClass, Loading, Notice, PageHeader, useFlash } from "./ui";
 
-type Form = ContactRow & { hours_en: string; notify: string[]; cvFr: string; cvEn: string };
+type Form = ContactRow & { hours_en: string; hours_ar: string; notify: string[]; cvFr: string; cvEn: string };
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -35,6 +35,7 @@ export default function Settings() {
         map_url: site.data?.map_url ?? shown.mapUrl,
         hours: site.data?.hours ?? shown.hours,
         hours_en: site.data?.hours_en ?? shown.hoursEn,
+        hours_ar: site.data?.hours_ar ?? shown.hoursAr,
         notify: admin.data?.notify_emails ?? [],
         cvFr: cv.data?.url_fr ?? "",
         cvEn: cv.data?.url_en ?? "",
@@ -73,6 +74,7 @@ export default function Settings() {
       map_url: form.map_url.trim(),
       hours: form.hours.trim(),
       hours_en: form.hours_en.trim(),
+      hours_ar: form.hours_ar.trim(),
       updated_at: now,
     });
     const admin = await supabase.from("admin_settings").upsert({ id: 1, notify_emails: form.notify, updated_at: now });
@@ -115,6 +117,9 @@ export default function Settings() {
           </Field>
           <Field label="Horaires (anglais)" htmlFor="c-hours-en">
             <input id="c-hours-en" lang="en" className={inputClass} value={form.hours_en} onChange={(e) => set("hours_en", e.target.value)} placeholder="Saturday – Thursday, 8 am – 5 pm" />
+          </Field>
+          <Field label="Horaires (arabe)" htmlFor="c-hours-ar">
+            <input id="c-hours-ar" lang="ar" dir="rtl" className={inputClass} value={form.hours_ar} onChange={(e) => set("hours_ar", e.target.value)} placeholder="من السبت إلى الخميس، 8:00 – 17:00" />
           </Field>
         </div>
       </section>

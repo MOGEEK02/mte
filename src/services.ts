@@ -7,7 +7,7 @@ import { createStore } from "./store";
  * DEFAULT_SERVICES is the built-in copy, used until the database answers or if it can't.
  */
 type Text = { title: string; summary: string; tagline: string };
-export type Service = { slug: string; image: string; fr: Text; en: Text };
+export type Service = { slug: string; image: string } & Record<Lang, Text>;
 
 export const DEFAULT_SERVICES: Service[] = [
   {
@@ -23,6 +23,12 @@ export const DEFAULT_SERVICES: Service[] = [
       title: "PLC and HMI programming",
       summary:
         "Writing, modifying and commissioning PLC and operator-panel programs. Recovery of lost programs and migration of obsolete PLCs.",
+      tagline: "Siemens S7 · TIA Portal · Modicon · Omron · Fatek",
+    },
+    ar: {
+      title: "برمجة المتحكمات PLC وواجهات HMI",
+      summary:
+        "كتابة وتعديل وضبط برامج المتحكمات المنطقية وشاشات التشغيل. استرجاع البرامج الضائعة وترحيل المتحكمات القديمة إلى أجيال حديثة.",
       tagline: "Siemens S7 · TIA Portal · Modicon · Omron · Fatek",
     },
   },
@@ -41,6 +47,12 @@ export const DEFAULT_SERVICES: Service[] = [
         "Machine down or intermittent fault: methodical fault finding in the panel (PLC, inputs/outputs, sensors, relays) and return to production.",
       tagline: "On-site service across Algeria",
     },
+    ar: {
+      title: "تصليح أعطال خزائن التحكم",
+      summary:
+        "آلة متوقفة أو عطل متقطع: بحث منهجي عن العطل داخل الخزانة (المتحكم، المداخل والمخارج، الحساسات، المرحلات) وإعادة الإنتاج.",
+      tagline: "تدخل في الموقع عبر كامل الجزائر",
+    },
   },
   {
     slug: "electrical-study",
@@ -57,6 +69,12 @@ export const DEFAULT_SERVICES: Service[] = [
         "Wiring diagrams, power balance, selection of protection devices and cables, control panel design and retrofit of existing installations.",
       tagline: "Panels · protection · retrofit",
     },
+    ar: {
+      title: "الدراسات الكهربائية",
+      summary:
+        "المخططات الكهربائية، حصيلة القدرة، اختيار أجهزة الحماية والكوابل، تصميم خزائن التحكم وتحديث التركيبات القائمة.",
+      tagline: "الخزائن · الحماية · التحديث",
+    },
   },
   {
     slug: "drives-repair",
@@ -71,6 +89,12 @@ export const DEFAULT_SERVICES: Service[] = [
       title: "Variable frequency drives (VFD)",
       summary:
         "Diagnosis, repair, parameter setup and replacement of AC/DC drives and soft starters, from 0.37 kW to over 500 kW.",
+      tagline: "ABB · Schneider Altivar · Siemens · Danfoss · LS",
+    },
+    ar: {
+      title: "مغيرات السرعة (VFD)",
+      summary:
+        "تشخيص وتصليح وضبط واستبدال مغيرات السرعة AC/DC والمشغلات التدريجية، من 0,37 كيلوواط إلى أكثر من 500 كيلوواط.",
       tagline: "ABB · Schneider Altivar · Siemens · Danfoss · LS",
     },
   },
@@ -89,6 +113,11 @@ export const DEFAULT_SERVICES: Service[] = [
         "Component-level repair of control and power boards, with reverse engineering when no schematic exists.",
       tagline: "Control and power boards",
     },
+    ar: {
+      title: "تصليح البطاقات الإلكترونية",
+      summary: "تصليح على مستوى المكونات لبطاقات التحكم والقدرة، مع الهندسة العكسية عند غياب المخطط.",
+      tagline: "بطاقات التحكم والقدرة",
+    },
   },
   {
     slug: "power-sensors",
@@ -105,6 +134,11 @@ export const DEFAULT_SERVICES: Service[] = [
         "AC/DC power supplies, UPS units and voltage stabilisers; diagnosis and replacement of sensors and transmitters.",
       tagline: "Power supplies · sensors · instrumentation",
     },
+    ar: {
+      title: "مزودات الطاقة والحساسات",
+      summary: "مزودات الطاقة AC/DC، أجهزة UPS ومنظمات الجهد؛ تشخيص واستبدال الحساسات والمرسلات.",
+      tagline: "مزودات الطاقة · الحساسات · أجهزة القياس",
+    },
   },
 ];
 
@@ -116,6 +150,9 @@ export type ServiceRow = {
   title_en?: string | null;
   summary_en?: string | null;
   tagline_en?: string | null;
+  title_ar?: string | null;
+  summary_ar?: string | null;
+  tagline_ar?: string | null;
   image: string | null;
   sort_order: number;
   published: boolean;
@@ -124,16 +161,18 @@ export type ServiceRow = {
 export function fromRow(r: ServiceRow): Service {
   const builtIn = DEFAULT_SERVICES.find((s) => s.slug === r.slug);
   const fr = { title: r.title, summary: r.summary, tagline: r.tagline ?? "" };
+  // Other languages fall back to the built-in translation, then to French.
+  const translated = (lang: "en" | "ar"): Text => ({
+    title: r[`title_${lang}`] || builtIn?.[lang].title || fr.title,
+    summary: r[`summary_${lang}`] || builtIn?.[lang].summary || fr.summary,
+    tagline: r[`tagline_${lang}`] || builtIn?.[lang].tagline || fr.tagline,
+  });
   return {
     slug: r.slug,
     image: r.image || builtIn?.image || "/images/web/automates.webp",
     fr,
-    // English falls back to the built-in translation, then to French.
-    en: {
-      title: r.title_en || builtIn?.en.title || fr.title,
-      summary: r.summary_en || builtIn?.en.summary || fr.summary,
-      tagline: r.tagline_en || builtIn?.en.tagline || fr.tagline,
-    },
+    en: translated("en"),
+    ar: translated("ar"),
   };
 }
 

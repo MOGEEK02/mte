@@ -36,7 +36,7 @@ function page(p, data, { keepData = true } = {}) {
   const markup = server.render(p.url, data);
   const structured = p.jsonLd.map((d) => `<script type="application/ld+json">${json(d)}</script>`).join("\n  ");
   let html = template
-    .replace(/<html lang="[^"]*">/, `<html lang="${server.DICT[p.lang].locale}">`)
+    .replace(/<html lang="[^"]*">/, `<html lang="${server.DICT[p.lang].locale}" dir="${server.DICT[p.lang].dir}">`)
     .replace(HEAD_BLOCK, () => server.headHtml(p.meta))
     .replace("<!--structured-data-->", () => structured)
     .replace('<div id="root"></div>', () =>

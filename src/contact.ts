@@ -13,6 +13,7 @@ export type Contact = {
   mapUrl: string;
   hours: string;
   hoursEn: string;
+  hoursAr: string;
 };
 
 export type ContactRow = {
@@ -23,6 +24,7 @@ export type ContactRow = {
   map_url: string;
   hours: string;
   hours_en?: string;
+  hours_ar?: string;
 };
 
 export const DEFAULT_CONTACT: Contact = {
@@ -33,6 +35,7 @@ export const DEFAULT_CONTACT: Contact = {
   mapUrl: CONTACT.mapUrl,
   hours: CONTACT.hours,
   hoursEn: CONTACT.hoursEn,
+  hoursAr: CONTACT.hoursAr,
 };
 
 /** Fills empty fields from the built-in details, so a blank field never breaks a link. */
@@ -46,6 +49,7 @@ export function fromContactRow(r: Partial<ContactRow>): Contact {
     mapUrl: r.map_url?.trim() || D.mapUrl,
     hours: r.hours?.trim() || D.hours,
     hoursEn: r.hours_en?.trim() || D.hoursEn,
+    hoursAr: r.hours_ar?.trim() || D.hoursAr,
   };
 }
 
@@ -77,7 +81,7 @@ export function useContact(): Contact {
 }
 
 export function hoursFor(contact: Contact, lang: Lang) {
-  return lang === "en" ? contact.hoursEn : contact.hours;
+  return lang === "en" ? contact.hoursEn : lang === "ar" ? contact.hoursAr : contact.hours;
 }
 
 // CV links shown in the About section ("resume_links" table).

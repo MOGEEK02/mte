@@ -29,10 +29,11 @@ export function Layout({ lang }: { lang: Lang }) {
   useScrollOnNavigate();
   useEffect(() => {
     document.documentElement.lang = DICT[lang].locale;
+    document.documentElement.dir = DICT[lang].dir;
   }, [lang]);
   return (
     <LangContext.Provider value={lang}>
-      <div className="flex min-h-screen flex-col">
+      <div className="flex min-h-screen flex-col" dir={DICT[lang].dir}>
         <a
           href="#contenu"
           className="sr-only z-[60] rounded-md bg-brand px-4 py-2 font-semibold text-navy-950 focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
