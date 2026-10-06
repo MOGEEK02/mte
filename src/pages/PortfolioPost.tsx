@@ -1,11 +1,12 @@
 import { useEffect, useState, type TouchEvent } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, ImageOff } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, ImageOff, Languages } from "lucide-react";
 import {
-  coverImage,
   fetchPortfolioItem,
   formatDate,
   getYouTubeId,
+  portfolioStore,
+  projectText,
   sortedMedia,
   splitDescription,
   stillImage,
@@ -13,6 +14,8 @@ import {
   type MediaItem,
   type PortfolioItem,
 } from "../portfolio";
+import { projectMeta } from "../seo";
+import { localePath, useLang, useT } from "../i18n";
 import { FALLBACK_IMAGE, getOptimizedImageUrl, isImageMedia } from "../utils/imageOptimizer";
 import { Seo } from "../ui/Seo";
 import NotFound from "./NotFound";
@@ -50,7 +53,8 @@ function Media({ media, title, active }: { media: MediaItem; title: string; acti
   );
 }
 
-function Gallery({ item }: { item: PortfolioItem }) {
+function Gallery({ item, title }: { item: PortfolioItem; title: string }) {
+  const t = useT().post;
   const media = sortedMedia(item);
   const [index, setIndex] = useState(0);
   const [touchX, setTouchX] = useState<number | null>(null);
@@ -78,15 +82,15 @@ function Gallery({ item }: { item: PortfolioItem }) {
       >
         {media.map((m, i) => (
           <div key={m.id} className={`absolute inset-0 transition-opacity duration-300 ${i === index ? "opacity-100" : "pointer-events-none opacity-0"}`}>
-            <Media media={m} title={`${item.title} – ${i + 1}`} active={i === index} />
+            <Media media={m} title={`${title} – ${i + 1}`} active={i === index} />
           </div>
         ))}
         {media.length > 1 && (
           <>
-            <button type="button" onClick={() => go(-1)} aria-label="Média précédent" className="absolute top-1/2 left-3 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/85 text-navy-950 shadow hover:bg-white">
+            <button type="button" onClick={() => go(-1)} aria-label={t.prev} className="absolute top-1/2 left-3 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/85 text-navy-950 shadow hover:bg-white">
               <ChevronLeft className="size-5" />
             </button>
-            <button type="button" onClick={() => go(1)} aria-label="Média suivant" className="absolute top-1/2 right-3 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/85 text-navy-950 shadow hover:bg-white">
+            <button type="button" onClick={() => go(1)} aria-label={t.next} className="absolute top-1/2 right-3 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/85 text-navy-950 shadow hover:bg-white">
               <ChevronRight className="size-5" />
             </button>
             <span className="absolute top-3 right-3 rounded-full bg-navy-950/70 px-2.5 py-1 text-xs font-semibold text-white">
@@ -105,7 +109,7 @@ function Gallery({ item }: { item: PortfolioItem }) {
                 <button
                   type="button"
                   onClick={() => setIndex(i)}
-                  aria-label={`Afficher le média ${i + 1}`}
+                  aria-label={t.show(i + 1)}
                   aria-current={i === index}
                   className={`block h-14 w-20 overflow-hidden rounded-md border-2 bg-navy-950 ${i === index ? "border-brand" : "border-transparent opacity-70 hover:opacity-100"}`}
                 >
@@ -120,19 +124,32 @@ function Gallery({ item }: { item: PortfolioItem }) {
   );
 }
 
-export default function PortfolioPost() {
-  const { id = "" } = useParams();
-  const [state, setState] = useState<{ id: string; item: PortfolioItem | null } | null>(null);
-
+/** A project not in the loaded list (new, or opened from an old link) is fetched on its own. */
+function useProject(id: string) {
+  const all = portfolioStore.use();
+  const listed = all?.find((p) => String(p.id) === id) ?? null;
+  const [single, setSingle] = useState<{ id: string; item: PortfolioItem | null } | null>(null);
+  const needFetch = all !== null && !listed;
   useEffect(() => {
+    if (!needFetch) return;
     let alive = true;
-    fetchPortfolioItem(id).then((item) => alive && setState({ id, item }));
+    fetchPortfolioItem(id).then((item) => alive && setSingle({ id, item }));
     return () => {
       alive = false;
     };
-  }, [id]);
+  }, [id, needFetch]);
+  if (listed) return { item: listed, loading: false };
+  if (all === null || (needFetch && single?.id !== id)) return { item: null, loading: true };
+  return { item: single?.item ?? null, loading: false };
+}
 
-  if (!state || state.id !== id) {
+export default function PortfolioPost() {
+  const lang = useLang();
+  const { post: t, nav } = useT();
+  const { id = "" } = useParams();
+  const { item, loading } = useProject(id);
+
+  if (loading) {
     return (
       <div className="container-page max-w-4xl pt-32 pb-20">
         <div className="h-8 w-2/3 animate-pulse rounded bg-slate-200" />
@@ -140,38 +157,43 @@ export default function PortfolioPost() {
       </div>
     );
   }
-  if (!state.item) return <NotFound />;
+  if (!item) return <NotFound />;
 
-  const item = state.item;
-  const { body, tags } = splitDescription(item.description);
-  const summary = (body || item.title).replace(/\s+/g, " ").slice(0, 160);
+  const text = projectText(item, lang);
+  const { body, tags } = splitDescription(text.description);
 
   return (
     <>
-      <Seo title={`${item.title.trim()} | Réalisations MTE`} description={summary} path={`/portfolio/${item.id}`} image={coverImage(item)} type="article" />
+      <Seo {...projectMeta(item, lang)} />
 
-      <article className="container-page max-w-4xl pt-28 pb-20 sm:pt-32">
-        <Link to="/portfolio" className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-navy-900">
+      <article className="container-page max-w-4xl pt-28 pb-20 sm:pt-32" lang={text.translated ? undefined : "fr"}>
+        <Link to={localePath(lang, "/portfolio")} className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-navy-900">
           <ArrowLeft className="size-4" />
-          Toutes les réalisations
+          {t.back}
         </Link>
         <header className="mt-5">
           <p className="text-sm text-slate-500">
-            <time dateTime={item.created_at}>{formatDate(item.created_at)}</time>
+            <time dateTime={item.created_at}>{formatDate(item.created_at, lang)}</time>
           </p>
-          <h1 className="mt-2 text-3xl leading-tight font-bold tracking-tight text-navy-900 sm:text-4xl">{item.title}</h1>
+          <h1 className="mt-2 text-3xl leading-tight font-bold tracking-tight text-navy-900 sm:text-4xl">{text.title}</h1>
+          {!text.translated && t.originalLanguage && (
+            <p className="mt-3 inline-flex items-center gap-1.5 rounded bg-slate-100 px-2.5 py-1 text-xs text-slate-600" lang="en">
+              <Languages className="size-3.5" />
+              {t.originalLanguage}
+            </p>
+          )}
         </header>
 
         <div className="mt-8">
-          <Gallery item={item} />
+          <Gallery item={item} title={text.title} />
         </div>
 
         {body && <div className="mt-8 text-base leading-relaxed whitespace-pre-line text-slate-700">{body}</div>}
         {tags.length > 0 && (
           <ul className="mt-6 flex flex-wrap gap-2">
-            {tags.map((t) => (
-              <li key={t} className="rounded bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">
-                {t}
+            {tags.map((tag) => (
+              <li key={tag} className="rounded bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">
+                {tag}
               </li>
             ))}
           </ul>
@@ -179,11 +201,11 @@ export default function PortfolioPost() {
 
         <aside className="mt-12 flex flex-col gap-5 rounded-xl bg-navy-900 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
           <div>
-            <h2 className="text-lg font-semibold text-white">Un équipement similaire en panne ?</h2>
-            <p className="mt-1 text-sm text-slate-300">Décrivez-nous la panne : diagnostic et devis avant réparation.</p>
+            <h2 className="text-lg font-semibold text-white">{t.ctaTitle}</h2>
+            <p className="mt-1 text-sm text-slate-300">{t.ctaText}</p>
           </div>
-          <Link to="/#contact" className="btn-primary shrink-0">
-            Demander un devis
+          <Link to={localePath(lang, "/#contact")} className="btn-primary shrink-0">
+            {nav.quote}
             <ArrowRight className="size-4" />
           </Link>
         </aside>

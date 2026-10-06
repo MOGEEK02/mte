@@ -56,6 +56,13 @@ MTE is a professional industrial electronics repair service based in Médéa, Al
    yarn build
    ```
 
+## 🌍 Languages and search engines
+
+- French at `/`, English under `/en` (texts in `src/i18n.ts`; services, projects and contact details have English fields in /admin).
+- `npm run build` pre-renders every public page in both languages (`src/entry-server.tsx`, `scripts/prerender.mjs`): full HTML content, title, description, canonical, hreflang, and schema.org data (LocalBusiness, FAQPage, Article, BreadcrumbList). Search engines and AI assistants read it without JavaScript.
+- `/sitemap.xml` (both languages, hreflang, images), `/robots.txt` (AI crawlers allowed), `/llms.txt` and `/llms-full.txt` (summary for AI assistants).
+- Pre-rendered pages are refreshed at each deployment: /admin → "Mettre à jour le site public", and every night (Vercel cron). Needs `DEPLOY_HOOK_URL` (Vercel → Settings → Git → Deploy Hooks) and `CRON_SECRET`.
+
 ## 🔐 Administration (/admin)
 
 The site has a private admin panel at `/admin` to manage quote requests, portfolio projects and service pages.

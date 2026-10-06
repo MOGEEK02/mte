@@ -3,6 +3,7 @@ import { Mail, MapPin, Phone } from "lucide-react";
 import { SOCIAL } from "../site";
 import { telHref, useContact, whatsappLink } from "../contact";
 import { useServices } from "../services";
+import { localePath, useLang, useT } from "../i18n";
 import { BrandIcon, type Brand } from "./BrandIcon";
 
 const SOCIAL_LINKS: { name: Brand; href: string }[] = [
@@ -13,17 +14,18 @@ const SOCIAL_LINKS: { name: Brand; href: string }[] = [
 ];
 
 export function Footer() {
-  const services = useServices();
+  const lang = useLang();
+  const t = useT();
+  const services = useServices(lang);
   const contact = useContact();
+  const to = (path: string) => localePath(lang, path);
   const social = [{ name: "WhatsApp" as Brand, href: whatsappLink(contact) }, ...SOCIAL_LINKS];
   return (
     <footer className="bg-navy-950 text-slate-300">
       <div className="container-page grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
         <div className="lg:col-span-1">
           <img src="/images/logo%20white.png" alt="MTE Industrial Electronics" width={900} height={384} className="h-10 w-auto" loading="lazy" />
-          <p className="mt-4 text-sm leading-relaxed text-slate-400">
-            Automatisme et électronique industrielle : programmation PLC, dépannage d’armoires, études électriques et réparation, à Médéa et partout en Algérie.
-          </p>
+          <p className="mt-4 text-sm leading-relaxed text-slate-400">{t.footer.text}</p>
           <ul className="mt-5 flex gap-3">
             {social.map((s) => (
               <li key={s.name}>
@@ -42,11 +44,11 @@ export function Footer() {
         </div>
 
         <div>
-          <h2 className="eyebrow text-brand">Services</h2>
+          <h2 className="eyebrow text-brand">{t.footer.services}</h2>
           <ul className="mt-4 space-y-2 text-sm">
             {services.map((s) => (
               <li key={s.slug}>
-                <Link to="/#services" className="hover:text-white">
+                <Link to={to("/#services")} className="hover:text-white">
                   {s.title}
                 </Link>
               </li>
@@ -55,18 +57,23 @@ export function Footer() {
         </div>
 
         <div>
-          <h2 className="eyebrow text-brand">Navigation</h2>
+          <h2 className="eyebrow text-brand">{t.footer.navigation}</h2>
           <ul className="mt-4 space-y-2 text-sm">
-            <li><Link to="/#methode" className="hover:text-white">Méthode</Link></li>
-            <li><Link to="/#a-propos" className="hover:text-white">À propos</Link></li>
-            <li><Link to="/portfolio" className="hover:text-white">Réalisations</Link></li>
-            <li><Link to="/#faq" className="hover:text-white">Questions fréquentes</Link></li>
-            <li><Link to="/#contact" className="hover:text-white">Demander un devis</Link></li>
+            <li><Link to={to("/#methode")} className="hover:text-white">{t.nav.method}</Link></li>
+            <li><Link to={to("/#a-propos")} className="hover:text-white">{t.nav.about}</Link></li>
+            <li><Link to={to("/portfolio")} className="hover:text-white">{t.nav.work}</Link></li>
+            <li><Link to={to("/#faq")} className="hover:text-white">{t.footer.faq}</Link></li>
+            <li><Link to={to("/#contact")} className="hover:text-white">{t.nav.quote}</Link></li>
+            <li>
+              <Link to={localePath(lang === "fr" ? "en" : "fr", "/")} hrefLang={lang === "fr" ? "en" : "fr"} className="hover:text-white">
+                {lang === "fr" ? "English" : "Français"}
+              </Link>
+            </li>
           </ul>
         </div>
 
         <div>
-          <h2 className="eyebrow text-brand">Contact</h2>
+          <h2 className="eyebrow text-brand">{t.footer.contact}</h2>
           <ul className="mt-4 space-y-3 text-sm">
             <li>
               <a href={telHref(contact.phone)} className="flex items-start gap-2.5 hover:text-white">
@@ -92,8 +99,8 @@ export function Footer() {
 
       <div className="border-t border-white/10">
         <div className="container-page flex flex-col gap-2 py-5 text-xs text-slate-500 sm:flex-row sm:justify-between">
-          <p>© {new Date().getFullYear()} MTE Industrial Electronics — Fekhar Moutie. Tous droits réservés.</p>
-          <p>Médéa, Algérie</p>
+          <p>© {new Date().getFullYear()} MTE Industrial Electronics — Fekhar Moutie. {t.footer.rights}</p>
+          <p>{t.footer.place}</p>
         </div>
       </div>
     </footer>

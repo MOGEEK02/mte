@@ -17,7 +17,7 @@ type MediaDraft = {
   preview?: string;
 };
 
-type Form = { title: string; date: string; description: string; published: boolean };
+type Form = { title: string; date: string; description: string; titleEn: string; descriptionEn: string; published: boolean };
 
 const today = () => new Date().toISOString().slice(0, 10);
 const newKey = () => Math.random().toString(36).slice(2);
@@ -33,7 +33,7 @@ export default function ProjectEditor() {
   const flash = useFlash();
 
   const [original, setOriginal] = useState<PortfolioItem | null>(null);
-  const [form, setForm] = useState<Form>({ title: "", date: today(), description: "", published: true });
+  const [form, setForm] = useState<Form>({ title: "", date: today(), description: "", titleEn: "", descriptionEn: "", published: true });
   const [media, setMedia] = useState<MediaDraft[]>([]);
   const [saved, setSaved] = useState<string>("");
   const [loading, setLoading] = useState(!isNew);
@@ -46,7 +46,7 @@ export default function ProjectEditor() {
 
   useEffect(() => {
     if (isNew) {
-      setSaved(snapshot({ title: "", date: today(), description: "", published: true }, []));
+      setSaved(snapshot({ title: "", date: today(), description: "", titleEn: "", descriptionEn: "", published: true }, []));
       return;
     }
     supabase
@@ -63,6 +63,8 @@ export default function ProjectEditor() {
           title: p.title ?? "",
           date: (p.created_at ?? "").slice(0, 10) || today(),
           description: p.description ?? "",
+          titleEn: p.title_en ?? "",
+          descriptionEn: p.description_en ?? "",
           published: p.published !== false,
         };
         const m: MediaDraft[] = [...(p.portfolio_media ?? [])]
@@ -125,6 +127,8 @@ export default function ProjectEditor() {
       const row = {
         title: form.title.trim(),
         description: form.description.trim(),
+        title_en: form.titleEn.trim() || null,
+        description_en: form.descriptionEn.trim() || null,
         created_at: keptDate ? original!.created_at : `${form.date}T12:00:00Z`,
         published: form.published,
         updated_at: new Date().toISOString(),
@@ -249,6 +253,18 @@ export default function ProjectEditor() {
           </Field>
           <Field label="Description" htmlFor="p-desc" hint="Ce qui a été fait, le matériel, le résultat. Les #mots-clés en fin de texte s’affichent comme étiquettes.">
             <textarea id="p-desc" rows={10} className={inputClass} value={form.description} onChange={(e) => set("description", e.target.value)} />
+          </Field>
+          <div className="border-t border-slate-200 pt-5">
+            <h2 className="font-semibold text-navy-900">Version anglaise (/en)</h2>
+            <p className="mt-0.5 text-xs text-slate-500">
+              Traduction affichée sur le site en anglais. Vide : la page anglaise montre le texte français et renvoie Google vers la page française.
+            </p>
+          </div>
+          <Field label="Title" htmlFor="p-title-en">
+            <input id="p-title-en" lang="en" className={inputClass} value={form.titleEn} onChange={(e) => set("titleEn", e.target.value)} />
+          </Field>
+          <Field label="Description" htmlFor="p-desc-en">
+            <textarea id="p-desc-en" lang="en" rows={8} className={inputClass} value={form.descriptionEn} onChange={(e) => set("descriptionEn", e.target.value)} />
           </Field>
         </section>
 

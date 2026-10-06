@@ -1,4 +1,6 @@
 import { select } from "./db";
+import { DICT, type Lang } from "./i18n";
+import { createStore } from "./store";
 import { getOptimizedImageUrl, isVideoMedia } from "./utils/imageOptimizer";
 
 export interface MediaItem {
@@ -13,7 +15,10 @@ export interface PortfolioItem {
   title: string;
   description: string;
   created_at: string;
-  /** Set in /admin (column added by supabase/admin.sql). */
+  /** English version, edited in /admin (empty: the French text is shown). */
+  title_en?: string | null;
+  description_en?: string | null;
+  /** Set in /admin (columns added by supabase/admin.sql). */
   service_slug?: string | null;
   published?: boolean;
   portfolio_media: MediaItem[];
@@ -83,6 +88,22 @@ export function splitDescription(text: string) {
   return { body, tags: [...new Set(tags)] };
 }
 
-export function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+/** Same result on the server (pre-render) and in the browser, whatever their time zone. */
+export function formatDate(iso: string, lang: Lang = "fr") {
+  return new Date(iso).toLocaleDateString(DICT[lang].dateLocale, { day: "numeric", month: "long", year: "numeric", timeZone: "Africa/Algiers" });
 }
+
+/** Title and description in the page's language; `translated` is false when English falls back to French. */
+export function projectText(item: PortfolioItem, lang: Lang) {
+  if (lang === "en" && item.title_en?.trim()) {
+    return { title: item.title_en.trim(), description: item.description_en?.trim() || item.description, translated: true };
+  }
+  return { title: item.title.trim(), description: item.description, translated: lang === "fr" };
+}
+
+/** All published projects, newest first; null until loaded. */
+export const portfolioStore = createStore<PortfolioItem[] | null>({
+  key: "portfolio",
+  fallback: null,
+  load: async () => fetchPortfolio(),
+});

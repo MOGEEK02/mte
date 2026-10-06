@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#0a2a4a">
 
-  <!-- Default page tags (home). Removed by src/main.tsx once the app runs; each page then sets its own.
-       api/page.js swaps this block on project pages so link previews show the project. -->
+  <!-- Page tags. scripts/prerender.mjs writes each page's own (title, description, canonical, hreflang…);
+       api/page.js does the same for pages built after the last deployment. Removed by src/main.tsx once the app runs. -->
   <title data-seo>MTE – Automatisme et électronique industrielle en Algérie | PLC, armoires, variateurs</title>
   <meta data-seo name="description" content="Programmation PLC et IHM, dépannage d’armoires de commande, études électriques, réparation de variateurs de vitesse et de cartes électroniques. Médéa et intervention partout en Algérie.">
   <link data-seo rel="canonical" href="https://moutie.vercel.app/">
@@ -21,14 +21,10 @@
   <meta data-seo name="twitter:image" content="https://moutie.vercel.app/images/web/og-default.png">
   <!-- /default page tags -->
 
-  <meta name="keywords" content="automatisme industriel Algérie, programmation PLC, programmation automate, IHM, dépannage armoire électrique, étude électrique, réparation variateur de vitesse, VFD repair Algeria, réparation carte électronique, Siemens S7, Schneider, ABB, Omron, Fatek, Médéa">
   <meta name="author" content="Fekhar Moutie">
   <meta name="geo.region" content="DZ-26">
   <meta name="geo.placename" content="Médéa, Algérie">
   <meta property="og:site_name" content="MTE Industrial Electronics">
-  <meta property="og:locale" content="fr_DZ">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="google-site-verification" content="1sFft2G_iFpOg_leck4tIj4OG_LKwwEieC41GGyfTfk">
 
@@ -39,151 +35,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="preload" as="image" href="/images/web/hero.webp" type="image/webp">
+  <!--structured-data-->
 </head>
 
 <body>
   <div id="root"></div>
-
-  <!-- Fallback content for visitors and crawlers without JavaScript. -->
-  <noscript>
-    <div style="max-width:960px;margin:0 auto;padding:40px 20px;font-family:Inter,system-ui,sans-serif;line-height:1.7;color:#0f1b2a;">
-      <h1>MTE – Automatisme et électronique industrielle en Algérie</h1>
-      <p>Programmation d’automates et d’écrans IHM, dépannage d’armoires de commande, études électriques, réparation de variateurs de vitesse et de cartes électroniques. Basé à Médéa, intervention sur site partout en Algérie.</p>
-      <h2>Services</h2>
-      <ul>
-        <li>Programmation PLC et IHM – Siemens, Schneider, Omron, Fatek</li>
-        <li>Dépannage d’armoires de commande</li>
-        <li>Études électriques – schémas, protections, armoires, rétrofit</li>
-        <li>Variateurs de vitesse (VFD) – réparation et paramétrage</li>
-        <li>Réparation de cartes électroniques</li>
-        <li>Alimentations et capteurs</li>
-      </ul>
-      <p><a href="/portfolio">Nos réalisations</a></p>
-      <h2>Contact</h2>
-      <p>Fekhar Moutie – MTE, Ain Dhab, Médéa 26011, Algérie<br>
-        Téléphone et WhatsApp : <a href="tel:+213778461682">+213 778 46 16 82</a><br>
-        E-mail : <a href="mailto:moutiefekhar@gmail.com">moutiefekhar@gmail.com</a></p>
-    </div>
-  </noscript>
-
-  <!-- Structured data. Keep in sync with src/site.ts (contact details, services, FAQ). -->
-  <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "LocalBusiness",
-  "@id": "https://moutie.vercel.app/#business",
-  "name": "MTE Industrial Electronics",
-  "alternateName": ["MTE Algérie", "MTE – Automatisme et électronique industrielle"],
-  "description": "Automatisme et électronique industrielle : programmation PLC et IHM, dépannage d’armoires de commande, études électriques, réparation de variateurs et de cartes électroniques en Algérie.",
-  "url": "https://moutie.vercel.app/",
-  "logo": "https://moutie.vercel.app/images/logo.png",
-  "image": "https://moutie.vercel.app/images/web/og-default.png",
-  "email": "moutiefekhar@gmail.com",
-  "telephone": "+213778461682",
-  "founder": { "@type": "Person", "name": "Fekhar Moutie", "jobTitle": "Ingénieur en automatisme et électronique" },
-  "foundingDate": "2020",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "Ain Dhab",
-    "addressLocality": "Médéa",
-    "addressRegion": "Médéa",
-    "postalCode": "26011",
-    "addressCountry": "DZ"
-  },
-  "geo": { "@type": "GeoCoordinates", "latitude": 36.2675, "longitude": 2.7539 },
-  "openingHoursSpecification": {
-    "@type": "OpeningHoursSpecification",
-    "dayOfWeek": ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"],
-    "opens": "08:00",
-    "closes": "17:00"
-  },
-  "areaServed": { "@type": "Country", "name": "Algérie" },
-  "sameAs": [
-    "https://www.linkedin.com/in/moutie/",
-    "https://www.facebook.com/mogeek02",
-    "https://www.instagram.com/mooutiem",
-    "https://github.com/MOGEEK02"
-  ],
-  "hasOfferCatalog": {
-    "@type": "OfferCatalog",
-    "name": "Automatisme et électronique industrielle",
-    "itemListElement": [
-      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Programmation PLC et IHM" } },
-      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Dépannage d’armoires de commande" } },
-      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Études électriques" } },
-      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Réparation de variateurs de vitesse (VFD)" } },
-      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Réparation de cartes électroniques" } },
-      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Alimentations et capteurs" } }
-    ]
-  }
-}
-  </script>
-  <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "Quels automates programmez-vous ?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Siemens (S7-200, S7-300, S7-1200, S7-1500, LOGO!), Schneider Electric (Modicon, Zelio), Omron et Fatek, ainsi que les écrans IHM associés. Pour une autre marque, contactez-nous : nous vous disons rapidement si nous pouvons intervenir."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Le programme de ma machine est perdu, que faire ?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Nous récupérons le programme de l’automate quand c’est possible, ou le réécrivons à partir du fonctionnement de la machine. Vous recevez ensuite une sauvegarde pour ne plus dépendre d’une seule copie."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Réparez-vous les variateurs de vitesse ?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Oui : diagnostic, réparation au niveau composant et paramétrage de variateurs ABB, Schneider Altivar, Siemens, Danfoss, LS et autres, de 0,37 kW à plus de 500 kW. Le diagnostic est réalisé sous 24 à 48 heures."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Réalisez-vous des études électriques ?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Oui : schémas électriques, bilan de puissance, choix des protections et des câbles, conception d’armoires et rétrofit d’installations. Envoyez-nous votre cahier des charges ou une description de l’installation."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Intervenez-vous sur site ?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Oui, partout en Algérie, depuis Médéa. Pour une machine à l’arrêt, envoyez-nous des photos de l’armoire et le code défaut affiché : cela permet souvent de préparer l’intervention avant de se déplacer."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Comment obtenir un devis ?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Décrivez votre besoin via le formulaire de contact ou WhatsApp. Vous recevez un devis avant toute intervention."
-      }
-    }
-  ]
-}
-  </script>
-  <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "url": "https://moutie.vercel.app/",
-  "name": "MTE Industrial Electronics",
-  "inLanguage": "fr-DZ",
-  "publisher": { "@id": "https://moutie.vercel.app/#business" }
-}
-  </script>
 
   <script type="module" src="/src/main.tsx"></script>
 </body>

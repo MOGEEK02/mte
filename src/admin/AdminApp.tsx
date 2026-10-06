@@ -1,10 +1,10 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, NavLink, Route, Routes } from "react-router-dom";
 import type { Session } from "@supabase/supabase-js";
-import { ExternalLink, FolderKanban, Inbox, LogOut, Settings as SettingsIcon, Wrench } from "lucide-react";
+import { ExternalLink, FolderKanban, Inbox, LogOut, RefreshCw, Settings as SettingsIcon, Wrench } from "lucide-react";
 import { Seo } from "../ui/Seo";
 import { configured, errorMessage, isMissingSetup, supabase } from "./supabase";
-import { Button, Field, FlashProvider, inputClass, Loading, Notice } from "./ui";
+import { Button, Field, FlashProvider, inputClass, Loading, Notice, useFlash } from "./ui";
 import Requests from "./Requests";
 import Projects from "./Projects";
 import ProjectEditor from "./ProjectEditor";
@@ -106,6 +106,30 @@ const NAV = [
   { to: "/admin/parametres", end: false, label: "Paramètres", icon: SettingsIcon },
 ];
 
+/**
+ * Regenerates the pages that Google and AI assistants read (built at each deployment).
+ * Visitors always see the latest data; this updates what crawlers see. It also runs every night.
+ */
+function RebuildButton({ className }: { className: string }) {
+  const flash = useFlash();
+  const [busy, setBusy] = useState(false);
+  const run = async () => {
+    setBusy(true);
+    const { data } = await supabase.auth.getSession();
+    const res = await fetch("/api/rebuild", { method: "POST", headers: { Authorization: `Bearer ${data.session?.access_token ?? ""}` } }).catch(() => null);
+    setBusy(false);
+    if (res?.ok) return flash("Mise à jour lancée : le site public sera régénéré dans 1 à 2 minutes.");
+    const err = res ? ((await res.json().catch(() => ({}))) as { error?: string }).error : "";
+    flash(err === "not_configured" ? "Ajoutez DEPLOY_HOOK_URL dans Vercel pour activer ce bouton." : "La mise à jour n’a pas pu être lancée.", "error");
+  };
+  return (
+    <button type="button" onClick={run} disabled={busy} title="Régénère les pages lues par Google et les assistants IA. Se fait aussi chaque nuit." className={className}>
+      <RefreshCw className={`size-4 ${busy ? "animate-spin" : ""}`} />
+      Mettre à jour le site public
+    </button>
+  );
+}
+
 function Layout({ email }: { email: string }) {
   const link = ({ isActive }: { isActive: boolean }) =>
     `flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
@@ -129,6 +153,7 @@ function Layout({ email }: { email: string }) {
           ))}
         </nav>
         <div className="hidden border-t border-white/10 p-3 lg:block">
+          <RebuildButton className="flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-left text-sm text-brand hover:bg-white/5 disabled:opacity-60" />
           <a href="/" target="_blank" rel="noopener" className="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm text-slate-300 hover:bg-white/5 hover:text-white">
             <ExternalLink className="size-4" />
             Voir le site
@@ -154,7 +179,8 @@ function Layout({ email }: { email: string }) {
             <Route path="services/:slug" element={<ServiceEditor />} />
             <Route path="parametres" element={<Settings />} />
           </Routes>
-          <div className="mt-12 flex gap-4 border-t border-slate-200 pt-4 text-sm lg:hidden">
+          <div className="mt-12 flex flex-wrap gap-4 border-t border-slate-200 pt-4 text-sm lg:hidden">
+            <RebuildButton className="inline-flex items-center gap-1.5 font-medium text-navy-900 disabled:opacity-60" />
             <a href="/" target="_blank" rel="noopener" className="text-slate-500">Voir le site</a>
             <button type="button" onClick={() => supabase.auth.signOut()} className="text-slate-500">Déconnexion</button>
           </div>
@@ -221,7 +247,7 @@ export default function AdminApp() {
 
   return (
     <FlashProvider>
-      <Seo title="Administration | MTE" description="Administration du site MTE." noindex />
+      <Seo lang="fr" path="/admin" title="Administration | MTE" description="Administration du site MTE." noindex />
       {page}
     </FlashProvider>
   );

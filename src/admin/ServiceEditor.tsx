@@ -6,9 +6,19 @@ import { compressImage } from "./image";
 import { BUCKET, errorMessage, storagePath, supabase } from "./supabase";
 import { Button, Field, inputClass, Loading, Notice, PageHeader, Toggle, useFlash } from "./ui";
 
-type Form = { title: string; slug: string; summary: string; tagline: string; image: string; published: boolean };
+type Form = {
+  title: string;
+  slug: string;
+  summary: string;
+  tagline: string;
+  titleEn: string;
+  summaryEn: string;
+  taglineEn: string;
+  image: string;
+  published: boolean;
+};
 
-const EMPTY: Form = { title: "", slug: "", summary: "", tagline: "", image: "", published: true };
+const EMPTY: Form = { title: "", slug: "", summary: "", tagline: "", titleEn: "", summaryEn: "", taglineEn: "", image: "", published: true };
 
 /** Photos already on the site, to pick without uploading. */
 const SITE_PHOTOS = [
@@ -41,7 +51,7 @@ export default function ServiceEditor() {
     if (isNew) return;
     supabase
       .from("services")
-      .select("slug, title, summary, tagline, image, sort_order, published")
+      .select("*")
       .eq("slug", param)
       .maybeSingle()
       .then(({ data, error }) => {
@@ -49,7 +59,19 @@ export default function ServiceEditor() {
         if (error) return setError(errorMessage(error));
         if (!data) return setError("Service introuvable.");
         const r = data as ServiceRow;
-        const f: Form = { title: r.title, slug: r.slug, summary: r.summary, tagline: r.tagline ?? "", image: fromRow(r).image, published: r.published };
+        // English starts from the built-in translation when the database has none yet.
+        const en = fromRow(r).en;
+        const f: Form = {
+          title: r.title,
+          slug: r.slug,
+          summary: r.summary,
+          tagline: r.tagline ?? "",
+          titleEn: r.title_en ?? (en.title !== r.title ? en.title : ""),
+          summaryEn: r.summary_en ?? (en.summary !== r.summary ? en.summary : ""),
+          taglineEn: r.tagline_en ?? (en.tagline !== (r.tagline ?? "") ? en.tagline : ""),
+          image: fromRow(r).image,
+          published: r.published,
+        };
         setForm(f);
         setSaved(JSON.stringify(f));
       });
@@ -92,6 +114,9 @@ export default function ServiceEditor() {
       title: form.title.trim(),
       summary: form.summary.trim(),
       tagline: form.tagline.trim(),
+      title_en: form.titleEn.trim(),
+      summary_en: form.summaryEn.trim(),
+      tagline_en: form.taglineEn.trim(),
       image: form.image,
       published: form.published,
       updated_at: new Date().toISOString(),
@@ -152,6 +177,22 @@ export default function ServiceEditor() {
             <input id="s-tagline" className={inputClass} value={form.tagline} onChange={(e) => set("tagline", e.target.value)} />
           </Field>
           <Toggle checked={form.published} onChange={(v) => set("published", v)} label={form.published ? "Visible sur le site" : "Masqué du site"} />
+        </section>
+
+        <section className="space-y-5 rounded-xl border border-slate-200 bg-white p-5 sm:p-6 lg:col-start-1">
+          <div>
+            <h2 className="font-semibold text-navy-900">Version anglaise (/en)</h2>
+            <p className="mt-0.5 text-xs text-slate-500">Affichée sur le site en anglais. Vide : le texte français est utilisé.</p>
+          </div>
+          <Field label="Title" htmlFor="s-title-en">
+            <input id="s-title-en" lang="en" className={inputClass} value={form.titleEn} onChange={(e) => set("titleEn", e.target.value)} placeholder={form.title} />
+          </Field>
+          <Field label="Text" htmlFor="s-summary-en">
+            <textarea id="s-summary-en" lang="en" rows={4} className={inputClass} value={form.summaryEn} onChange={(e) => set("summaryEn", e.target.value)} />
+          </Field>
+          <Field label="Bottom line" htmlFor="s-tagline-en">
+            <input id="s-tagline-en" lang="en" className={inputClass} value={form.taglineEn} onChange={(e) => set("taglineEn", e.target.value)} placeholder={form.tagline} />
+          </Field>
         </section>
 
         <section className="space-y-4 rounded-xl border border-slate-200 bg-white p-5 sm:p-6 lg:self-start">

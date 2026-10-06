@@ -10,26 +10,39 @@ import NotFound from "./pages/NotFound";
 // Loaded only when /admin is opened, so visitors never download it.
 const AdminApp = lazy(() => import("./admin/AdminApp"));
 
+/** French at "/", English under "/en". Shared by the browser and the pre-renderer (src/entry-server.tsx). */
+export function AppRoutes() {
+  return (
+    <Routes>
+      <Route
+        path="/admin/*"
+        element={
+          <Suspense fallback={<div className="min-h-screen bg-slate-100" />}>
+            <AdminApp />
+          </Suspense>
+        }
+      />
+      <Route path="/en" element={<Layout lang="en" />}>
+        <Route index element={<Home />} />
+        <Route path="portfolio" element={<Portfolio />} />
+        <Route path="portfolio/:id" element={<PortfolioPost />} />
+        <Route path="*" element={<NotFound />} />
+      </Route>
+      <Route element={<Layout lang="fr" />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/portfolio" element={<Portfolio />} />
+        <Route path="/portfolio/:id" element={<PortfolioPost />} />
+        <Route path="*" element={<NotFound />} />
+      </Route>
+    </Routes>
+  );
+}
+
 export default function App() {
   return (
     <HelmetProvider>
       <BrowserRouter>
-        <Routes>
-          <Route
-            path="/admin/*"
-            element={
-              <Suspense fallback={<div className="min-h-screen bg-slate-100" />}>
-                <AdminApp />
-              </Suspense>
-            }
-          />
-          <Route element={<Layout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/portfolio" element={<Portfolio />} />
-            <Route path="/portfolio/:id" element={<PortfolioPost />} />
-            <Route path="*" element={<NotFound />} />
-          </Route>
-        </Routes>
+        <AppRoutes />
       </BrowserRouter>
     </HelmetProvider>
   );

@@ -1,6 +1,7 @@
-import { useSyncExternalStore } from "react";
 import { select } from "./db";
+import type { Lang } from "./i18n";
 import { CONTACT } from "./site";
+import { createStore } from "./store";
 
 /** Contact details shown on the site, edited in /admin → Paramètres ("site_settings" table). */
 export type Contact = {
@@ -11,28 +12,40 @@ export type Contact = {
   address: string;
   mapUrl: string;
   hours: string;
+  hoursEn: string;
 };
 
-export type ContactRow = { email: string; phone: string; whatsapp: string; address: string; map_url: string; hours: string };
+export type ContactRow = {
+  email: string;
+  phone: string;
+  whatsapp: string;
+  address: string;
+  map_url: string;
+  hours: string;
+  hours_en?: string;
+};
 
-const DEFAULTS: Contact = {
+export const DEFAULT_CONTACT: Contact = {
   email: CONTACT.email,
   phone: CONTACT.phoneDisplay,
   whatsapp: CONTACT.phoneDisplay,
   address: CONTACT.address,
   mapUrl: CONTACT.mapUrl,
   hours: CONTACT.hours,
+  hoursEn: CONTACT.hoursEn,
 };
 
 /** Fills empty fields from the built-in details, so a blank field never breaks a link. */
 export function fromContactRow(r: Partial<ContactRow>): Contact {
+  const D = DEFAULT_CONTACT;
   return {
-    email: r.email?.trim() || DEFAULTS.email,
-    phone: r.phone?.trim() || DEFAULTS.phone,
-    whatsapp: r.whatsapp?.trim() || r.phone?.trim() || DEFAULTS.whatsapp,
-    address: r.address?.trim() || DEFAULTS.address,
-    mapUrl: r.map_url?.trim() || DEFAULTS.mapUrl,
-    hours: r.hours?.trim() || DEFAULTS.hours,
+    email: r.email?.trim() || D.email,
+    phone: r.phone?.trim() || D.phone,
+    whatsapp: r.whatsapp?.trim() || r.phone?.trim() || D.whatsapp,
+    address: r.address?.trim() || D.address,
+    mapUrl: r.map_url?.trim() || D.mapUrl,
+    hours: r.hours?.trim() || D.hours,
+    hoursEn: r.hours_en?.trim() || D.hoursEn,
   };
 }
 
@@ -52,44 +65,27 @@ export function whatsappLink(contact: Contact, text?: string) {
   return `https://wa.me/${whatsappDigits(contact.whatsapp)}${text ? `?text=${encodeURIComponent(text)}` : ""}`;
 }
 
-// --- Live value: last known copy first (browser cache or built-in), then the database. ---
-
-const CACHE_KEY = "mte-contact-v1";
-
-function readCache(): Contact | null {
-  try {
-    const raw = localStorage.getItem(CACHE_KEY);
-    return raw ? (JSON.parse(raw) as Contact) : null;
-  } catch {
-    return null;
-  }
+export async function fetchContact(): Promise<Contact | undefined> {
+  const [row] = await select<ContactRow>("site_settings", { select: "*", id: "eq.1" });
+  return row ? fromContactRow(row) : undefined;
 }
 
-let snapshot: Contact = readCache() ?? DEFAULTS;
-const listeners = new Set<() => void>();
-let started = false;
-
-function load() {
-  if (started) return;
-  started = true;
-  select<ContactRow>("site_settings", { select: "email,phone,whatsapp,address,map_url,hours", id: "eq.1" }).then(([row]) => {
-    if (!row) return;
-    snapshot = fromContactRow(row);
-    try {
-      localStorage.setItem(CACHE_KEY, JSON.stringify(snapshot));
-    } catch {
-      // Storage unavailable: fetched again next visit.
-    }
-    listeners.forEach((l) => l());
-  });
-}
-
-function subscribe(listener: () => void) {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
-}
+export const contactStore = createStore<Contact>({ key: "contact", fallback: DEFAULT_CONTACT, load: fetchContact });
 
 export function useContact(): Contact {
-  load();
-  return useSyncExternalStore(subscribe, () => snapshot, () => snapshot);
+  return contactStore.use();
 }
+
+export function hoursFor(contact: Contact, lang: Lang) {
+  return lang === "en" ? contact.hoursEn : contact.hours;
+}
+
+// CV links shown in the About section ("resume_links" table).
+export type CvLinks = { fr: string; en: string };
+
+export async function fetchCv(): Promise<CvLinks | undefined> {
+  const [row] = await select<{ url_fr: string | null; url_en: string | null }>("resume_links", { select: "url_fr,url_en", limit: "1" });
+  return row ? { fr: row.url_fr || "", en: row.url_en || "" } : undefined;
+}
+
+export const cvStore = createStore<CvLinks>({ key: "cv", fallback: { fr: "", en: "" }, load: fetchCv });

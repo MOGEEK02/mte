@@ -1,35 +1,38 @@
+import { useSyncExternalStore } from "react";
 import { Helmet } from "react-helmet-async";
-import { SITE_URL } from "../site";
+import { DICT } from "../i18n";
+import { alternatesFor, canonicalFor, DEFAULT_IMAGE, type PageMeta } from "../seo";
 
-type Props = {
-  title: string;
-  description: string;
-  path?: string;
-  image?: string | null;
-  type?: "website" | "article";
-  noindex?: boolean;
-};
+/**
+ * Per-page title, description, canonical URL, language alternates and link-preview tags,
+ * kept up to date while browsing. Pre-rendered pages already carry the same tags in their
+ * HTML (src/seo.ts → headHtml), so nothing is rendered on the server.
+ */
+const noop = () => () => {};
 
-const DEFAULT_IMAGE = `${SITE_URL}/images/web/og-default.png`;
-
-/** Per-page title, description, canonical URL and social-preview tags. */
-export function Seo({ title, description, path, image, type = "website", noindex }: Props) {
-  const url = path !== undefined ? `${SITE_URL}${path}` : undefined;
-  const img = image || DEFAULT_IMAGE;
+export function Seo(meta: PageMeta) {
+  // False on the server and during hydration (so the first render matches the HTML), true after.
+  const mounted = useSyncExternalStore(noop, () => true, () => false);
+  if (!mounted) return null;
+  const image = meta.image || DEFAULT_IMAGE;
+  const canonical = canonicalFor(meta);
   return (
-    <Helmet>
-      <title>{title}</title>
-      <meta name="description" content={description} />
-      {noindex && <meta name="robots" content="noindex, follow" />}
-      {url && <link rel="canonical" href={url} />}
-      <meta property="og:type" content={type} />
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={description} />
-      {url && <meta property="og:url" content={url} />}
-      <meta property="og:image" content={img} />
-      <meta name="twitter:title" content={title} />
-      <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={img} />
+    <Helmet htmlAttributes={{ lang: DICT[meta.lang].locale }}>
+      <title>{meta.title}</title>
+      <meta name="description" content={meta.description} />
+      {meta.noindex ? <meta name="robots" content="noindex, follow" /> : <link rel="canonical" href={canonical} />}
+      {alternatesFor(meta).map((a) => (
+        <link key={a.hreflang} rel="alternate" hrefLang={a.hreflang} href={a.href} />
+      ))}
+      <meta property="og:type" content={meta.type ?? "website"} />
+      <meta property="og:title" content={meta.title} />
+      <meta property="og:description" content={meta.description} />
+      <meta property="og:url" content={canonical} />
+      <meta property="og:image" content={image} />
+      <meta property="og:locale" content={DICT[meta.lang].ogLocale} />
+      <meta name="twitter:title" content={meta.title} />
+      <meta name="twitter:description" content={meta.description} />
+      <meta name="twitter:image" content={image} />
     </Helmet>
   );
 }

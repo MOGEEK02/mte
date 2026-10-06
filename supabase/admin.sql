@@ -234,6 +234,134 @@ insert into public.admin_settings (id, notify_emails) values (1, array['moutie22
 on conflict (id) do nothing;
 
 -- ---------------------------------------------------------------------------
+-- 9. English version of the site (/en)
+-- ---------------------------------------------------------------------------
+alter table public.services add column if not exists title_en text not null default '';
+alter table public.services add column if not exists summary_en text not null default '';
+alter table public.services add column if not exists tagline_en text not null default '';
+alter table public.portfolio add column if not exists title_en text;
+alter table public.portfolio add column if not exists description_en text;
+alter table public.site_settings add column if not exists hours_en text not null default '';
+
+update public.site_settings set hours_en = 'Saturday – Thursday, 8 am – 5 pm' where id = 1 and hours_en = '';
+
+-- English texts of the six services (only where still empty).
+update public.services s set title_en = v.t, summary_en = v.s, tagline_en = v.g
+from (values
+  ('plc-programming', $q$PLC and HMI programming$q$,
+   $q$Writing, modifying and commissioning PLC and operator-panel programs. Recovery of lost programs and migration of obsolete PLCs.$q$,
+   $q$Siemens S7 · TIA Portal · Modicon · Omron · Fatek$q$),
+  ('control-panel-diagnostics', $q$Control panel troubleshooting$q$,
+   $q$Machine down or intermittent fault: methodical fault finding in the panel (PLC, inputs/outputs, sensors, relays) and return to production.$q$,
+   $q$On-site service across Algeria$q$),
+  ('electrical-study', $q$Electrical design studies$q$,
+   $q$Wiring diagrams, power balance, selection of protection devices and cables, control panel design and retrofit of existing installations.$q$,
+   $q$Panels · protection · retrofit$q$),
+  ('drives-repair', $q$Variable frequency drives (VFD)$q$,
+   $q$Diagnosis, repair, parameter setup and replacement of AC/DC drives and soft starters, from 0.37 kW to over 500 kW.$q$,
+   $q$ABB · Schneider Altivar · Siemens · Danfoss · LS$q$),
+  ('electronic-repair', $q$Electronic board repair$q$,
+   $q$Component-level repair of control and power boards, with reverse engineering when no schematic exists.$q$,
+   $q$Control and power boards$q$),
+  ('power-sensors', $q$Power supplies and sensors$q$,
+   $q$AC/DC power supplies, UPS units and voltage stabilisers; diagnosis and replacement of sensors and transmitters.$q$,
+   $q$Power supplies · sensors · instrumentation$q$)
+) as v(slug, t, s, g)
+where s.slug = v.slug and s.title_en = '';
+
+-- English translations of the published projects (only where still empty; edit them in /admin).
+update public.portfolio p set title_en = v.t, description_en = v.d
+from (values
+  (18, $q$PLC Programming — Industrial Vacuum System | Automation Algeria$q$,
+   $q$Design and programming of an automated control system for an industrial vacuum installation with three motors: a main vacuum pump (11 kW) and two Roots blowers (7 kW and 5.5 kW), controlled by a Mitsubishi FX PLC.
+
+The ladder program includes:
+
+→ Automatic sequencing from pressure sensors
+→ Two operating modes: Automatic and Manual
+→ Phase-fault protection (thermal overload relay)
+→ Temperature monitoring with an Omron E5CC controller
+→ Control of a vacuum-break solenoid valve (fail-safe)
+→ Start-up time delay for mechanical protection
+→ Interlocking: the blowers cannot start without the main pump
+→ Alarm reset with fault memory
+
+Delivered by MTE Industrial Electronics — Algeria.
+Specialist in industrial automation, PLC programming, variable frequency drives and component-level electronic maintenance.$q$),
+  (17, $q$Repair and recommissioning of a 40 kVA generator set$q$,
+   $q$Diagnosis and complete repair of a 40 kVA generator set. Work carried out: replacement of the main contactor, repair of the engine control module (generator display), repair of the battery charger, complete rewiring of the control panel with correction of the wiring diagram, repair of the fuel level sensor, coolant drain and replacement, diagnosis and repair of the diesel fuel circuit, recommissioning and load tests. Completed in 4 days — the fault had not been solved by previous technicians for more than a month.$q$),
+  (1, $q$120 kW variable frequency drive repair$q$,
+   $q$Repair of a 120 kW variable frequency drive.$q$),
+  (4, $q$ABB ACS150 drive installation | Replacing a SEW drive$q$,
+   $q$Successful installation of an ABB ACS150 variable frequency drive in a water bottling unit. An old, out-of-service SEW drive was replaced with an ABB ACS150-03E-08A8-4 (1.5 kW / 2 HP). The existing braking resistor was reused, and the drive was commissioned for reliable, optimised operation.$q$),
+  (3, $q$LS variable frequency drive (VFD) repair | Plastic injection machine for shoe soles$q$,
+   $q$Complete intervention (diagnosis, repair and testing) on the LS variable frequency drives of a plastic injection machine for shoe soles. Replacement of the three-phase rectifier bridge, IGBT module (braking chopper), capacitors and a Semikron SKDH 146/16-L75 module. Recommissioned with optimised performance and industrial reliability.
+
+#VFDRepair #VariableFrequencyDrive #LSVFD #IndustrialMaintenance #InjectionMolding #IGBT #Semikron #AlgeriaIndustry$q$),
+  (7, $q$Industrial ultrasonic cutting machine repair$q$,
+   $q$Diagnosis, repair and testing of an ultrasonic cutting machine. Work on the electronic components (generator, transducer, power board) and adjustment of the operating parameters. Recommissioned with stable performance and precise cutting.
+
+#Ultrasonic #IndustrialMaintenance #Electronics #Diagnosis #Repair$q$),
+  (9, $q$Restoration and overhaul: Andeli 30 kVA voltage stabiliser (3-phase)$q$,
+   $q$Complete overhaul of an Andeli 30 kVA three-phase voltage stabiliser. In-depth diagnosis and full renovation, including replacement of the servo motors and calibration of the regulation circuits. From worn condition back to as-new condition, for high-performance electrical protection and optimal voltage stability.
+
+#IndustrialMaintenance #Algeria #Andeli #VoltageStabilizer #PowerSolutions$q$),
+  (13, $q$Installation and setup of a Schneider Altivar Process ATV930 drive$q$,
+   $q$Commissioning of a Schneider Electric ATV930 industrial variable speed drive (22 kW / 30 HP). On-site integration including control wiring, configuration of the acceleration ramps and motor energy optimisation. A high-performance solution for industrial pumping or ventilation control in Algeria.
+
+#SchneiderElectric #Altivar #ATV930 #VFD #AutomationAlgeria #IndustrialMaintenance$q$),
+  (11, $q$Siemens ET200 & KTP1200 automation upgrade – Algiers Metro$q$,
+   $q$Optimisation of a railway control system. Development in TIA Portal for a Siemens ET200 PLC and a KTP1200 HMI. Integration of advanced diagnostic functions and real-time monitoring of the CPU states (RUN/STOP) for better preventive maintenance of the network.$q$),
+  (14, $q$VFD configuration and control panel repair | JH21-45T pneumatic press$q$,
+   $q$Intervention on a JH21-45T pneumatic press used for sheet-metal punching. Configuration of the variable frequency drive (VFD) and repair of the control panel to ensure reliable, stable operation of the machine.$q$),
+  (8, $q$Reverse engineering & PCB repair: treadmill power board$q$,
+   $q$Advanced microelectronics work on the test bench. Complex diagnosis through reverse engineering to identify and replace burnt power components on a treadmill controller. Careful restoration of the printed circuit board (PCB), bringing it back into service without the costly replacement of the complete board.
+
+#ReverseEngineering #PCBRepair #Microelectronics #PowerElectronics #ElectronicMaintenance$q$)
+) as v(id, t, d)
+where p.id = v.id and coalesce(p.title_en, '') = '';
+
+-- Projects 15 and 16 were written in English: that text becomes the English version and a French
+-- version is added (only if they have not been edited since).
+update public.portfolio set
+  title_en = trim(title),
+  description_en = description,
+  title = $q$Rétrofit complet automate et IHM sur une ligne de production de carton Hebei Huayu$q$,
+  description = $q$Une ligne de production de carton est arrivée avec une panne catastrophique : un court-circuit entre le 24 V DC et une phase 230 V AC avait détruit la plupart des composants électriques et électroniques de la machine. Rien n’avait été épargné.
+L’intervention a couvert l’ensemble des dégâts :
+
+🔍 Diagnostic de la cause : suivi du chemin du court-circuit dans l’armoire et identification de chaque composant endommagé
+⚡ Réparation des variateurs : réparation au niveau composant des variateurs de fréquence endommagés
+🔧 Installation et mise en service de variateurs : pose des variateurs de remplacement et programmation de tous les paramètres (accélération, décélération, limites de fréquence, mode de commande)
+🖥️ Réparation de l’IHM : diagnostic et réparation de l’interface homme-machine endommagée
+🧠 Nouvel automate : remplacement de l’automate défaillant par un Schneider Electric Modicon TM221 et réécriture complète du programme en ladder
+🔌 Recâblage complet : dépose et reprise de tout le câblage de l’armoire selon les règles de l’art industrielles
+
+La machine est passée d’un arrêt total à la remise en production — sans documentation d’origine, sans sauvegarde du programme, en repartant de zéro.$q$
+where id = 16 and trim(title) = 'Full PLC & HMI Retrofit on a Hebei Huayu Carton Production Line' and coalesce(title_en, '') = '';
+
+update public.portfolio set
+  title_en = trim(title),
+  description_en = description,
+  title = $q$Diagnostic et reprogrammation d’une EEPROM corrompue sur un variateur Honeywell (HONVFD05P5K)$q$,
+  description = $q$Réparation d’un variateur de fréquence haute performance Honeywell HONVFD05P5K qui affichait un défaut permanent.
+
+Un diagnostic méthodique a permis d’identifier la cause : une mémoire EEPROM M24C64 corrompue.
+La mémoire a été extraite, son contenu analysé, puis reprogrammée avec un fichier binaire (BIN) valide.
+
+Après remontage de l’EEPROM, le variateur a retrouvé un fonctionnement normal, confirmant la résolution complète du défaut.
+
+Ce projet illustre :
+
+Le diagnostic de pannes au niveau matériel et firmware
+La manipulation et la reprogrammation d’EEPROM
+L’utilisation de programmateurs externes et la récupération de données binaires
+La réparation concrète d’équipements de contrôle industriels
+
+Pour obtenir le fichier BIN ou pour un problème similaire, contactez-nous sur WhatsApp.$q$
+where id = 15 and trim(title) = 'Diagnosing and Reprogramming Corrupted EEPROM in Honeywell VFD (HONVFD05P5K)' and coalesce(title_en, '') = '';
+
+-- ---------------------------------------------------------------------------
 -- 8. Make your account the admin (create it first in Authentication → Users)
 -- ---------------------------------------------------------------------------
 insert into public.site_admins (user_id)

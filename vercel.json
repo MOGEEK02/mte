@@ -1,5 +1,6 @@
 {
   "trailingSlash": false,
+  "crons": [{ "path": "/api/rebuild", "schedule": "0 3 * * *" }],
   "redirects": [
     { "source": "/services", "destination": "/#services", "permanent": true },
     { "source": "/services/:path*", "destination": "/#services", "permanent": true }
@@ -17,6 +18,20 @@
       "headers": [
         { "key": "Content-Type", "value": "text/plain; charset=utf-8" },
         { "key": "Cache-Control", "value": "public, s-maxage=86400" }
+      ]
+    },
+    {
+      "source": "/llms.txt",
+      "headers": [
+        { "key": "Content-Type", "value": "text/plain; charset=utf-8" },
+        { "key": "Cache-Control", "value": "public, s-maxage=3600" }
+      ]
+    },
+    {
+      "source": "/llms-full.txt",
+      "headers": [
+        { "key": "Content-Type", "value": "text/plain; charset=utf-8" },
+        { "key": "Cache-Control", "value": "public, s-maxage=3600" }
       ]
     },
     {
@@ -53,9 +68,9 @@
     { "source": "/robots.txt", "destination": "/robots.txt" },
     { "source": "/gestion", "destination": "https://mte-facturation.vercel.app/gestion" },
     { "source": "/gestion/:path*", "destination": "https://mte-facturation.vercel.app/gestion/:path*" },
-    { "source": "/admin", "destination": "/index.html" },
-    { "source": "/admin/:path*", "destination": "/index.html" },
-    { "source": "/portfolio", "destination": "/api/page?section=portfolio" },
-    { "source": "/portfolio/:id", "destination": "/api/page?section=portfolio&id=:id" }
+    { "source": "/admin", "destination": "/shell.html" },
+    { "source": "/admin/:path*", "destination": "/shell.html" },
+    { "source": "/portfolio/:id", "destination": "/api/page?id=:id" },
+    { "source": "/en/portfolio/:id", "destination": "/api/page?lang=en&id=:id" }
   ]
 }

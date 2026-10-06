@@ -1,13 +1,12 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Check, Clock, FileText, Mail, MapPin, Phone, Plus } from "lucide-react";
-import { BRANDS, FAQ, STEPS } from "../site";
-import { telHref, useContact, whatsappLink } from "../contact";
-import { coverImage, fetchPortfolio, formatDate, type PortfolioItem } from "../portfolio";
-import { select } from "../db";
+import { ArrowRight, Check, Clock, Factory, FileText, Mail, MapPin, Phone, Plus } from "lucide-react";
+import { BRANDS } from "../site";
+import { cvStore, hoursFor, telHref, useContact, whatsappLink } from "../contact";
+import { coverImage, formatDate, portfolioStore, projectText } from "../portfolio";
+import { useServices } from "../services";
+import { localePath, useLang, useT } from "../i18n";
 import { BrandIcon } from "../ui/BrandIcon";
 import { QuoteForm } from "../ui/QuoteForm";
-import { useServices } from "../services";
 import { Seo } from "../ui/Seo";
 
 function SectionTitle({ eyebrow, title, text, light }: { eyebrow: string; title: string; text?: string; light?: boolean }) {
@@ -21,6 +20,8 @@ function SectionTitle({ eyebrow, title, text, light }: { eyebrow: string; title:
 }
 
 function Hero() {
+  const lang = useLang();
+  const { hero: t, nav } = useT();
   const contact = useContact();
   return (
     <section className="relative isolate overflow-hidden bg-navy-950">
@@ -35,17 +36,12 @@ function Hero() {
       <div className="absolute inset-0 -z-10 bg-gradient-to-r from-navy-950 via-navy-950/85 to-navy-950/30" />
       <div className="container-page pt-32 pb-20 sm:pt-40 sm:pb-28 lg:pt-44 lg:pb-32">
         <div className="max-w-2xl">
-          <p className="eyebrow text-brand">Médéa · Intervention dans toute l’Algérie</p>
-          <h1 className="mt-4 text-4xl leading-[1.1] font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
-            Automatisme et électronique industrielle
-          </h1>
-          <p className="mt-6 text-lg leading-relaxed text-slate-300">
-            Programmation d’automates, dépannage d’armoires de commande, études électriques, réparation de variateurs
-            et de cartes électroniques : un seul interlocuteur pour remettre vos machines en production.
-          </p>
+          <p className="eyebrow text-brand">{t.eyebrow}</p>
+          <h1 className="mt-4 text-4xl leading-[1.1] font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">{t.title}</h1>
+          <p className="mt-6 text-lg leading-relaxed text-slate-300">{t.text}</p>
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <Link to="/#contact" className="btn-primary px-6">
-              Demander un devis
+            <Link to={localePath(lang, "/#contact")} className="btn-primary px-6">
+              {nav.quote}
               <ArrowRight className="size-4" />
             </Link>
             <a href={whatsappLink(contact)} target="_blank" rel="noopener noreferrer" className="btn-outline-light px-6">
@@ -54,10 +50,10 @@ function Hero() {
             </a>
           </div>
           <ul className="mt-10 grid gap-3 text-sm text-slate-300 sm:grid-cols-3 sm:gap-6">
-            {["Diagnostic sous 24 à 48 h", "Devis avant intervention", "Toutes marques"].map((t) => (
-              <li key={t} className="flex items-center gap-2">
+            {t.checks.map((c) => (
+              <li key={c} className="flex items-center gap-2">
                 <Check className="size-4 shrink-0 text-brand" />
-                {t}
+                {c}
               </li>
             ))}
           </ul>
@@ -68,10 +64,11 @@ function Hero() {
 }
 
 function Brands() {
+  const t = useT().brands;
   return (
-    <section aria-label="Marques prises en charge" className="border-b border-slate-200 bg-white">
+    <section aria-label={t.label} className="border-b border-slate-200 bg-white">
       <div className="container-page py-10">
-        <p className="text-center text-sm text-slate-500">Équipements de toutes marques, notamment</p>
+        <p className="text-center text-sm text-slate-500">{t.text}</p>
         <ul className="mt-6 flex flex-wrap items-center justify-center gap-x-10 gap-y-6 sm:justify-between">
           {BRANDS.map((b) => (
             <li key={b.name}>
@@ -90,25 +87,18 @@ function Brands() {
 }
 
 function Services() {
-  const services = useServices();
+  const lang = useLang();
+  const t = useT().services;
+  const services = useServices(lang);
   return (
     <section id="services" className="bg-slate-50 py-20 sm:py-24">
       <div className="container-page">
-        <SectionTitle
-          eyebrow="Services"
-          title="Ce que nous faisons"
-          text="De la programmation d’automates à la réparation au niveau composant, en atelier ou sur site."
-        />
+        <SectionTitle eyebrow={t.eyebrow} title={t.title} text={t.text} />
         <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {services.map((s) => (
             <li key={s.slug} className="group flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xs transition hover:shadow-md">
               <div className="aspect-[16/10] overflow-hidden bg-slate-100">
-                <img
-                  src={s.image}
-                  alt={s.title}
-                  loading="lazy"
-                  className="size-full object-cover transition duration-500 group-hover:scale-[1.03]"
-                />
+                <img src={s.image} alt={s.title} loading="lazy" className="size-full object-cover transition duration-500 group-hover:scale-[1.03]" />
               </div>
               <div className="flex flex-1 flex-col p-6">
                 <h3 className="text-lg font-semibold text-navy-900">{s.title}</h3>
@@ -123,18 +113,56 @@ function Services() {
   );
 }
 
+/** Where and for whom: helps local searches ("automatisme Blida", "réparation variateur Oran"…). */
+function Reach() {
+  const t = useT().reach;
+  return (
+    <section id="zones" className="py-20 sm:py-24">
+      <div className="container-page">
+        <SectionTitle eyebrow={t.eyebrow} title={t.title} text={t.text} />
+        <div className="mt-12 grid gap-10 lg:grid-cols-2">
+          <div>
+            <h3 className="flex items-center gap-2 font-semibold text-navy-900">
+              <Factory className="size-5 text-brand-600" />
+              {t.sectorsTitle}
+            </h3>
+            <ul className="mt-4 grid gap-2.5 sm:grid-cols-2">
+              {t.sectors.map((s) => (
+                <li key={s} className="flex items-start gap-2 text-sm text-slate-700">
+                  <Check className="mt-0.5 size-4 shrink-0 text-brand-600" />
+                  {s}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h3 className="flex items-center gap-2 font-semibold text-navy-900">
+              <MapPin className="size-5 text-brand-600" />
+              {t.areasTitle}
+            </h3>
+            <ul className="mt-4 flex flex-wrap gap-2">
+              {t.areas.map((a) => (
+                <li key={a} className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-sm text-slate-700">
+                  {a}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-3 text-sm text-slate-500">{t.everywhere}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function Method() {
+  const t = useT().method;
   return (
     <section id="methode" className="bg-navy-900 py-20 sm:py-24">
       <div className="container-page">
-        <SectionTitle
-          light
-          eyebrow="Méthode"
-          title="Une intervention claire, de la panne à la remise en service"
-          text="Vous savez à chaque étape ce qui a été constaté, ce qui sera fait et dans quel délai."
-        />
+        <SectionTitle light eyebrow={t.eyebrow} title={t.title} text={t.text} />
         <ol className="mt-12 grid gap-px overflow-hidden rounded-xl bg-white/10 sm:grid-cols-2 lg:grid-cols-4">
-          {STEPS.map((s, i) => (
+          {t.steps.map((s, i) => (
             <li key={s.title} className="bg-navy-900 p-6 lg:p-7">
               <span className="font-display text-4xl font-semibold text-brand">{String(i + 1).padStart(2, "0")}</span>
               <h3 className="mt-3 text-lg font-semibold text-white">{s.title}</h3>
@@ -148,59 +176,52 @@ function Method() {
 }
 
 function About() {
-  const [cv, setCv] = useState<{ fr: string; en: string }>({ fr: "", en: "" });
-  useEffect(() => {
-    select<{ url_fr: string | null; url_en: string | null }>("resume_links", { select: "url_fr,url_en", limit: "1" }).then(
-      ([row]) => row && setCv({ fr: row.url_fr || "", en: row.url_en || "" }),
-    );
-  }, []);
-
+  const lang = useLang();
+  const t = useT().about;
+  const cv = cvStore.use();
   return (
-    <section id="a-propos" className="py-20 sm:py-24">
+    <section id="a-propos" className="bg-slate-50 py-20 sm:py-24">
       <div className="container-page grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
         <div className="relative mx-auto w-full max-w-md lg:max-w-none">
           <img
             src="/images/web/fondateur.webp"
-            alt="Fekhar Moutie sur un site industriel"
+            alt={t.photoAlt}
             width={900}
             height={1200}
             loading="lazy"
             className="aspect-[4/5] w-full rounded-xl object-cover shadow-lg"
           />
           <div className="absolute -bottom-5 left-5 rounded-lg bg-brand px-5 py-3 shadow-md sm:-right-5 sm:left-auto">
-            <p className="font-display text-2xl leading-none font-semibold text-navy-950">Depuis 2020</p>
-            <p className="mt-1 text-xs font-medium text-navy-900">au service de l’industrie</p>
+            <p className="font-display text-2xl leading-none font-semibold text-navy-950">{t.since}</p>
+            <p className="mt-1 text-xs font-medium text-navy-900">{t.sinceText}</p>
           </div>
         </div>
         <div>
-          <SectionTitle eyebrow="À propos" title="Un ingénieur, de l’automate jusqu’au composant" />
+          <SectionTitle eyebrow={t.eyebrow} title={t.title} />
           <div className="mt-5 space-y-4 text-base leading-relaxed text-slate-600">
             <p>
-              MTE a été créé par <strong className="font-semibold text-navy-900">Fekhar Moutie</strong>, ingénieur en
-              automatisme et électronique, pour accompagner les industriels sur toute la partie commande de leurs
-              machines : automates, écrans, armoires, variateurs et cartes électroniques.
+              {t.p1a}
+              <strong className="font-semibold text-navy-900">Fekhar Moutie</strong>
+              {t.p1b}
             </p>
-            <p>
-              Être à la fois programmeur et électronicien permet de dépanner vite : lire le programme en ligne, mesurer
-              les signaux dans l’armoire et, si besoin, comprendre ce qui se passe sur une carte.
-            </p>
-            <p>Notre engagement : des interventions préparées, des explications claires, et des programmes sauvegardés et documentés.</p>
+            <p>{t.p2}</p>
+            <p>{t.p3}</p>
           </div>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link to="/portfolio" className="btn bg-navy-900 text-white hover:bg-navy-800">
-              Voir les réalisations
+            <Link to={localePath(lang, "/portfolio")} className="btn bg-navy-900 text-white hover:bg-navy-800">
+              {t.work}
               <ArrowRight className="size-4" />
             </Link>
             {cv.fr && (
               <a href={cv.fr} target="_blank" rel="noopener noreferrer" className="btn-outline">
                 <FileText className="size-4" />
-                CV (français)
+                {t.cvFr}
               </a>
             )}
             {cv.en && (
               <a href={cv.en} target="_blank" rel="noopener noreferrer" className="btn-outline">
                 <FileText className="size-4" />
-                CV (anglais)
+                {t.cvEn}
               </a>
             )}
           </div>
@@ -211,58 +232,57 @@ function About() {
 }
 
 function LatestWork() {
-  const [items, setItems] = useState<PortfolioItem[] | null>(null);
-  useEffect(() => {
-    fetchPortfolio(3).then(setItems);
-  }, []);
+  const lang = useLang();
+  const t = useT().latest;
+  const all = portfolioStore.use();
+  const items = all?.slice(0, 3) ?? null;
   if (items && items.length === 0) return null;
 
   return (
-    <section className="border-t border-slate-200 bg-slate-50 py-20 sm:py-24">
+    <section className="py-20 sm:py-24">
       <div className="container-page">
         <div className="flex flex-wrap items-end justify-between gap-6">
-          <SectionTitle eyebrow="Réalisations" title="Interventions récentes" />
-          <Link to="/portfolio" className="inline-flex items-center gap-1.5 text-sm font-semibold text-navy-900 hover:text-navy-700">
-            Toutes les réalisations
+          <SectionTitle eyebrow={t.eyebrow} title={t.title} />
+          <Link to={localePath(lang, "/portfolio")} className="inline-flex items-center gap-1.5 text-sm font-semibold text-navy-900 hover:text-navy-700">
+            {t.all}
             <ArrowRight className="size-4" />
           </Link>
         </div>
         <ul className="mt-10 grid gap-6 md:grid-cols-3">
-          {(items ?? [null, null, null]).map((item, i) =>
-            item ? (
+          {(items ?? [null, null, null]).map((item, i) => {
+            if (!item) {
+              // Same box as a loaded card, so the page doesn't shift when projects arrive.
+              return (
+                <li key={i} aria-hidden="true" className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+                  <div className="aspect-video animate-pulse bg-slate-200" />
+                  <div className="p-5">
+                    <div className="h-4 w-24 rounded bg-slate-100" />
+                    <div className="mt-1.5 h-12 rounded bg-slate-100" />
+                  </div>
+                </li>
+              );
+            }
+            const cover = coverImage(item);
+            const { title } = projectText(item, lang);
+            return (
               <li key={item.id}>
                 <Link
-                  to={`/portfolio/${item.id}`}
+                  to={localePath(lang, `/portfolio/${item.id}`)}
                   className="group block overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xs transition hover:shadow-md"
                 >
                   <div className="aspect-video overflow-hidden bg-slate-200">
-                    {coverImage(item) && (
-                      <img
-                        src={coverImage(item)!}
-                        alt={item.title}
-                        loading="lazy"
-                        referrerPolicy="no-referrer"
-                        className="size-full object-cover transition duration-500 group-hover:scale-[1.03]"
-                      />
+                    {cover && (
+                      <img src={cover} alt={title} loading="lazy" referrerPolicy="no-referrer" className="size-full object-cover transition duration-500 group-hover:scale-[1.03]" />
                     )}
                   </div>
                   <div className="p-5">
-                    <p className="text-xs text-slate-500">{formatDate(item.created_at)}</p>
-                    <h3 className="mt-1.5 line-clamp-2 font-semibold text-navy-900 group-hover:text-navy-700">{item.title}</h3>
+                    <p className="text-xs text-slate-500">{formatDate(item.created_at, lang)}</p>
+                    <h3 className="mt-1.5 line-clamp-2 font-semibold text-navy-900 group-hover:text-navy-700">{title}</h3>
                   </div>
                 </Link>
               </li>
-            ) : (
-              // Same box as a loaded card, so the page doesn't shift when projects arrive.
-              <li key={i} aria-hidden="true" className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-                <div className="aspect-video animate-pulse bg-slate-200" />
-                <div className="p-5">
-                  <div className="h-4 w-24 rounded bg-slate-100" />
-                  <div className="mt-1.5 h-12 rounded bg-slate-100" />
-                </div>
-              </li>
-            ),
-          )}
+            );
+          })}
         </ul>
       </div>
     </section>
@@ -270,15 +290,16 @@ function LatestWork() {
 }
 
 function Faq() {
+  const t = useT().faq;
   return (
-    <section id="faq" className="py-20 sm:py-24">
+    <section id="faq" className="border-t border-slate-200 py-20 sm:py-24">
       <div className="container-page grid gap-10 lg:grid-cols-[1fr_1.6fr] lg:gap-16">
-        <SectionTitle eyebrow="FAQ" title="Questions fréquentes" text="Une autre question ? Appelez-nous ou écrivez-nous sur WhatsApp." />
+        <SectionTitle eyebrow={t.eyebrow} title={t.title} text={t.text} />
         <div className="divide-y divide-slate-200 border-y border-slate-200">
-          {FAQ.map((f) => (
+          {t.items.map((f) => (
             <details key={f.q} className="group py-5">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold text-navy-900 [&::-webkit-details-marker]:hidden">
-                {f.q}
+                <h3>{f.q}</h3>
                 <Plus className="size-5 shrink-0 text-slate-400 transition group-open:rotate-45" />
               </summary>
               <p className="mt-3 text-sm leading-relaxed text-slate-600">{f.a}</p>
@@ -291,23 +312,21 @@ function Faq() {
 }
 
 function Contact() {
+  const lang = useLang();
+  const t = useT().contact;
   const contact = useContact();
   const rows = [
-    { icon: <BrandIcon name="WhatsApp" className="size-5" />, label: "WhatsApp", value: contact.whatsapp, href: whatsappLink(contact), external: true },
-    { icon: <Phone className="size-5" />, label: "Téléphone", value: contact.phone, href: telHref(contact.phone) },
-    { icon: <Mail className="size-5" />, label: "E-mail", value: contact.email, href: `mailto:${contact.email}` },
-    { icon: <MapPin className="size-5" />, label: "Adresse", value: contact.address, href: contact.mapUrl, external: true },
-    { icon: <Clock className="size-5" />, label: "Horaires", value: contact.hours },
+    { icon: <BrandIcon name="WhatsApp" className="size-5" />, label: t.whatsapp, value: contact.whatsapp, href: whatsappLink(contact), external: true },
+    { icon: <Phone className="size-5" />, label: t.phone, value: contact.phone, href: telHref(contact.phone) },
+    { icon: <Mail className="size-5" />, label: t.email, value: contact.email, href: `mailto:${contact.email}` },
+    { icon: <MapPin className="size-5" />, label: t.address, value: contact.address, href: contact.mapUrl, external: true },
+    { icon: <Clock className="size-5" />, label: t.hours, value: hoursFor(contact, lang) },
   ];
   return (
     <section id="contact" className="bg-slate-50 py-20 sm:py-24">
       <div className="container-page grid gap-12 lg:grid-cols-[1fr_1.4fr]">
         <div>
-          <SectionTitle
-            eyebrow="Contact"
-            title="Une machine à l’arrêt ou un projet ?"
-            text="Envoyez une photo de l’armoire, le code défaut affiché ou la description de votre projet : nous revenons vers vous rapidement."
-          />
+          <SectionTitle eyebrow={t.eyebrow} title={t.title} text={t.text} />
           <ul className="mt-8 space-y-4">
             {rows.map((r) => {
               const body = (
@@ -344,16 +363,15 @@ function Contact() {
 }
 
 export default function Home() {
+  const lang = useLang();
+  const t = useT().seo;
   return (
     <>
-      <Seo
-        title="MTE – Automatisme et électronique industrielle en Algérie | PLC, armoires, variateurs"
-        description="Programmation PLC et IHM, dépannage d’armoires de commande, études électriques, réparation de variateurs de vitesse et de cartes électroniques. Médéa et intervention partout en Algérie."
-        path="/"
-      />
+      <Seo lang={lang} path="/" title={t.homeTitle} description={t.homeDescription} />
       <Hero />
       <Brands />
       <Services />
+      <Reach />
       <Method />
       <About />
       <LatestWork />

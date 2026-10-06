@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Outlet, useLocation } from "react-router-dom";
+import { DICT, LangContext, type Lang } from "../i18n";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 
@@ -11,7 +12,7 @@ function useScrollOnNavigate() {
     const samePage = lastPath.current === pathname;
     lastPath.current = pathname;
     if (!hash) {
-      window.scrollTo({ top: 0, behavior: "instant" });
+      if (!samePage) window.scrollTo({ top: 0, behavior: "instant" });
       return;
     }
     // Glide within the page; jump straight there when arriving from another page.
@@ -24,21 +25,26 @@ function useScrollOnNavigate() {
   }, [pathname, hash]);
 }
 
-export function Layout() {
+export function Layout({ lang }: { lang: Lang }) {
   useScrollOnNavigate();
+  useEffect(() => {
+    document.documentElement.lang = DICT[lang].locale;
+  }, [lang]);
   return (
-    <div className="flex min-h-screen flex-col">
-      <a
-        href="#contenu"
-        className="sr-only z-[60] rounded-md bg-brand px-4 py-2 font-semibold text-navy-950 focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
-      >
-        Aller au contenu
-      </a>
-      <Header />
-      <main id="contenu" className="flex-1">
-        <Outlet />
-      </main>
-      <Footer />
-    </div>
+    <LangContext.Provider value={lang}>
+      <div className="flex min-h-screen flex-col">
+        <a
+          href="#contenu"
+          className="sr-only z-[60] rounded-md bg-brand px-4 py-2 font-semibold text-navy-950 focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
+        >
+          {DICT[lang].skip}
+        </a>
+        <Header />
+        <main id="contenu" className="flex-1">
+          <Outlet />
+        </main>
+        <Footer />
+      </div>
+    </LangContext.Provider>
   );
 }
