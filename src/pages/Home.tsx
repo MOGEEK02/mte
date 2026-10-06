@@ -182,7 +182,7 @@ function About() {
   return (
     <section id="a-propos" className="bg-slate-50 py-20 sm:py-24">
       <div className="container-page grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-        <div className="relative mx-auto w-full max-w-md lg:max-w-none">
+        <div className="mx-auto w-full max-w-md lg:max-w-none">
           <img
             src="/images/web/fondateur.webp"
             alt={t.photoAlt}
@@ -191,10 +191,6 @@ function About() {
             loading="lazy"
             className="aspect-[4/5] w-full rounded-xl object-cover shadow-lg"
           />
-          <div className="absolute -bottom-5 start-5 rounded-lg bg-brand px-5 py-3 shadow-md sm:-end-5 sm:start-auto">
-            <p className="font-display text-2xl leading-none font-semibold text-navy-950">{t.since}</p>
-            <p className="mt-1 text-xs font-medium text-navy-900">{t.sinceText}</p>
-          </div>
         </div>
         <div>
           <SectionTitle eyebrow={t.eyebrow} title={t.title} />
@@ -235,7 +231,9 @@ function LatestWork() {
   const lang = useLang();
   const t = useT().latest;
   const all = portfolioStore.use();
-  const items = all?.slice(0, 3) ?? null;
+  // Projects chosen in /admin ("À la une"), or the three newest when none is chosen.
+  const featured = all?.filter((p) => p.featured) ?? [];
+  const items = all ? (featured.length ? featured : all).slice(0, 3) : null;
   if (items && items.length === 0) return null;
 
   return (

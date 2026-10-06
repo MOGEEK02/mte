@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ExternalLink, ImageOff, Pencil, Plus, Search } from "lucide-react";
+import { ExternalLink, ImageOff, Pencil, Plus, Search, Star } from "lucide-react";
 import { coverImage, formatDate, type PortfolioItem } from "../portfolio";
 import { errorMessage, supabase } from "./supabase";
 import { inputClass, Loading, Notice, PageHeader, Toggle, useFlash } from "./ui";
@@ -19,6 +19,16 @@ export default function Projects() {
       .order("created_at", { ascending: false })
       .then(({ data, error }) => (error ? setError(errorMessage(error)) : setItems(data as PortfolioItem[])));
   }, []);
+
+  const setFeatured = async (item: PortfolioItem, featured: boolean) => {
+    setItems((s) => s!.map((p) => (p.id === item.id ? { ...p, featured } : p)));
+    const { error } = await supabase.from("portfolio").update({ featured }).eq("id", item.id);
+    if (error) {
+      setItems((s) => s!.map((p) => (p.id === item.id ? { ...p, featured: !featured } : p)));
+      return flash(errorMessage(error), "error");
+    }
+    flash(featured ? "Affiché dans « Interventions récentes »" : "Retiré de « Interventions récentes »");
+  };
 
   const setPublished = async (item: PortfolioItem, published: boolean) => {
     setItems((s) => s!.map((p) => (p.id === item.id ? { ...p, published } : p)));
@@ -41,7 +51,7 @@ export default function Projects() {
     <div>
       <PageHeader
         title="Réalisations"
-        description="Les projets affichés sur la page Réalisations et dans « Interventions récentes »."
+        description="★ = affiché dans « Interventions récentes » sur l’accueil (les 3 plus récents marqués ; aucun marqué : les 3 derniers projets)."
         actions={
           <Link to="/admin/realisations/nouveau" className="inline-flex items-center gap-2 rounded-md bg-brand px-4 py-2.5 text-sm font-medium text-navy-950 hover:bg-brand-600">
             <Plus className="size-4" /> Nouveau projet
@@ -86,6 +96,15 @@ export default function Projects() {
                   <div className="hidden sm:block">
                     <Toggle checked={p.published !== false} onChange={(v) => setPublished(p, v)} label="Visible" />
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => setFeatured(p, !p.featured)}
+                    aria-pressed={Boolean(p.featured)}
+                    title={p.featured ? "Retirer de « Interventions récentes »" : "Afficher dans « Interventions récentes »"}
+                    className={`rounded-md p-2 transition-colors ${p.featured ? "text-brand-600 hover:bg-amber-50" : "text-slate-300 hover:bg-slate-100 hover:text-slate-500"}`}
+                  >
+                    <Star className="size-5" fill={p.featured ? "currentColor" : "none"} />
+                  </button>
                   <a href={`/portfolio/${p.slug || p.id}`} target="_blank" rel="noopener" aria-label="Voir sur le site" className="rounded-md p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700">
                     <ExternalLink className="size-4" />
                   </a>

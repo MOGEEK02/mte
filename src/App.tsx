@@ -5,6 +5,7 @@ import { Layout } from "./ui/Layout";
 import Home from "./pages/Home";
 import Portfolio from "./pages/Portfolio";
 import PortfolioPost from "./pages/PortfolioPost";
+import Store from "./pages/Store";
 import NotFound from "./pages/NotFound";
 
 // Loaded only when /admin is opened, so visitors never download it.
@@ -27,6 +28,7 @@ export function AppRoutes() {
           <Route index element={<Home />} />
           <Route path="portfolio" element={<Portfolio />} />
           <Route path="portfolio/:id" element={<PortfolioPost />} />
+          <Route path="store" element={<Store />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       ))}
@@ -34,6 +36,7 @@ export function AppRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/portfolio" element={<Portfolio />} />
         <Route path="/portfolio/:id" element={<PortfolioPost />} />
+        <Route path="/store" element={<Store />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

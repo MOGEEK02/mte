@@ -28,6 +28,7 @@ type Form = {
   titleAr: string;
   descriptionAr: string;
   published: boolean;
+  featured: boolean;
 };
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -44,7 +45,7 @@ export default function ProjectEditor() {
   const flash = useFlash();
 
   const [original, setOriginal] = useState<PortfolioItem | null>(null);
-  const [form, setForm] = useState<Form>({ title: "", date: today(), description: "", slug: "", titleEn: "", descriptionEn: "", titleAr: "", descriptionAr: "", published: true });
+  const [form, setForm] = useState<Form>({ title: "", date: today(), description: "", slug: "", titleEn: "", descriptionEn: "", titleAr: "", descriptionAr: "", published: true, featured: false });
   const [media, setMedia] = useState<MediaDraft[]>([]);
   const [saved, setSaved] = useState<string>("");
   const [loading, setLoading] = useState(!isNew);
@@ -57,7 +58,7 @@ export default function ProjectEditor() {
 
   useEffect(() => {
     if (isNew) {
-      setSaved(snapshot({ title: "", date: today(), description: "", slug: "", titleEn: "", descriptionEn: "", titleAr: "", descriptionAr: "", published: true }, []));
+      setSaved(snapshot({ title: "", date: today(), description: "", slug: "", titleEn: "", descriptionEn: "", titleAr: "", descriptionAr: "", published: true, featured: false }, []));
       return;
     }
     supabase
@@ -80,6 +81,7 @@ export default function ProjectEditor() {
           titleAr: p.title_ar ?? "",
           descriptionAr: p.description_ar ?? "",
           published: p.published !== false,
+          featured: Boolean(p.featured),
         };
         const m: MediaDraft[] = [...(p.portfolio_media ?? [])]
           .sort((a, b) => a.sort_order - b.sort_order)
@@ -150,6 +152,7 @@ export default function ProjectEditor() {
         description_ar: form.descriptionAr.trim() || null,
         created_at: keptDate ? original!.created_at : `${form.date}T12:00:00Z`,
         published: form.published,
+        featured: form.featured,
         updated_at: new Date().toISOString(),
       };
       let projectId = original?.id;
@@ -301,6 +304,7 @@ export default function ProjectEditor() {
 
         <section className="space-y-5 rounded-xl border border-slate-200 bg-white p-5 sm:p-6 lg:self-start">
           <Toggle checked={form.published} onChange={(v) => set("published", v)} label={form.published ? "Visible sur le site" : "Masqué du site"} />
+          <Toggle checked={form.featured} onChange={(v) => set("featured", v)} label="Afficher dans « Interventions récentes »" />
           <Field label="Date d’intervention" htmlFor="p-date">
             <input id="p-date" type="date" className={inputClass} value={form.date} onChange={(e) => set("date", e.target.value || today())} />
           </Field>

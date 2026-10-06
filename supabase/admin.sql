@@ -500,6 +500,12 @@ from (values
 where p.id = v.id and coalesce(p.title_ar, '') = '';
 
 -- ---------------------------------------------------------------------------
+-- 11. Projects shown in "Interventions récentes" on the home page (★ in /admin).
+--     None chosen: the three newest are shown.
+-- ---------------------------------------------------------------------------
+alter table public.portfolio add column if not exists featured boolean not null default false;
+
+-- ---------------------------------------------------------------------------
 -- 8. Make your account the admin (create it first in Authentication → Users)
 -- ---------------------------------------------------------------------------
 insert into public.site_admins (user_id)

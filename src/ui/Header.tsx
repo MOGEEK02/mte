@@ -36,6 +36,7 @@ export function Header() {
     { to: to("/#methode"), label: t.nav.method },
     { to: to("/#a-propos"), label: t.nav.about },
     { to: to("/portfolio"), label: t.nav.work },
+    { to: to("/store"), label: t.nav.store },
     { to: to("/#faq"), label: t.nav.faq },
   ];
   // FR · EN · عربي — the same page in each language. The Arabic label uses the system font so

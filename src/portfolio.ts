@@ -25,6 +25,8 @@ export interface PortfolioItem {
   /** Set in /admin (columns added by supabase/admin.sql). */
   service_slug?: string | null;
   published?: boolean;
+  /** Shown in "Interventions récentes" on the home page (chosen in /admin). */
+  featured?: boolean;
   portfolio_media: MediaItem[];
 }
 

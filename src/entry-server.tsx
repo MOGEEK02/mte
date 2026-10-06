@@ -59,6 +59,8 @@ export function pages(data: SiteData): Page[] {
       meta: { lang, path: "/portfolio", title: t.seo.workTitle, description: t.seo.workDescription },
       jsonLd: [business, ...portfolioJsonLd(lang, data.portfolio)],
     });
+    // "Coming soon" store page: out of search results until it has content.
+    out.push({ url: `${prefix}/store`, lang, meta: { lang, path: "/store", title: t.store.seoTitle, description: t.store.seoDescription, noindex: true }, jsonLd: [] });
     for (const item of data.portfolio) {
       out.push({ url: `${prefix}${projectPath(item)}`, lang, meta: projectMeta(item, lang), jsonLd: [business, ...projectJsonLd(lang, item)] });
     }

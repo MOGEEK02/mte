@@ -62,6 +62,7 @@ export function Footer() {
             <li><Link to={to("/#methode")} className="hover:text-white">{t.nav.method}</Link></li>
             <li><Link to={to("/#a-propos")} className="hover:text-white">{t.nav.about}</Link></li>
             <li><Link to={to("/portfolio")} className="hover:text-white">{t.nav.work}</Link></li>
+            <li><Link to={to("/store")} className="hover:text-white">{t.nav.store}</Link></li>
             <li><Link to={to("/#faq")} className="hover:text-white">{t.footer.faq}</Link></li>
             <li><Link to={to("/#contact")} className="hover:text-white">{t.nav.quote}</Link></li>
             {LANGS.filter((l) => l !== lang).map((l) => (
