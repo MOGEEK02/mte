@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, CheckCircle2, CircleAlert, ExternalLink, Eye, FolderKanban, Inbox, MessageCircle } from "lucide-react";
 import { setTrackingOff, trackingOff } from "../track";
 import { RebuildButton } from "./RebuildButton";
+import { aiErrorText, askAi } from "./ai";
 import { errorMessage, isMissingSetup, supabase } from "./supabase";
 import { Card, formatDateTime, Loading, Notice, PageHeader, Toggle } from "./ui";
 
@@ -19,7 +20,27 @@ type Stats = {
   contactPages: Count[];
 };
 type RequestRow = { id: number; created_at: string; name: string; company: string; request_type: string; status: string };
-type Status = { deployHook: boolean; cronSecret: boolean; resend: boolean; secretKey: boolean; environment: string };
+type Status = { deployHook: boolean; cronSecret: boolean; resend: boolean; secretKey: boolean; gemini?: boolean; environment: string };
+
+/** Asks Gemini to correct a sample sentence, to check the key from here. */
+function AiTest() {
+  const [result, setResult] = useState<{ ok: boolean; text: string } | null>(null);
+  const [busy, setBusy] = useState(false);
+  const run = async () => {
+    setBusy(true);
+    const r = await askAi({ task: "correct", text: "Nous avons reparer le variateur de la ligne 2.", lang: "fr", field: "text" });
+    setBusy(false);
+    setResult("text" in r ? { ok: true, text: r.text } : { ok: false, text: aiErrorText(r.error) });
+  };
+  return (
+    <>
+      <button type="button" onClick={run} disabled={busy} className="font-semibold text-navy-900 underline disabled:opacity-60">
+        {busy ? "Test en cours…" : "Tester l’IA"}
+      </button>
+      {result && <span className={`mt-1 block ${result.ok ? "text-emerald-700" : "text-red-700"}`}>{result.ok ? `Réponse : « ${result.text} »` : result.text}</span>}
+    </>
+  );
+}
 
 const PERIODS = [
   { days: 7, label: "7 jours" },
@@ -432,6 +453,25 @@ export default function Dashboard() {
                   ok={status ? status.secretKey : null}
                   label="Enregistrement des demandes et des visites (SUPABASE_SECRET_KEY)"
                   help={status?.secretKey ? "Demandes et statistiques sont enregistrées." : "Sans cette clé, ni les demandes ni les visites ne sont enregistrées."}
+                />
+                <Check
+                  ok={status ? status.gemini === true : null}
+                  label="Assistant de rédaction IA (GEMINI_API_KEY)"
+                  help={
+                    status?.gemini ? (
+                      <>
+                        Les boutons « IA » fonctionnent (Gemini, gratuit). <AiTest />
+                      </>
+                    ) : (
+                      <>
+                        Clé gratuite sur{" "}
+                        <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" className="font-medium text-navy-900 underline">
+                          aistudio.google.com/apikey
+                        </a>
+                        , à ajouter dans Vercel aux deux projets (site et mte-facturation), puis redéployer.
+                      </>
+                    )
+                  }
                 />
               </>
             )}

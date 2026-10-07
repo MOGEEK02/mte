@@ -37,12 +37,37 @@ export function Button({
 export const inputClass =
   "block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-ink shadow-xs placeholder:text-slate-400 focus:border-navy-700 focus:ring-2 focus:ring-navy-700/15 focus:outline-none disabled:bg-slate-50 disabled:text-slate-500";
 
-export function Field({ label, hint, htmlFor, children, className = "" }: { label: string; hint?: ReactNode; htmlFor?: string; children: ReactNode; className?: string }) {
+export function Field({
+  label,
+  hint,
+  htmlFor,
+  children,
+  className = "",
+  action,
+}: {
+  label: string;
+  hint?: ReactNode;
+  htmlFor?: string;
+  children: ReactNode;
+  className?: string;
+  /** Small control at the end of the label row (the writing assistant). */
+  action?: ReactNode;
+}) {
+  const labelEl = (
+    <label htmlFor={htmlFor} className="block text-sm font-medium text-slate-700">
+      {label}
+    </label>
+  );
   return (
     <div className={className}>
-      <label htmlFor={htmlFor} className="block text-sm font-medium text-slate-700">
-        {label}
-      </label>
+      {action ? (
+        <div className="flex min-h-5 items-center justify-between gap-2">
+          {labelEl}
+          {action}
+        </div>
+      ) : (
+        labelEl
+      )}
       <div className="mt-1.5">{children}</div>
       {hint && <p className="mt-1.5 text-xs text-slate-500">{hint}</p>}
     </div>

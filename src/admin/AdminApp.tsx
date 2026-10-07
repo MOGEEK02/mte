@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Link, NavLink, Route, Routes, useLocation } from "react-router-dom";
 import type { Session } from "@supabase/supabase-js";
 import {
+  BookOpen,
   ExternalLink,
   FileText,
   FolderKanban,
@@ -9,6 +10,7 @@ import {
   LayoutDashboard,
   LogOut,
   MessageSquareQuote,
+  Receipt,
   Settings as SettingsIcon,
   ShoppingBag,
   Wrench,
@@ -24,6 +26,8 @@ import ContentAdmin from "./ContentAdmin";
 import ReviewsAdmin from "./ReviewsAdmin";
 import StoreAdmin from "./StoreAdmin";
 import ProductEditor from "./ProductEditor";
+import Gestion from "./Gestion";
+import { SearchPalette } from "./SearchPalette";
 import Projects from "./Projects";
 import ProjectEditor from "./ProjectEditor";
 import ServicesAdmin from "./ServicesAdmin";
@@ -117,9 +121,14 @@ function SetPassword({ onDone }: { onDone: () => void }) {
   );
 }
 
-const NAV = [
+type NavItem = { to: string; end: boolean; label: string; icon: typeof Inbox; badge?: boolean; match?: (path: string) => boolean };
+
+const NAV: NavItem[] = [
   { to: "/admin", end: true, label: "Tableau de bord", icon: LayoutDashboard },
   { to: "/admin/demandes", end: false, label: "Demandes", icon: Inbox, badge: true },
+  // The invoicing app, shown inside the admin (its catalogue has its own entry).
+  { to: "/admin/gestion", end: false, label: "Facturation", icon: Receipt, match: (p) => p.startsWith("/admin/gestion") && !p.startsWith("/admin/gestion/catalog") },
+  { to: "/admin/gestion/catalog", end: false, label: "Catalogue", icon: BookOpen, match: (p) => p.startsWith("/admin/gestion/catalog") },
   { to: "/admin/realisations", end: false, label: "Réalisations", icon: FolderKanban },
   { to: "/admin/services", end: false, label: "Services", icon: Wrench },
   { to: "/admin/contenu", end: false, label: "Textes du site", icon: FileText },
@@ -148,6 +157,9 @@ function useNewRequests() {
 
 function Layout({ email }: { email: string }) {
   const newRequests = useNewRequests();
+  const { pathname } = useLocation();
+  // The invoicing app takes the whole width and height next to the menu.
+  const fullPage = pathname.startsWith("/admin/gestion");
   // The owner's own visits are left out of the statistics on this device.
   useEffect(excludeThisDevice, []);
   const link = ({ isActive }: { isActive: boolean }) =>
@@ -162,10 +174,11 @@ function Layout({ email }: { email: string }) {
             <img src="/images/logo%20white.png" alt="MTE" width={900} height={384} className="h-8 w-auto" />
           </Link>
           <p className="hidden text-xs text-slate-500 lg:mt-2 lg:block">Administration du site</p>
+          <SearchPalette className="w-40 sm:w-56 lg:mt-4 lg:w-full" />
         </div>
         <nav className="flex gap-1 overflow-x-auto px-3 pb-3 lg:flex-1 lg:flex-col lg:px-3 lg:pb-0">
           {NAV.map((n) => (
-            <NavLink key={n.to} to={n.to} end={n.end} className={link}>
+            <NavLink key={n.to} to={n.to} end={n.end} className={({ isActive }) => link({ isActive: n.match ? n.match(pathname) : isActive })}>
               <n.icon className="size-4 shrink-0" />
               <span className="whitespace-nowrap">{n.label}</span>
               {n.badge && newRequests > 0 && (
@@ -194,8 +207,9 @@ function Layout({ email }: { email: string }) {
         </div>
       </aside>
       <main className="flex-1 lg:pl-60">
-        <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-10">
+        <div className={fullPage ? "" : "mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-10"}>
           <Routes>
+            <Route path="gestion/*" element={<Gestion />} />
             <Route index element={<Dashboard />} />
             <Route path="demandes" element={<Requests />} />
             <Route path="realisations" element={<Projects />} />
@@ -208,7 +222,7 @@ function Layout({ email }: { email: string }) {
             <Route path="boutique/:id" element={<ProductEditor />} />
             <Route path="parametres" element={<Settings />} />
           </Routes>
-          <div className="mt-12 flex flex-wrap gap-4 border-t border-slate-200 pt-4 text-sm lg:hidden">
+          <div className={`mt-12 flex flex-wrap gap-4 border-t border-slate-200 pt-4 text-sm lg:hidden ${fullPage ? "hidden" : ""}`}>
             <RebuildButton className="inline-flex items-center gap-1.5 font-medium text-navy-900 disabled:opacity-60" />
             <a href="/" target="_blank" rel="noopener" className="text-slate-500">Voir le site</a>
             <button type="button" onClick={() => supabase.auth.signOut()} className="text-slate-500">Déconnexion</button>

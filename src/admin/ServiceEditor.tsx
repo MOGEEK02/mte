@@ -6,6 +6,7 @@ import { compressImage } from "./image";
 import { slugify } from "./slug";
 import { BUCKET, errorMessage, storagePath, supabase } from "./supabase";
 import { Button, Field, inputClass, Loading, Notice, PageHeader, Toggle, useFlash } from "./ui";
+import { AiAssist } from "./AiAssist";
 
 type Form = {
   title: string;
@@ -167,13 +168,13 @@ export default function ServiceEditor() {
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
         <section className="space-y-5 rounded-xl border border-slate-200 bg-white p-5 sm:p-6">
-          <Field label="Titre *" htmlFor="s-title">
+          <Field label="Titre *" htmlFor="s-title" action={<AiAssist value={form.title} onApply={(v) => set("title", v)} lang="fr" field="title" />}>
             <input id="s-title" className={inputClass} value={form.title} onChange={(e) => set("title", e.target.value)} />
           </Field>
-          <Field label="Texte" htmlFor="s-summary" hint="Deux ou trois lignes : ce que vous faites et pour qui.">
+          <Field label="Texte" htmlFor="s-summary" action={<AiAssist value={form.summary} onApply={(v) => set("summary", v)} lang="fr" field="text" />} hint="Deux ou trois lignes : ce que vous faites et pour qui.">
             <textarea id="s-summary" rows={5} className={inputClass} value={form.summary} onChange={(e) => set("summary", e.target.value)} />
           </Field>
-          <Field label="Ligne du bas" htmlFor="s-tagline" hint="Marques ou précision, ex. « ABB · Schneider · Siemens ».">
+          <Field label="Ligne du bas" htmlFor="s-tagline" action={<AiAssist value={form.tagline} onApply={(v) => set("tagline", v)} lang="fr" field="short" />} hint="Marques ou précision, ex. « ABB · Schneider · Siemens ».">
             <input id="s-tagline" className={inputClass} value={form.tagline} onChange={(e) => set("tagline", e.target.value)} />
           </Field>
           <Toggle checked={form.published} onChange={(v) => set("published", v)} label={form.published ? "Visible sur le site" : "Masqué du site"} />
@@ -184,13 +185,13 @@ export default function ServiceEditor() {
             <h2 className="font-semibold text-navy-900">Version anglaise (/en)</h2>
             <p className="mt-0.5 text-xs text-slate-500">Affichée sur le site en anglais. Vide : le texte français est utilisé.</p>
           </div>
-          <Field label="Title" htmlFor="s-title-en">
+          <Field label="Title" htmlFor="s-title-en" action={<AiAssist value={form.titleEn} onApply={(v) => set("titleEn", v)} lang="en" field="title" source={form.title} />}>
             <input id="s-title-en" lang="en" className={inputClass} value={form.titleEn} onChange={(e) => set("titleEn", e.target.value)} placeholder={form.title} />
           </Field>
-          <Field label="Text" htmlFor="s-summary-en">
+          <Field label="Text" htmlFor="s-summary-en" action={<AiAssist value={form.summaryEn} onApply={(v) => set("summaryEn", v)} lang="en" field="text" source={form.summary} />}>
             <textarea id="s-summary-en" lang="en" rows={4} className={inputClass} value={form.summaryEn} onChange={(e) => set("summaryEn", e.target.value)} />
           </Field>
-          <Field label="Bottom line" htmlFor="s-tagline-en">
+          <Field label="Bottom line" htmlFor="s-tagline-en" action={<AiAssist value={form.taglineEn} onApply={(v) => set("taglineEn", v)} lang="en" field="short" source={form.tagline} />}>
             <input id="s-tagline-en" lang="en" className={inputClass} value={form.taglineEn} onChange={(e) => set("taglineEn", e.target.value)} placeholder={form.tagline} />
           </Field>
         </section>
@@ -200,13 +201,13 @@ export default function ServiceEditor() {
             <h2 className="font-semibold text-navy-900">Version arabe (/ar)</h2>
             <p className="mt-0.5 text-xs text-slate-500">Affichée sur le site en arabe. Vide : le texte français est utilisé.</p>
           </div>
-          <Field label="العنوان" htmlFor="s-title-ar">
+          <Field label="العنوان" htmlFor="s-title-ar" action={<AiAssist value={form.titleAr} onApply={(v) => set("titleAr", v)} lang="ar" field="title" source={form.title} />}>
             <input id="s-title-ar" lang="ar" dir="rtl" className={inputClass} value={form.titleAr} onChange={(e) => set("titleAr", e.target.value)} />
           </Field>
-          <Field label="النص" htmlFor="s-summary-ar">
+          <Field label="النص" htmlFor="s-summary-ar" action={<AiAssist value={form.summaryAr} onApply={(v) => set("summaryAr", v)} lang="ar" field="text" source={form.summary} />}>
             <textarea id="s-summary-ar" lang="ar" dir="rtl" rows={4} className={inputClass} value={form.summaryAr} onChange={(e) => set("summaryAr", e.target.value)} />
           </Field>
-          <Field label="السطر السفلي" htmlFor="s-tagline-ar">
+          <Field label="السطر السفلي" htmlFor="s-tagline-ar" action={<AiAssist value={form.taglineAr} onApply={(v) => set("taglineAr", v)} lang="ar" field="short" source={form.tagline} />}>
             <input id="s-tagline-ar" lang="ar" dir="rtl" className={inputClass} value={form.taglineAr} onChange={(e) => set("taglineAr", e.target.value)} placeholder={form.tagline} />
           </Field>
         </section>

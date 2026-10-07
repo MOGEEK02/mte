@@ -7,6 +7,7 @@ import { compressImage } from "./image";
 import { slugify } from "./slug";
 import { BUCKET, errorMessage, storagePath, supabase } from "./supabase";
 import { Button, Field, inputClass, Loading, Notice, PageHeader, Toggle, useFlash } from "./ui";
+import { AiAssist } from "./AiAssist";
 
 type MediaDraft = {
   key: string;
@@ -272,10 +273,10 @@ export default function ProjectEditor() {
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         <section className="space-y-5 rounded-xl border border-slate-200 bg-white p-5 sm:p-6">
-          <Field label="Titre *" htmlFor="p-title">
+          <Field label="Titre *" htmlFor="p-title" action={<AiAssist value={form.title} onApply={(v) => set("title", v)} lang="fr" field="title" />}>
             <input id="p-title" className={inputClass} value={form.title} onChange={(e) => set("title", e.target.value)} placeholder="ex. Rétrofit automate S7-300 vers S7-1200 – ligne d’embouteillage" />
           </Field>
-          <Field label="Description" htmlFor="p-desc" hint="Ce qui a été fait, le matériel, le résultat. Les #mots-clés en fin de texte s’affichent comme étiquettes.">
+          <Field label="Description" htmlFor="p-desc" action={<AiAssist value={form.description} onApply={(v) => set("description", v)} lang="fr" field="text" />} hint="Ce qui a été fait, le matériel, le résultat. Les #mots-clés en fin de texte s’affichent comme étiquettes.">
             <textarea id="p-desc" rows={10} className={inputClass} value={form.description} onChange={(e) => set("description", e.target.value)} />
           </Field>
           <div className="border-t border-slate-200 pt-5">
@@ -284,20 +285,20 @@ export default function ProjectEditor() {
               Traduction affichée sur le site en anglais. Vide : la page anglaise montre le texte français et renvoie Google vers la page française.
             </p>
           </div>
-          <Field label="Title" htmlFor="p-title-en">
+          <Field label="Title" htmlFor="p-title-en" action={<AiAssist value={form.titleEn} onApply={(v) => set("titleEn", v)} lang="en" field="title" source={form.title} />}>
             <input id="p-title-en" lang="en" className={inputClass} value={form.titleEn} onChange={(e) => set("titleEn", e.target.value)} />
           </Field>
-          <Field label="Description" htmlFor="p-desc-en">
+          <Field label="Description" htmlFor="p-desc-en" action={<AiAssist value={form.descriptionEn} onApply={(v) => set("descriptionEn", v)} lang="en" field="text" source={form.description} />}>
             <textarea id="p-desc-en" lang="en" rows={8} className={inputClass} value={form.descriptionEn} onChange={(e) => set("descriptionEn", e.target.value)} />
           </Field>
           <div className="border-t border-slate-200 pt-5">
             <h2 className="font-semibold text-navy-900">Version arabe (/ar)</h2>
             <p className="mt-0.5 text-xs text-slate-500">Vide : la page arabe montre le texte français et renvoie Google vers la page française.</p>
           </div>
-          <Field label="العنوان" htmlFor="p-title-ar">
+          <Field label="العنوان" htmlFor="p-title-ar" action={<AiAssist value={form.titleAr} onApply={(v) => set("titleAr", v)} lang="ar" field="title" source={form.title} />}>
             <input id="p-title-ar" lang="ar" dir="rtl" className={inputClass} value={form.titleAr} onChange={(e) => set("titleAr", e.target.value)} />
           </Field>
-          <Field label="الوصف" htmlFor="p-desc-ar">
+          <Field label="الوصف" htmlFor="p-desc-ar" action={<AiAssist value={form.descriptionAr} onApply={(v) => set("descriptionAr", v)} lang="ar" field="text" source={form.description} />}>
             <textarea id="p-desc-ar" lang="ar" dir="rtl" rows={8} className={inputClass} value={form.descriptionAr} onChange={(e) => set("descriptionAr", e.target.value)} />
           </Field>
         </section>

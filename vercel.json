@@ -1,6 +1,9 @@
 {
   "trailingSlash": false,
   "crons": [{ "path": "/api/rebuild", "schedule": "0 3 * * *" }],
+  "functions": {
+    "api/ai.js": { "maxDuration": 60 }
+  },
   "redirects": [
     { "source": "/services", "destination": "/#services", "permanent": true },
     { "source": "/services/:path*", "destination": "/#services", "permanent": true }

@@ -4,6 +4,7 @@ import { ArrowLeft, Download, Mail, MapPin, Phone, RefreshCw, Search, Trash2 } f
 import { BrandIcon } from "../ui/BrandIcon";
 import { errorMessage, supabase } from "./supabase";
 import { Button, Field, formatDateTime, inputClass, Loading, Notice, PageHeader, useFlash } from "./ui";
+import { ReplyAssistant } from "./ReplyAssistant";
 
 type Status = "nouveau" | "en_cours" | "traite" | "archive";
 
@@ -130,6 +131,7 @@ function Detail({ request, onChange, onDelete, onBack }: { request: Request; onC
             <Mail className="size-4" /> {request.email}
           </a>
         )}
+        <ReplyAssistant request={request} />
       </div>
 
       <dl className="mt-6 grid gap-x-6 gap-y-3 text-sm sm:grid-cols-2">

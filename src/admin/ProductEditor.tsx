@@ -8,6 +8,7 @@ import { compressImage } from "./image";
 import { slugify } from "./slug";
 import { BUCKET, errorMessage, isMissingSetup, storagePath, supabase } from "./supabase";
 import { Button, Card, Field, inputClass, langProps, Loading, Notice, PageHeader, SaveBar, Toggle, useFlash, useUnsavedWarning } from "./ui";
+import { AiAssist } from "./AiAssist";
 
 type Form = {
   name: string;
@@ -194,10 +195,10 @@ export default function ProductEditor() {
         <div className="space-y-6">
           <Card title="Produit">
             <div className="grid gap-5 sm:grid-cols-2">
-              <Field label="Nom *" htmlFor="p-name" className="sm:col-span-2">
+              <Field label="Nom *" htmlFor="p-name" action={<AiAssist value={form.name} onApply={(v) => set("name", v)} lang="fr" field="title" />} className="sm:col-span-2">
                 <input id="p-name" maxLength={160} className={inputClass} value={form.name} onChange={(e) => set("name", e.target.value)} placeholder="ex. Variateur Schneider Altivar ATV320 2,2 kW" />
               </Field>
-              <Field label="Description" htmlFor="p-desc" className="sm:col-span-2" hint="Caractéristiques, compatibilité, garantie…">
+              <Field label="Description" htmlFor="p-desc" action={<AiAssist value={form.description} onApply={(v) => set("description", v)} lang="fr" field="text" />} className="sm:col-span-2" hint="Caractéristiques, compatibilité, garantie…">
                 <textarea id="p-desc" rows={5} className={inputClass} value={form.description} onChange={(e) => set("description", e.target.value)} />
               </Field>
               <Field label="Catégorie" htmlFor="p-cat">
@@ -232,10 +233,10 @@ export default function ProductEditor() {
 
           <Card title="Version anglaise (/en)" description="Vide : le texte français est affiché.">
             <div className="space-y-5">
-              <Field label="Name" htmlFor="p-name-en">
+              <Field label="Name" htmlFor="p-name-en" action={<AiAssist value={form.nameEn} onApply={(v) => set("nameEn", v)} lang="en" field="title" source={form.name} />}>
                 <input id="p-name-en" {...langProps("en")} className={inputClass} value={form.nameEn} onChange={(e) => set("nameEn", e.target.value)} placeholder={form.name} />
               </Field>
-              <Field label="Description" htmlFor="p-desc-en">
+              <Field label="Description" htmlFor="p-desc-en" action={<AiAssist value={form.descriptionEn} onApply={(v) => set("descriptionEn", v)} lang="en" field="text" source={form.description} />}>
                 <textarea id="p-desc-en" {...langProps("en")} rows={4} className={inputClass} value={form.descriptionEn} onChange={(e) => set("descriptionEn", e.target.value)} />
               </Field>
             </div>
@@ -243,10 +244,10 @@ export default function ProductEditor() {
 
           <Card title="Version arabe (/ar)" description="Vide : le texte français est affiché.">
             <div className="space-y-5">
-              <Field label="الاسم" htmlFor="p-name-ar">
+              <Field label="الاسم" htmlFor="p-name-ar" action={<AiAssist value={form.nameAr} onApply={(v) => set("nameAr", v)} lang="ar" field="title" source={form.name} />}>
                 <input id="p-name-ar" {...langProps("ar")} className={inputClass} value={form.nameAr} onChange={(e) => set("nameAr", e.target.value)} />
               </Field>
-              <Field label="الوصف" htmlFor="p-desc-ar">
+              <Field label="الوصف" htmlFor="p-desc-ar" action={<AiAssist value={form.descriptionAr} onApply={(v) => set("descriptionAr", v)} lang="ar" field="text" source={form.description} />}>
                 <textarea id="p-desc-ar" {...langProps("ar")} rows={4} className={inputClass} value={form.descriptionAr} onChange={(e) => set("descriptionAr", e.target.value)} />
               </Field>
             </div>

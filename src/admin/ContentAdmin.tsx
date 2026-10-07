@@ -4,6 +4,7 @@ import { defaultAbout, siteTexts, type Announcement, type FaqItem, type SiteCont
 import { DICT, type Lang } from "../i18n";
 import { errorMessage, isMissingSetup, supabase } from "./supabase";
 import { Button, Card, Field, inputClass, LangTabs, langProps, Loading, Notice, PageHeader, SaveBar, Toggle, useFlash, useUnsavedWarning } from "./ui";
+import { AiAssist } from "./AiAssist";
 
 const LANGS: Lang[] = ["fr", "en", "ar"];
 const LANG_NAME: Record<Lang, string> = { fr: "Français", en: "Anglais", ar: "Arabe" };
@@ -177,7 +178,7 @@ export default function ContentAdmin() {
       >
         <div className="grid gap-5 sm:grid-cols-2">
           {LANGS.map((l) => (
-            <Field key={l} label={`Texte (${LANG_NAME[l].toLowerCase()})`} htmlFor={`b-${l}`} className={l === "fr" ? "sm:col-span-2" : ""} hint={l === "fr" ? "Court : environ 80 caractères. Vide en anglais ou en arabe : le texte français est affiché." : undefined}>
+            <Field key={l} label={`Texte (${LANG_NAME[l].toLowerCase()})`} htmlFor={`b-${l}`} action={<AiAssist value={a.text[l] ?? ""} onApply={(v) => set((d) => void (d.announcement.text[l] = v))} lang={l} field="short" source={l === "fr" ? undefined : (a.text.fr ?? "")} />} className={l === "fr" ? "sm:col-span-2" : ""} hint={l === "fr" ? "Court : environ 80 caractères. Vide en anglais ou en arabe : le texte français est affiché." : undefined}>
               <input
                 id={`b-${l}`}
                 {...langProps(l)}
@@ -232,13 +233,13 @@ export default function ContentAdmin() {
 
       <Card className="mt-6" title="Haut de la page d’accueil" description="Le grand titre sur la photo, le texte dessous et les trois points forts." actions={resetButton("hero")}>
         <div className="space-y-5">
-          <Field label="Petite ligne au-dessus du titre" htmlFor="h-eyebrow">
+          <Field label="Petite ligne au-dessus du titre" htmlFor="h-eyebrow" action={<AiAssist value={hero.eyebrow} onApply={(v) => set((d) => void (d.hero[lang].eyebrow = v))} lang={lang} field="short" source={lang === "fr" ? undefined : draft.hero.fr.eyebrow} />}>
             <input id="h-eyebrow" {...lp} className={inputClass} value={hero.eyebrow} onChange={(e) => set((d) => void (d.hero[lang].eyebrow = e.target.value))} placeholder={t.hero.eyebrow} />
           </Field>
-          <Field label="Titre" htmlFor="h-title">
+          <Field label="Titre" htmlFor="h-title" action={<AiAssist value={hero.title} onApply={(v) => set((d) => void (d.hero[lang].title = v))} lang={lang} field="title" source={lang === "fr" ? undefined : draft.hero.fr.title} />}>
             <input id="h-title" {...lp} className={inputClass} value={hero.title} onChange={(e) => set((d) => void (d.hero[lang].title = e.target.value))} placeholder={t.hero.title} />
           </Field>
-          <Field label="Texte" htmlFor="h-text">
+          <Field label="Texte" htmlFor="h-text" action={<AiAssist value={hero.text} onApply={(v) => set((d) => void (d.hero[lang].text = v))} lang={lang} field="text" source={lang === "fr" ? undefined : draft.hero.fr.text} />}>
             <textarea id="h-text" {...lp} rows={3} className={inputClass} value={hero.text} onChange={(e) => set((d) => void (d.hero[lang].text = e.target.value))} placeholder={t.hero.text} />
           </Field>
           <div className="grid gap-3 sm:grid-cols-3">
@@ -268,7 +269,10 @@ export default function ContentAdmin() {
           {draft.faq[lang].map((f, i) => (
             <li key={i} className="rounded-lg border border-slate-200 p-4">
               <div className="flex items-center justify-between gap-2">
-                <span className="text-xs font-semibold text-slate-500">Question {i + 1}</span>
+                <span className="flex items-center gap-1">
+                  <span className="text-xs font-semibold text-slate-500">Question {i + 1}</span>
+                  <AiAssist value={f.q} onApply={(v) => set((d) => void (d.faq[lang][i].q = v))} lang={lang} field="faq" source={lang === "fr" ? undefined : (draft.faq.fr[i]?.q ?? "")} />
+                </span>
                 <div className="flex">
                   <button type="button" aria-label="Monter" disabled={i === 0} onClick={() => set((d) => void d.faq[lang].splice(i - 1, 2, d.faq[lang][i], d.faq[lang][i - 1]))} className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100 disabled:opacity-30">
                     <ArrowUp className="size-4" />
@@ -304,6 +308,9 @@ export default function ContentAdmin() {
                 onChange={(e) => set((d) => void (d.faq[lang][i].a = e.target.value))}
                 placeholder="Réponse"
               />
+              <div className="mt-1 flex justify-end">
+                <AiAssist value={f.a} onApply={(v) => set((d) => void (d.faq[lang][i].a = v))} lang={lang} field="faq" source={lang === "fr" ? undefined : (draft.faq.fr[i]?.a ?? "")} />
+              </div>
             </li>
           ))}
         </ol>
@@ -314,10 +321,10 @@ export default function ContentAdmin() {
 
       <Card className="mt-6" title="Secteurs et wilayas" description="Section « Zones et secteurs » de l’accueil. Une ligne par secteur ou par wilaya." actions={resetButton("reach")}>
         <div className="grid gap-5 sm:grid-cols-2">
-          <Field label="Secteurs où vous intervenez" htmlFor="r-sectors">
+          <Field label="Secteurs où vous intervenez" htmlFor="r-sectors" action={<AiAssist value={draft.reach[lang].sectors} onApply={(v) => set((d) => void (d.reach[lang].sectors = v))} lang={lang} field="short" source={lang === "fr" ? undefined : draft.reach.fr.sectors} />}>
             <textarea id="r-sectors" {...lp} rows={8} className={inputClass} value={draft.reach[lang].sectors} onChange={(e) => set((d) => void (d.reach[lang].sectors = e.target.value))} />
           </Field>
-          <Field label="Wilayas desservies" htmlFor="r-areas" hint="Aussi transmises à Google comme zone d’intervention.">
+          <Field label="Wilayas desservies" htmlFor="r-areas" action={<AiAssist value={draft.reach[lang].areas} onApply={(v) => set((d) => void (d.reach[lang].areas = v))} lang={lang} field="short" source={lang === "fr" ? undefined : draft.reach.fr.areas} />} hint="Aussi transmises à Google comme zone d’intervention.">
             <textarea id="r-areas" {...lp} rows={8} className={inputClass} value={draft.reach[lang].areas} onChange={(e) => set((d) => void (d.reach[lang].areas = e.target.value))} />
           </Field>
         </div>
@@ -325,10 +332,10 @@ export default function ContentAdmin() {
 
       <Card className="mt-6" title="À propos" description="Le titre et les paragraphes à côté de votre photo. « Fekhar Moutie » est mis en gras automatiquement." actions={resetButton("about")}>
         <div className="space-y-5">
-          <Field label="Titre" htmlFor="a-title">
+          <Field label="Titre" htmlFor="a-title" action={<AiAssist value={draft.about[lang].title} onApply={(v) => set((d) => void (d.about[lang].title = v))} lang={lang} field="title" source={lang === "fr" ? undefined : draft.about.fr.title} />}>
             <input id="a-title" {...lp} className={inputClass} value={draft.about[lang].title} onChange={(e) => set((d) => void (d.about[lang].title = e.target.value))} placeholder={t.about.title} />
           </Field>
-          <Field label="Paragraphes" htmlFor="a-text" hint="Laissez une ligne vide entre deux paragraphes.">
+          <Field label="Paragraphes" htmlFor="a-text" action={<AiAssist value={draft.about[lang].paragraphs} onApply={(v) => set((d) => void (d.about[lang].paragraphs = v))} lang={lang} field="text" source={lang === "fr" ? undefined : draft.about.fr.paragraphs} />} hint="Laissez une ligne vide entre deux paragraphes.">
             <textarea id="a-text" {...lp} rows={10} className={inputClass} value={draft.about[lang].paragraphs} onChange={(e) => set((d) => void (d.about[lang].paragraphs = e.target.value))} />
           </Field>
         </div>

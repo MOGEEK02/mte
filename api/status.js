@@ -12,6 +12,7 @@ export default async function handler(req, res) {
     cronSecret: set('CRON_SECRET'),
     resend: set('RESEND_API_KEY'),
     secretKey: set('SUPABASE_SECRET_KEY'),
+    gemini: set('GEMINI_API_KEY'),
     environment: process.env.VERCEL_ENV || 'local',
   });
 }
