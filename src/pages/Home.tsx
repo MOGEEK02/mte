@@ -1,10 +1,12 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Check, Clock, Factory, FileText, Mail, MapPin, Phone, Plus } from "lucide-react";
+import { ArrowRight, Check, Clock, Factory, FileText, Mail, MapPin, Phone, Plus, Quote, Star } from "lucide-react";
 import { BRANDS } from "../site";
 import { cvStore, hoursFor, telHref, useContact, whatsappLink } from "../contact";
+import { useSiteTexts } from "../content";
 import { formatDate, portfolioStore, projectPath, projectText } from "../portfolio";
 import { useServices } from "../services";
-import { localePath, useLang, useT } from "../i18n";
+import { testimonialsStore } from "../testimonials";
+import { DICT, localePath, useLang, useT } from "../i18n";
 import { BrandIcon } from "../ui/BrandIcon";
 import { CardMedia } from "../ui/CardMedia";
 import { QuoteForm } from "../ui/QuoteForm";
@@ -22,7 +24,8 @@ function SectionTitle({ eyebrow, title, text, light }: { eyebrow: string; title:
 
 function Hero() {
   const lang = useLang();
-  const { hero: t, nav } = useT();
+  const { nav } = useT();
+  const t = useSiteTexts().hero;
   const contact = useContact();
   return (
     <section className="relative isolate overflow-hidden bg-navy-950">
@@ -51,8 +54,8 @@ function Hero() {
             </a>
           </div>
           <ul className="mt-10 grid gap-3 text-sm text-slate-300 sm:grid-cols-3 sm:gap-6">
-            {t.checks.map((c) => (
-              <li key={c} className="flex items-center gap-2">
+            {t.checks.map((c, i) => (
+              <li key={i} className="flex items-center gap-2">
                 <Check className="size-4 shrink-0 text-brand" />
                 {c}
               </li>
@@ -117,6 +120,7 @@ function Services() {
 /** Where and for whom: helps local searches ("automatisme Blida", "réparation variateur Oran"…). */
 function Reach() {
   const t = useT().reach;
+  const { sectors, areas } = useSiteTexts();
   return (
     <section id="zones" className="py-20 sm:py-24">
       <div className="container-page">
@@ -128,8 +132,8 @@ function Reach() {
               {t.sectorsTitle}
             </h3>
             <ul className="mt-4 grid gap-2.5 sm:grid-cols-2">
-              {t.sectors.map((s) => (
-                <li key={s} className="flex items-start gap-2 text-sm text-slate-700">
+              {sectors.map((s, i) => (
+                <li key={i} className="flex items-start gap-2 text-sm text-slate-700">
                   <Check className="mt-0.5 size-4 shrink-0 text-brand-600" />
                   {s}
                 </li>
@@ -142,8 +146,8 @@ function Reach() {
               {t.areasTitle}
             </h3>
             <ul className="mt-4 flex flex-wrap gap-2">
-              {t.areas.map((a) => (
-                <li key={a} className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-sm text-slate-700">
+              {areas.map((a, i) => (
+                <li key={i} className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-sm text-slate-700">
                   {a}
                 </li>
               ))}
@@ -176,9 +180,24 @@ function Method() {
   );
 }
 
+/** The founder's name stands out wherever it appears in the About text. */
+function withFounder(paragraph: string) {
+  const name = "Fekhar Moutie";
+  const i = paragraph.indexOf(name);
+  if (i < 0) return paragraph;
+  return (
+    <>
+      {paragraph.slice(0, i)}
+      <strong className="font-semibold text-navy-900">{name}</strong>
+      {paragraph.slice(i + name.length)}
+    </>
+  );
+}
+
 function About() {
   const lang = useLang();
   const t = useT().about;
+  const texts = useSiteTexts().about;
   const cv = cvStore.use();
   return (
     <section id="a-propos" className="bg-slate-50 py-20 sm:py-24">
@@ -194,15 +213,11 @@ function About() {
           />
         </div>
         <div>
-          <SectionTitle eyebrow={t.eyebrow} title={t.title} />
+          <SectionTitle eyebrow={t.eyebrow} title={texts.title} />
           <div className="mt-5 space-y-4 text-base leading-relaxed text-slate-600">
-            <p>
-              {t.p1a}
-              <strong className="font-semibold text-navy-900">Fekhar Moutie</strong>
-              {t.p1b}
-            </p>
-            <p>{t.p2}</p>
-            <p>{t.p3}</p>
+            {texts.paragraphs.map((p, i) => (
+              <p key={i}>{withFounder(p)}</p>
+            ))}
           </div>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link to={localePath(lang, "/portfolio")} className="btn bg-navy-900 text-white hover:bg-navy-800">
@@ -285,15 +300,68 @@ function LatestWork() {
   );
 }
 
+function Stars({ rating, label }: { rating: number; label: string }) {
+  return (
+    <p role="img" aria-label={label} className="flex gap-0.5">
+      {[1, 2, 3, 4, 5].map((n) => (
+        <Star key={n} className={`size-4 ${n <= rating ? "text-brand" : "text-slate-200"}`} fill="currentColor" />
+      ))}
+    </p>
+  );
+}
+
+/** Customer reviews from /admin → Avis clients, each in the language it was written in. Hidden when there are none. */
+function Reviews() {
+  const t = useT().reviews;
+  const items = testimonialsStore.use();
+  if (items.length === 0) return null;
+  return (
+    <section id="avis" className="bg-slate-50 py-20 sm:py-24">
+      <div className="container-page">
+        <SectionTitle eyebrow={t.eyebrow} title={t.title} />
+        <ul className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {items.map((r) => {
+            const lang = DICT[r.lang] ? r.lang : "fr";
+            const who = [r.company, r.city].map((s) => s.trim()).filter(Boolean).join(" · ");
+            return (
+              <li key={r.id}>
+                <figure className="flex h-full flex-col rounded-xl border border-slate-200 bg-white p-6 shadow-xs">
+                  <div className="flex items-start justify-between gap-4">
+                    <Quote className="size-7 text-brand rtl:-scale-x-100" fill="currentColor" />
+                    {r.rating ? <Stars rating={r.rating} label={t.stars(r.rating)} /> : null}
+                  </div>
+                  <blockquote lang={lang} dir={DICT[lang].dir} className="mt-4 flex-1 leading-relaxed whitespace-pre-line text-slate-700">
+                    {r.quote}
+                  </blockquote>
+                  <figcaption className="mt-5 flex items-center gap-3 border-t border-slate-100 pt-4">
+                    <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-navy-900 text-sm font-semibold text-brand">
+                      {r.name.trim().charAt(0).toUpperCase()}
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block font-semibold text-navy-900" dir="auto">{r.name}</span>
+                      {who && <span className="block text-xs text-slate-500" dir="auto">{who}</span>}
+                    </span>
+                  </figcaption>
+                </figure>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
 function Faq() {
   const t = useT().faq;
+  const { faq } = useSiteTexts();
   return (
     <section id="faq" className="border-t border-slate-200 py-20 sm:py-24">
       <div className="container-page grid gap-10 lg:grid-cols-[1fr_1.6fr] lg:gap-16">
         <SectionTitle eyebrow={t.eyebrow} title={t.title} text={t.text} />
         <div className="divide-y divide-slate-200 border-y border-slate-200">
-          {t.items.map((f) => (
-            <details key={f.q} className="group py-5">
+          {faq.map((f, i) => (
+            <details key={i} className="group py-5">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold text-navy-900 [&::-webkit-details-marker]:hidden">
                 <h3>{f.q}</h3>
                 <Plus className="size-5 shrink-0 text-slate-400 transition group-open:rotate-45" />
@@ -373,6 +441,7 @@ export default function Home() {
       <Method />
       <About />
       <LatestWork />
+      <Reviews />
       <Faq />
       <Contact />
     </>

@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useState, type ButtonHTMLAttributes, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, type ButtonHTMLAttributes, type ReactNode } from "react";
 import { CheckCircle2, Loader2, TriangleAlert } from "lucide-react";
 
 // Small building blocks for the admin pages.
@@ -142,4 +142,83 @@ export function useFlash() {
 // eslint-disable-next-line react-refresh/only-export-components
 export function formatDateTime(iso: string) {
   return new Date(iso).toLocaleString("fr-FR", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+}
+
+// --- Pieces shared by the editing pages ---
+
+export function Card({ title, description, actions, children, className = "" }: { title: string; description?: ReactNode; actions?: ReactNode; children: ReactNode; className?: string }) {
+  return (
+    <section className={`rounded-xl border border-slate-200 bg-white p-5 sm:p-6 ${className}`}>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 className="font-semibold text-navy-900">{title}</h2>
+          {description && <p className="mt-1 text-xs leading-relaxed text-slate-500">{description}</p>}
+        </div>
+        {actions}
+      </div>
+      <div className="mt-5">{children}</div>
+    </section>
+  );
+}
+
+export type AdminLang = "fr" | "en" | "ar";
+const LANG_TABS: { code: AdminLang; label: string }[] = [
+  { code: "fr", label: "Français" },
+  { code: "en", label: "English" },
+  { code: "ar", label: "العربية" },
+];
+
+/** French / English / Arabic switch; a dot marks the languages whose text was changed. */
+export function LangTabs({ value, onChange, changed }: { value: AdminLang; onChange: (l: AdminLang) => void; changed?: Partial<Record<AdminLang, boolean>> }) {
+  return (
+    <div role="tablist" aria-label="Langue" className="inline-flex rounded-lg bg-slate-100 p-1">
+      {LANG_TABS.map((l) => (
+        <button
+          key={l.code}
+          type="button"
+          role="tab"
+          aria-selected={value === l.code}
+          onClick={() => onChange(l.code)}
+          className={`relative rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+            value === l.code ? "bg-white text-navy-900 shadow-xs" : "text-slate-600 hover:text-navy-900"
+          }`}
+        >
+          {l.label}
+          {changed?.[l.code] && <span title="Texte modifié" className="absolute top-1 right-1 size-1.5 rounded-full bg-brand-600" />}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/** lang and dir attributes for a field written in this language. */
+// eslint-disable-next-line react-refresh/only-export-components
+export const langProps = (l: AdminLang) => ({ lang: l, dir: l === "ar" ? ("rtl" as const) : ("ltr" as const) });
+
+/** Bar fixed at the bottom of an editing page. */
+export function SaveBar({ dirty, busy, onSave, label = "Enregistrer", left }: { dirty: boolean; busy: boolean; onSave?: () => void; label?: string; left?: ReactNode }) {
+  return (
+    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 backdrop-blur lg:left-60">
+      <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-10">
+        <div>{left}</div>
+        <div className="flex items-center gap-3">
+          {dirty && <span className="hidden text-sm text-amber-700 sm:inline">Modifications non enregistrées</span>}
+          <Button type={onSave ? "button" : "submit"} variant="primary" loading={busy} disabled={!dirty} onClick={onSave}>
+            {label}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Asks before leaving the page with unsaved changes. */
+// eslint-disable-next-line react-refresh/only-export-components
+export function useUnsavedWarning(dirty: boolean) {
+  useEffect(() => {
+    if (!dirty) return;
+    const warn = (e: BeforeUnloadEvent) => e.preventDefault();
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [dirty]);
 }

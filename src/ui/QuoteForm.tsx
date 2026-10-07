@@ -2,6 +2,7 @@ import { useRef, useState, type FormEvent } from "react";
 import { CheckCircle2, Loader2, Send } from "lucide-react";
 import { useContact, whatsappLink } from "../contact";
 import { useLang, useT, type Dict } from "../i18n";
+import { track } from "../track";
 import { BrandIcon } from "./BrandIcon";
 
 type Fields = {
@@ -58,6 +59,7 @@ export function QuoteForm() {
         body: JSON.stringify({ ...f, service: lang === "en" ? "Site (English)" : "", website: trap, elapsed: Date.now() - shownAt.current }),
       });
       setStatus(res.ok ? "sent" : "error");
+      if (res.ok) track("quote");
     } catch {
       setStatus("error");
     }

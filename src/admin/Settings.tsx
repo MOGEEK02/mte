@@ -1,12 +1,31 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { Info, Plus, X } from "lucide-react";
-import { fromContactRow, whatsappDigits, type ContactRow } from "../contact";
+import { fromContactRow, SOCIAL_KEYS, whatsappDigits, type ContactRow, type Social, type SocialKey } from "../contact";
+import { BrandIcon, type Brand } from "../ui/BrandIcon";
 import { errorMessage, supabase } from "./supabase";
-import { Button, Field, inputClass, Loading, Notice, PageHeader, useFlash } from "./ui";
+import { Button, Field, inputClass, Loading, Notice, PageHeader, Toggle, useFlash } from "./ui";
 
-type Form = ContactRow & { hours_en: string; hours_ar: string; notify: string[]; cvFr: string; cvEn: string };
+type Form = Omit<ContactRow, "social" | "whatsapp_button"> & {
+  hours_en: string;
+  hours_ar: string;
+  notify: string[];
+  cvFr: string;
+  cvEn: string;
+  social: Social;
+  whatsappButton: boolean;
+};
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const URL_OK = /^https?:\/\/\S+$/i;
+
+const NETWORKS: Record<SocialKey, { brand: Brand; label: string; example: string }> = {
+  facebook: { brand: "Facebook", label: "Facebook", example: "https://www.facebook.com/votre-page" },
+  instagram: { brand: "Instagram", label: "Instagram", example: "https://www.instagram.com/votre-compte" },
+  linkedin: { brand: "LinkedIn", label: "LinkedIn", example: "https://www.linkedin.com/in/votre-profil" },
+  youtube: { brand: "YouTube", label: "YouTube", example: "https://www.youtube.com/@votre-chaine" },
+  tiktok: { brand: "TikTok", label: "TikTok", example: "https://www.tiktok.com/@votre-compte" },
+  github: { brand: "GitHub", label: "GitHub", example: "https://github.com/votre-compte" },
+};
 
 export default function Settings() {
   const flash = useFlash();
@@ -16,6 +35,8 @@ export default function Settings() {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [newEmail, setNewEmail] = useState("");
+  // Social links and the WhatsApp button need section 12 of supabase/admin.sql.
+  const [hasSocial, setHasSocial] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -39,7 +60,10 @@ export default function Settings() {
         notify: admin.data?.notify_emails ?? [],
         cvFr: cv.data?.url_fr ?? "",
         cvEn: cv.data?.url_en ?? "",
+        social: { ...shown.social },
+        whatsappButton: shown.whatsappButton,
       };
+      setHasSocial(Boolean(site.data && "social" in site.data));
       setCvId(cv.data?.id ?? null);
       setForm(f);
       setSaved(JSON.stringify(f));
@@ -63,6 +87,8 @@ export default function Settings() {
     e.preventDefault();
     if (!EMAIL.test(form.email.trim())) return flash("L’e-mail affiché sur le site est invalide.", "error");
     if (form.notify.length === 0) return flash("Gardez au moins une adresse pour recevoir les demandes.", "error");
+    const badLink = SOCIAL_KEYS.find((k) => form.social[k].trim() && !URL_OK.test(form.social[k].trim()));
+    if (badLink) return flash(`Lien ${NETWORKS[badLink].label} invalide : il doit commencer par https://`, "error");
     setBusy(true);
     const now = new Date().toISOString();
     const site = await supabase.from("site_settings").upsert({
@@ -75,6 +101,12 @@ export default function Settings() {
       hours: form.hours.trim(),
       hours_en: form.hours_en.trim(),
       hours_ar: form.hours_ar.trim(),
+      ...(hasSocial
+        ? {
+            social: Object.fromEntries(SOCIAL_KEYS.map((k) => [k, form.social[k].trim()])),
+            whatsapp_button: form.whatsappButton,
+          }
+        : {}),
       updated_at: now,
     });
     const admin = await supabase.from("admin_settings").upsert({ id: 1, notify_emails: form.notify, updated_at: now });
@@ -122,6 +154,40 @@ export default function Settings() {
             <input id="c-hours-ar" lang="ar" dir="rtl" className={inputClass} value={form.hours_ar} onChange={(e) => set("hours_ar", e.target.value)} placeholder="من السبت إلى الخميس، 8:00 – 17:00" />
           </Field>
         </div>
+      </section>
+
+      <section className="mt-6 rounded-xl border border-slate-200 bg-white p-5 sm:p-6">
+        <h2 className="font-semibold text-navy-900">Réseaux sociaux et WhatsApp</h2>
+        <p className="mt-1 text-xs text-slate-500">Icônes du pied de page, et liens donnés à Google pour reconnaître votre entreprise. Un champ vide n’est pas affiché.</p>
+        {!hasSocial ? (
+          <div className="mt-4">
+            <Notice>Exécutez la section 12 de <code>supabase/admin.sql</code> dans Supabase pour modifier ces liens et le bouton WhatsApp.</Notice>
+          </div>
+        ) : (
+          <>
+            <div className="mt-4 rounded-lg bg-slate-50 p-4">
+              <Toggle checked={form.whatsappButton} onChange={(v) => set("whatsappButton", v)} label="Bouton WhatsApp rond en bas de chaque page" />
+              <p className="mt-1.5 ps-11 text-xs text-slate-500">Le moyen le plus rapide pour un client de vous écrire depuis son téléphone.</p>
+            </div>
+            <div className="mt-5 grid gap-4 sm:grid-cols-2">
+              {SOCIAL_KEYS.map((k) => (
+                <Field key={k} label={NETWORKS[k].label} htmlFor={`c-social-${k}`}>
+                  <div className="relative">
+                    <BrandIcon name={NETWORKS[k].brand} className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-slate-400" />
+                    <input
+                      id={`c-social-${k}`}
+                      type="url"
+                      className={`${inputClass} pl-9`}
+                      value={form.social[k]}
+                      onChange={(e) => set("social", { ...form.social, [k]: e.target.value })}
+                      placeholder={NETWORKS[k].example}
+                    />
+                  </div>
+                </Field>
+              ))}
+            </div>
+          </>
+        )}
       </section>
 
       <section className="mt-6 rounded-xl border border-slate-200 bg-white p-5 sm:p-6">

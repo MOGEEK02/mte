@@ -58,6 +58,18 @@ async function projects() {
   return res.ok ? res.json() : [];
 }
 
+/** Date of the latest product change when the store is open in /admin (with products), else null. */
+async function storeLastmod() {
+  if (!supabaseUrl || !supabaseKey) return null;
+  const get = (q) =>
+    fetch(`${supabaseUrl}/rest/v1/${q}`, { headers: { apikey: supabaseKey }, signal: AbortSignal.timeout(5000) }).then((r) => (r.ok ? r.json() : []));
+  const [content, products] = await Promise.all([
+    get('site_content?select=value&key=eq.store'),
+    get('products?select=updated_at&published=eq.true&order=updated_at.desc&limit=1'),
+  ]);
+  return content[0]?.value?.open === true && products.length ? products[0].updated_at.slice(0, 10) : null;
+}
+
 export default async function handler(request, response) {
   response.setHeader('Content-Type', 'application/xml; charset=utf-8');
   response.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
@@ -71,10 +83,12 @@ export default async function handler(request, response) {
     console.error('sitemap: projects unavailable', err);
   }
   const newest = items[0]?.updated_at?.slice(0, 10) || items[0]?.created_at?.slice(0, 10) || today;
+  const store = await storeLastmod().catch(() => null);
 
   const urls = [
     entries('/', { lastmod: newest, priority: '1.0', changefreq: 'weekly' }),
     entries('/portfolio', { lastmod: newest, priority: '0.9', changefreq: 'weekly' }),
+    ...(store ? [entries('/store', { lastmod: store, priority: '0.7', changefreq: 'weekly' })] : []),
     ...items.map((p) => {
       const titles = Object.fromEntries(LANGS.map((l) => [l, (l === 'fr' ? p.title : p[`title_${l}`] || '').trim()]));
       return entries(`/portfolio/${(p.slug || '').trim() || p.id}`, {

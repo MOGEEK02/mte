@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { basePath, LANG_LABELS, LANGS, localePath, useLang, useT } from "../i18n";
+import { Announcement } from "./Announcement";
 
 const DICT_LOCALE = { fr: "fr", en: "en", ar: "ar" } as const;
 
@@ -71,6 +72,7 @@ export function Header() {
         solid ? "border-b border-slate-200 bg-white/95 backdrop-blur" : "bg-transparent"
       }`}
     >
+      <Announcement />
       <div className="container-page flex h-16 items-center justify-between gap-6 lg:h-20">
         <Link to={to("/")} className="shrink-0" aria-label={t.nav.home}>
           <img

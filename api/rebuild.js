@@ -7,20 +7,7 @@
 //   DEPLOY_HOOK_URL  Settings → Git → Deploy Hooks → create one for branch "main"
 //   CRON_SECRET      any long random string (Vercel sends it with the daily cron call)
 
-const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
-const supabaseKey = process.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY || process.env.VITE_SUPABASE_ANON_KEY || '';
-
-/** Asks Supabase whether the signed-in user behind this token is the site admin. */
-async function isAdmin(token) {
-  if (!token || !supabaseUrl || !supabaseKey) return false;
-  const r = await fetch(`${supabaseUrl}/rest/v1/rpc/is_site_admin`, {
-    method: 'POST',
-    headers: { apikey: supabaseKey, Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: '{}',
-    signal: AbortSignal.timeout(5000),
-  });
-  return r.ok && (await r.json()) === true;
-}
+import { bearer, isAdmin } from './_admin.js';
 
 export default async function handler(req, res) {
   const auth = req.headers.authorization || '';
@@ -30,7 +17,7 @@ export default async function handler(req, res) {
       res.setHeader('Allow', 'POST');
       return res.status(405).json({ error: 'method' });
     }
-    if (!(await isAdmin(auth.replace(/^Bearer\s+/i, '')))) return res.status(403).json({ error: 'forbidden' });
+    if (!(await isAdmin(bearer(req)))) return res.status(403).json({ error: 'forbidden' });
   }
 
   const hook = process.env.DEPLOY_HOOK_URL;

@@ -54,7 +54,9 @@ function write(url, html) {
 }
 
 const data = await server.loadData();
-console.log(`prerender: ${data.services.length} services, ${data.portfolio.length} projects`);
+console.log(
+  `prerender: ${data.services.length} services, ${data.portfolio.length} projects, ${data.testimonials.length} reviews, ${data.products.length} products`,
+);
 
 let count = 0;
 for (const p of server.pages(data)) {
@@ -69,4 +71,10 @@ fs.writeFileSync(path.join(dist, "404.html"), page(nf, data));
 fs.writeFileSync(path.join(dist, "llms.txt"), server.llmsTxt(data));
 fs.writeFileSync(path.join(dist, "llms-full.txt"), server.llmsTxt(data, true));
 
-console.log(`prerender: ${count} pages, 404.html, shell.html, llms.txt, llms-full.txt`);
+// Read by /admin → Tableau de bord: when the pages were last generated.
+fs.writeFileSync(
+  path.join(dist, "build.json"),
+  JSON.stringify({ builtAt: data.builtAt, commit: (process.env.VERCEL_GIT_COMMIT_SHA || "").slice(0, 7), pages: count }),
+);
+
+console.log(`prerender: ${count} pages, 404.html, shell.html, llms.txt, llms-full.txt, build.json`);

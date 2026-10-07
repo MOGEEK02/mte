@@ -78,7 +78,7 @@ async function sendEmail(f, onSite, emailValid) {
     ['Sur site', onSite ? 'Oui, intervention sur site souhaitée' : ''],
   ].filter(([, v]) => v);
 
-  const text = `${rows.map(([k, v]) => `${k} : ${v}`).join('\n')}\n\n${f.message}\n\nToutes les demandes : https://moutie.vercel.app/admin`;
+  const text = `${rows.map(([k, v]) => `${k} : ${v}`).join('\n')}\n\n${f.message}\n\nToutes les demandes : https://moutie.vercel.app/admin/demandes`;
   const phoneLink = f.phone ? `tel:${f.phone.replace(/[^\d+]/g, '')}` : '';
   const html = `
 <div style="font-family:Arial,sans-serif;font-size:14px;color:#0f1b2a;max-width:600px">
@@ -95,7 +95,7 @@ async function sendEmail(f, onSite, emailValid) {
   </table>
   <div style="margin-top:16px;padding:12px 14px;background:#f1f5f9;border-radius:6px;white-space:pre-wrap">${escapeHtml(f.message)}</div>
   <p style="margin-top:16px;color:#94a3b8;font-size:12px">Envoyé depuis le formulaire de moutie.vercel.app${emailValid ? ' — répondez directement à cet e-mail pour écrire au client.' : '.'}
-    <a href="https://moutie.vercel.app/admin" style="color:#0a2a4a">Ouvrir les demandes</a></p>
+    <a href="https://moutie.vercel.app/admin/demandes" style="color:#0a2a4a">Ouvrir les demandes</a></p>
 </div>`;
 
   // One message per address: without a verified domain, Resend refuses any address other than

@@ -1,7 +1,21 @@
 import { select } from "./db";
 import type { Lang } from "./i18n";
-import { CONTACT } from "./site";
+import { CONTACT, SOCIAL } from "./site";
 import { createStore } from "./store";
+
+/** Social networks shown in the footer and given to search engines; an empty link is hidden. */
+export const SOCIAL_KEYS = ["facebook", "instagram", "linkedin", "youtube", "tiktok", "github"] as const;
+export type SocialKey = (typeof SOCIAL_KEYS)[number];
+export type Social = Record<SocialKey, string>;
+
+export const DEFAULT_SOCIAL: Social = {
+  facebook: SOCIAL.facebook,
+  instagram: SOCIAL.instagram,
+  linkedin: SOCIAL.linkedin,
+  youtube: "",
+  tiktok: "",
+  github: SOCIAL.github,
+};
 
 /** Contact details shown on the site, edited in /admin → Paramètres ("site_settings" table). */
 export type Contact = {
@@ -14,6 +28,9 @@ export type Contact = {
   hours: string;
   hoursEn: string;
   hoursAr: string;
+  social: Social;
+  /** Round WhatsApp button in the corner of every page. */
+  whatsappButton: boolean;
 };
 
 export type ContactRow = {
@@ -25,6 +42,9 @@ export type ContactRow = {
   hours: string;
   hours_en?: string;
   hours_ar?: string;
+  /** Set once saved from /admin (empty object before: the built-in links). */
+  social?: Partial<Social> | null;
+  whatsapp_button?: boolean;
 };
 
 export const DEFAULT_CONTACT: Contact = {
@@ -36,7 +56,20 @@ export const DEFAULT_CONTACT: Contact = {
   hours: CONTACT.hours,
   hoursEn: CONTACT.hoursEn,
   hoursAr: CONTACT.hoursAr,
+  social: DEFAULT_SOCIAL,
+  whatsappButton: true,
 };
+
+/** Saved links, keeping only web addresses. */
+function socialFrom(saved: Partial<Social> | null | undefined): Social {
+  if (!saved || Object.keys(saved).length === 0) return DEFAULT_SOCIAL;
+  const out = { ...DEFAULT_SOCIAL };
+  for (const k of SOCIAL_KEYS) {
+    const v = saved[k]?.trim() ?? "";
+    out[k] = /^https?:\/\/\S+$/i.test(v) ? v : "";
+  }
+  return out;
+}
 
 /** Fills empty fields from the built-in details, so a blank field never breaks a link. */
 export function fromContactRow(r: Partial<ContactRow>): Contact {
@@ -50,6 +83,8 @@ export function fromContactRow(r: Partial<ContactRow>): Contact {
     hours: r.hours?.trim() || D.hours,
     hoursEn: r.hours_en?.trim() || D.hoursEn,
     hoursAr: r.hours_ar?.trim() || D.hoursAr,
+    social: socialFrom(r.social),
+    whatsappButton: r.whatsapp_button ?? true,
   };
 }
 

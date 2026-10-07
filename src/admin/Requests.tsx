@@ -1,10 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Mail, MapPin, Phone, RefreshCw, Trash2 } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
+import { ArrowLeft, Download, Mail, MapPin, Phone, RefreshCw, Search, Trash2 } from "lucide-react";
 import { BrandIcon } from "../ui/BrandIcon";
 import { errorMessage, supabase } from "./supabase";
 import { Button, Field, formatDateTime, inputClass, Loading, Notice, PageHeader, useFlash } from "./ui";
 
 type Status = "nouveau" | "en_cours" | "traite" | "archive";
+
+/** Sent when a request changes, so the menu counter follows. */
+export const REQUESTS_CHANGED = "mte-requests-changed";
+const changed = () => window.dispatchEvent(new Event(REQUESTS_CHANGED));
 
 type Request = {
   id: number;
@@ -59,6 +64,7 @@ function Detail({ request, onChange, onDelete, onBack }: { request: Request; onC
     setBusy(false);
     if (error) return flash(errorMessage(error), "error");
     onChange({ ...request, ...patch });
+    changed();
     flash(done);
   };
 
@@ -67,6 +73,7 @@ function Detail({ request, onChange, onDelete, onBack }: { request: Request; onC
     const { error } = await supabase.from("quote_requests").delete().eq("id", request.id);
     if (error) return flash(errorMessage(error), "error");
     flash("Demande supprimée");
+    changed();
     onDelete();
   };
 
@@ -154,11 +161,43 @@ function Detail({ request, onChange, onDelete, onBack }: { request: Request; onC
   );
 }
 
+function exportCsv(rows: Request[]) {
+  const cell = (v: string) => `"${v.replace(/"/g, '""')}"`;
+  const head = ["Date", "Nom", "Entreprise", "Téléphone", "E-mail", "Besoin", "Matériel", "Sur site", "Statut", "Message", "Notes"];
+  const lines = rows.map((r) =>
+    [
+      formatDateTime(r.created_at),
+      r.name,
+      r.company,
+      r.phone,
+      r.email,
+      r.request_type,
+      r.equipment,
+      r.on_site ? "Oui" : "",
+      STATUS[r.status]?.label ?? r.status,
+      r.message,
+      r.notes,
+    ]
+      .map((v) => cell(v ?? ""))
+      .join(";"),
+  );
+  const blob = new Blob([String.fromCharCode(0xfeff) + [head.map(cell).join(";"), ...lines].join("\r\n")], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `demandes-mte-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
 export default function Requests() {
   const [items, setItems] = useState<Request[] | null>(null);
   const [error, setError] = useState("");
-  const [filter, setFilter] = useState<(typeof FILTERS)[number]["value"]>("actifs");
-  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [params] = useSearchParams();
+  // "?id=12" (from the dashboard) opens that request.
+  const opened = Number(params.get("id")) || null;
+  const [filter, setFilter] = useState<(typeof FILTERS)[number]["value"]>(opened ? "tous" : "actifs");
+  const [selectedId, setSelectedId] = useState<number | null>(opened);
+  const [query, setQuery] = useState("");
 
   const load = useCallback(async () => {
     const { data, error } = await supabase.from("quote_requests").select("*").order("created_at", { ascending: false }).limit(500);
@@ -181,8 +220,11 @@ export default function Requests() {
     return c;
   }, [items]);
 
-  const shown = (items ?? []).filter((r) =>
-    filter === "tous" ? true : filter === "actifs" ? r.status === "nouveau" || r.status === "en_cours" : r.status === filter,
+  const q = query.trim().toLowerCase();
+  const shown = (items ?? []).filter(
+    (r) =>
+      (filter === "tous" ? true : filter === "actifs" ? r.status === "nouveau" || r.status === "en_cours" : r.status === filter) &&
+      (!q || [r.name, r.company, r.phone, r.email, r.request_type, r.equipment, r.message, r.notes].join(" ").toLowerCase().includes(q)),
   );
   const selected = items?.find((r) => r.id === selectedId) ?? null;
 
@@ -192,16 +234,32 @@ export default function Requests() {
         title="Demandes de devis"
         description="Les demandes envoyées depuis le formulaire du site."
         actions={
-          <Button onClick={load}>
-            <RefreshCw className="size-4" /> Actualiser
-          </Button>
+          <>
+            <Button onClick={() => exportCsv(shown)} disabled={!shown.length} title="Fichier pour Excel, avec les demandes affichées">
+              <Download className="size-4" /> Exporter (Excel)
+            </Button>
+            <Button onClick={load}>
+              <RefreshCw className="size-4" /> Actualiser
+            </Button>
+          </>
         }
       />
       {error && <div className="mt-6"><Notice tone="error">{error}</Notice></div>}
       {!items && !error && <Loading />}
       {items && (
         <>
-          <div className="mt-5 flex flex-wrap gap-1.5">
+          <div className="relative mt-5 max-w-md">
+            <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-slate-400" />
+            <input
+              type="search"
+              placeholder="Rechercher : nom, téléphone, machine…"
+              aria-label="Rechercher une demande"
+              className={`${inputClass} pl-9`}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+          </div>
+          <div className="mt-3 flex flex-wrap gap-1.5">
             {FILTERS.map((f) => (
               <button
                 key={f.value}

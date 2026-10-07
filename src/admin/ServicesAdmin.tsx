@@ -20,7 +20,7 @@ export default function ServicesAdmin() {
 
   const setPublished = async (s: ServiceRow, published: boolean) => {
     setItems((list) => list!.map((x) => (x.slug === s.slug ? { ...x, published } : x)));
-    const { error } = await supabase.from("services").update({ published }).eq("slug", s.slug);
+    const { error } = await supabase.from("services").update({ published, updated_at: new Date().toISOString() }).eq("slug", s.slug);
     if (error) {
       setItems((list) => list!.map((x) => (x.slug === s.slug ? { ...x, published: !published } : x)));
       return flash(errorMessage(error), "error");
@@ -37,7 +37,7 @@ export default function ServicesAdmin() {
     const ordered = list.map((s, k) => ({ ...s, sort_order: (k + 1) * 10 }));
     setItems(ordered);
     for (const s of ordered) {
-      const { error } = await supabase.from("services").update({ sort_order: s.sort_order }).eq("slug", s.slug);
+      const { error } = await supabase.from("services").update({ sort_order: s.sort_order, updated_at: new Date().toISOString() }).eq("slug", s.slug);
       if (error) return flash(errorMessage(error), "error");
     }
     flash("Ordre enregistré");

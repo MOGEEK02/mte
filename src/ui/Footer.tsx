@@ -1,17 +1,18 @@
 import { Link } from "react-router-dom";
 import { Mail, MapPin, Phone } from "lucide-react";
-import { SOCIAL } from "../site";
-import { telHref, useContact, whatsappLink } from "../contact";
+import { SOCIAL_KEYS, telHref, useContact, whatsappLink, type SocialKey } from "../contact";
 import { useServices } from "../services";
 import { LANG_LABELS, LANGS, localePath, useLang, useT } from "../i18n";
 import { BrandIcon, type Brand } from "./BrandIcon";
 
-const SOCIAL_LINKS: { name: Brand; href: string }[] = [
-  { name: "LinkedIn", href: SOCIAL.linkedin },
-  { name: "Facebook", href: SOCIAL.facebook },
-  { name: "Instagram", href: SOCIAL.instagram },
-  { name: "GitHub", href: SOCIAL.github },
-];
+const BRAND: Record<SocialKey, Brand> = {
+  facebook: "Facebook",
+  instagram: "Instagram",
+  linkedin: "LinkedIn",
+  youtube: "YouTube",
+  tiktok: "TikTok",
+  github: "GitHub",
+};
 
 export function Footer() {
   const lang = useLang();
@@ -19,7 +20,11 @@ export function Footer() {
   const services = useServices(lang);
   const contact = useContact();
   const to = (path: string) => localePath(lang, path);
-  const social = [{ name: "WhatsApp" as Brand, href: whatsappLink(contact) }, ...SOCIAL_LINKS];
+  // Links set in /admin → Paramètres; an empty one is not shown.
+  const social = [
+    { name: "WhatsApp" as Brand, href: whatsappLink(contact) },
+    ...SOCIAL_KEYS.filter((k) => contact.social[k]).map((k) => ({ name: BRAND[k], href: contact.social[k] })),
+  ];
   return (
     <footer className="bg-navy-950 text-slate-300">
       <div className="container-page grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
@@ -101,7 +106,7 @@ export function Footer() {
       </div>
 
       <div className="border-t border-white/10">
-        <div className="container-page flex flex-col gap-2 py-5 text-xs text-slate-500 sm:flex-row sm:justify-between">
+        <div className={`container-page flex flex-col gap-2 pt-5 text-xs text-slate-500 sm:flex-row sm:justify-between sm:pb-5 ${contact.whatsappButton ? "pb-24" : "pb-5"}`}>
           <p>
             <span dir="ltr">© {new Date().getFullYear()} MTE Industrial Electronics — Fekhar Moutie.</span> {t.footer.rights}
           </p>

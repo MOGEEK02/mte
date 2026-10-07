@@ -22,7 +22,7 @@ export default function Projects() {
 
   const setFeatured = async (item: PortfolioItem, featured: boolean) => {
     setItems((s) => s!.map((p) => (p.id === item.id ? { ...p, featured } : p)));
-    const { error } = await supabase.from("portfolio").update({ featured }).eq("id", item.id);
+    const { error } = await supabase.from("portfolio").update({ featured, updated_at: new Date().toISOString() }).eq("id", item.id);
     if (error) {
       setItems((s) => s!.map((p) => (p.id === item.id ? { ...p, featured: !featured } : p)));
       return flash(errorMessage(error), "error");
@@ -32,7 +32,7 @@ export default function Projects() {
 
   const setPublished = async (item: PortfolioItem, published: boolean) => {
     setItems((s) => s!.map((p) => (p.id === item.id ? { ...p, published } : p)));
-    const { error } = await supabase.from("portfolio").update({ published }).eq("id", item.id);
+    const { error } = await supabase.from("portfolio").update({ published, updated_at: new Date().toISOString() }).eq("id", item.id);
     if (error) {
       setItems((s) => s!.map((p) => (p.id === item.id ? { ...p, published: !published } : p)));
       return flash(errorMessage(error), "error");

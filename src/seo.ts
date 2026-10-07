@@ -1,6 +1,8 @@
 import { DICT, LANGS, localePath, type Lang } from "./i18n";
-import { BUSINESS, EXPERTISE, SITE_URL, SOCIAL } from "./site";
+import { BUSINESS, EXPERTISE, SITE_URL } from "./site";
 import type { Contact } from "./contact";
+import type { FaqItem } from "./content";
+import { productText, type Product } from "./products";
 import type { Service } from "./services";
 import { coverImage, projectLangs, projectPath, projectText, splitDescription, type PortfolioItem } from "./portfolio";
 
@@ -108,8 +110,10 @@ const JOB: Record<Lang, string> = {
   ar: "مهندس في الأتمتة والإلكترونيات",
 };
 
-export function businessJsonLd(lang: Lang, contact: Contact, services: Service[]) {
+/** `areas`: the wilayas shown on the page (edited in /admin → Contenu). */
+export function businessJsonLd(lang: Lang, contact: Contact, services: Service[], areas: string[] = DICT[lang].reach.areas) {
   const t = DICT[lang];
+  const social = Object.values(contact.social).filter(Boolean);
   const phone = `+${contact.phone.replace(/\D/g, "").replace(/^0/, "213")}`;
   return {
     "@context": "https://schema.org",
@@ -145,7 +149,7 @@ export function businessJsonLd(lang: Lang, contact: Contact, services: Service[]
         },
         areaServed: [
           { "@type": "Country", name: COUNTRY[lang] },
-          ...t.reach.areas.map((name) => ({ "@type": "AdministrativeArea", name, containedInPlace: { "@type": "Country", name: "DZ" } })),
+          ...areas.map((name) => ({ "@type": "AdministrativeArea", name, containedInPlace: { "@type": "Country", name: "DZ" } })),
         ],
         knowsAbout: EXPERTISE,
         knowsLanguage: ["fr", "ar", "en"],
@@ -167,7 +171,7 @@ export function businessJsonLd(lang: Lang, contact: Contact, services: Service[]
             provider: { "@id": BUSINESS_ID },
           },
         })),
-        sameAs: [SOCIAL.linkedin, SOCIAL.facebook, SOCIAL.instagram, SOCIAL.github],
+        sameAs: social,
       },
       {
         "@type": "Person",
@@ -175,7 +179,7 @@ export function businessJsonLd(lang: Lang, contact: Contact, services: Service[]
         name: BUSINESS.founder,
         jobTitle: JOB[lang],
         worksFor: { "@id": BUSINESS_ID },
-        sameAs: [SOCIAL.linkedin, SOCIAL.github],
+        sameAs: [contact.social.linkedin, contact.social.github].filter(Boolean),
       },
       {
         "@type": "WebSite",
@@ -189,12 +193,13 @@ export function businessJsonLd(lang: Lang, contact: Contact, services: Service[]
   };
 }
 
-export function faqJsonLd(lang: Lang) {
+/** `items`: the questions shown on the page (edited in /admin → Contenu). */
+export function faqJsonLd(lang: Lang, items: FaqItem[] = DICT[lang].faq.items) {
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     inLanguage: DICT[lang].locale,
-    mainEntity: DICT[lang].faq.items.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+    mainEntity: items.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
   };
 }
 
@@ -259,6 +264,70 @@ export function projectJsonLd(lang: Lang, item: PortfolioItem) {
       { name: HOME[lang], path: "/" },
       { name: t.work.eyebrow, path: "/portfolio" },
       { name: text.title, path: projectPath(item) },
+    ]),
+  ];
+}
+
+// ---------------------------------------------------------------------------
+// Store (/store): out of search results until it is opened in /admin with products
+// ---------------------------------------------------------------------------
+
+/** Product photos are full addresses (Supabase storage); a site path becomes one too. */
+const absolute = (url: string) => (url.startsWith("/") ? `${SITE_URL}${url}` : url);
+
+export function storeMeta(lang: Lang, open: boolean, products: Product[]): PageMeta {
+  const t = DICT[lang].store;
+  const photo = products.find((p) => p.image)?.image;
+  return open
+    ? { lang, path: "/store", title: t.seoOpenTitle, description: t.seoOpenDescription, image: photo ? absolute(photo) : null }
+    : { lang, path: "/store", title: t.seoTitle, description: t.seoDescription, noindex: true };
+}
+
+const CONDITION_URL = {
+  new: "https://schema.org/NewCondition",
+  used: "https://schema.org/UsedCondition",
+  refurbished: "https://schema.org/RefurbishedCondition",
+} as const;
+
+/** The catalogue; products with a price are described as offers from MTE. */
+export function storeJsonLd(lang: Lang, products: Product[]) {
+  const t = DICT[lang];
+  return [
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      name: t.store.openTitle,
+      url: urlFor(lang, "/store"),
+      numberOfItems: products.length,
+      itemListElement: products.map((p, i) => {
+        const { name, description } = productText(p, lang);
+        if (p.price_da == null) return { "@type": "ListItem", position: i + 1, name };
+        return {
+          "@type": "ListItem",
+          position: i + 1,
+          item: {
+            "@type": "Product",
+            name,
+            ...(description ? { description: summarize(description, 300) } : {}),
+            ...(p.image ? { image: absolute(p.image) } : {}),
+            ...(p.brand.trim() ? { brand: { "@type": "Brand", name: p.brand.trim() } } : {}),
+            ...(p.reference.trim() ? { mpn: p.reference.trim() } : {}),
+            offers: {
+              "@type": "Offer",
+              price: p.price_da,
+              priceCurrency: "DZD",
+              availability: p.in_stock ? "https://schema.org/InStock" : "https://schema.org/BackOrder",
+              itemCondition: CONDITION_URL[p.condition] ?? CONDITION_URL.new,
+              url: urlFor(lang, "/store"),
+              seller: { "@id": BUSINESS_ID },
+            },
+          },
+        };
+      }),
+    },
+    breadcrumb(lang, [
+      { name: HOME[lang], path: "/" },
+      { name: t.store.eyebrow, path: "/store" },
     ]),
   ];
 }

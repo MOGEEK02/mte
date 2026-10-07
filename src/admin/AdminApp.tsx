@@ -1,11 +1,29 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { Link, NavLink, Route, Routes } from "react-router-dom";
+import { Link, NavLink, Route, Routes, useLocation } from "react-router-dom";
 import type { Session } from "@supabase/supabase-js";
-import { ExternalLink, FolderKanban, Inbox, LogOut, RefreshCw, Settings as SettingsIcon, Wrench } from "lucide-react";
+import {
+  ExternalLink,
+  FileText,
+  FolderKanban,
+  Inbox,
+  LayoutDashboard,
+  LogOut,
+  MessageSquareQuote,
+  Settings as SettingsIcon,
+  ShoppingBag,
+  Wrench,
+} from "lucide-react";
 import { Seo } from "../ui/Seo";
+import { excludeThisDevice } from "../track";
 import { configured, errorMessage, isMissingSetup, supabase } from "./supabase";
-import { Button, Field, FlashProvider, inputClass, Loading, Notice, useFlash } from "./ui";
-import Requests from "./Requests";
+import { Button, Field, FlashProvider, inputClass, Loading, Notice } from "./ui";
+import { RebuildButton } from "./RebuildButton";
+import Dashboard from "./Dashboard";
+import Requests, { REQUESTS_CHANGED } from "./Requests";
+import ContentAdmin from "./ContentAdmin";
+import ReviewsAdmin from "./ReviewsAdmin";
+import StoreAdmin from "./StoreAdmin";
+import ProductEditor from "./ProductEditor";
 import Projects from "./Projects";
 import ProjectEditor from "./ProjectEditor";
 import ServicesAdmin from "./ServicesAdmin";
@@ -100,37 +118,38 @@ function SetPassword({ onDone }: { onDone: () => void }) {
 }
 
 const NAV = [
-  { to: "/admin", end: true, label: "Demandes", icon: Inbox },
+  { to: "/admin", end: true, label: "Tableau de bord", icon: LayoutDashboard },
+  { to: "/admin/demandes", end: false, label: "Demandes", icon: Inbox, badge: true },
   { to: "/admin/realisations", end: false, label: "Réalisations", icon: FolderKanban },
   { to: "/admin/services", end: false, label: "Services", icon: Wrench },
+  { to: "/admin/contenu", end: false, label: "Textes du site", icon: FileText },
+  { to: "/admin/avis", end: false, label: "Avis clients", icon: MessageSquareQuote },
+  { to: "/admin/boutique", end: false, label: "Boutique", icon: ShoppingBag },
   { to: "/admin/parametres", end: false, label: "Paramètres", icon: SettingsIcon },
 ];
 
-/**
- * Regenerates the pages that Google and AI assistants read (built at each deployment).
- * Visitors always see the latest data; this updates what crawlers see. It also runs every night.
- */
-function RebuildButton({ className }: { className: string }) {
-  const flash = useFlash();
-  const [busy, setBusy] = useState(false);
-  const run = async () => {
-    setBusy(true);
-    const { data } = await supabase.auth.getSession();
-    const res = await fetch("/api/rebuild", { method: "POST", headers: { Authorization: `Bearer ${data.session?.access_token ?? ""}` } }).catch(() => null);
-    setBusy(false);
-    if (res?.ok) return flash("Mise à jour lancée : le site public sera régénéré dans 1 à 2 minutes.");
-    const err = res ? ((await res.json().catch(() => ({}))) as { error?: string }).error : "";
-    flash(err === "not_configured" ? "Ajoutez DEPLOY_HOOK_URL dans Vercel pour activer ce bouton." : "La mise à jour n’a pas pu être lancée.", "error");
-  };
-  return (
-    <button type="button" onClick={run} disabled={busy} title="Régénère les pages lues par Google et les assistants IA. Se fait aussi chaque nuit." className={className}>
-      <RefreshCw className={`size-4 ${busy ? "animate-spin" : ""}`} />
-      Mettre à jour le site public
-    </button>
-  );
+/** Number of requests still marked "Nouveau", for the menu. */
+function useNewRequests() {
+  const { pathname } = useLocation();
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    const load = () =>
+      supabase
+        .from("quote_requests")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "nouveau")
+        .then(({ count }) => setCount(count ?? 0));
+    load();
+    window.addEventListener(REQUESTS_CHANGED, load);
+    return () => window.removeEventListener(REQUESTS_CHANGED, load);
+  }, [pathname]);
+  return count;
 }
 
 function Layout({ email }: { email: string }) {
+  const newRequests = useNewRequests();
+  // The owner's own visits are left out of the statistics on this device.
+  useEffect(excludeThisDevice, []);
   const link = ({ isActive }: { isActive: boolean }) =>
     `flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
       isActive ? "bg-white/10 text-white" : "text-slate-300 hover:bg-white/5 hover:text-white"
@@ -148,7 +167,12 @@ function Layout({ email }: { email: string }) {
           {NAV.map((n) => (
             <NavLink key={n.to} to={n.to} end={n.end} className={link}>
               <n.icon className="size-4 shrink-0" />
-              {n.label}
+              <span className="whitespace-nowrap">{n.label}</span>
+              {n.badge && newRequests > 0 && (
+                <span className="ms-auto rounded-full bg-brand px-1.5 text-[11px] leading-5 font-bold text-navy-950" aria-label={`${newRequests} nouvelle(s)`}>
+                  {newRequests}
+                </span>
+              )}
             </NavLink>
           ))}
         </nav>
@@ -172,11 +196,16 @@ function Layout({ email }: { email: string }) {
       <main className="flex-1 lg:pl-60">
         <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-10">
           <Routes>
-            <Route index element={<Requests />} />
+            <Route index element={<Dashboard />} />
+            <Route path="demandes" element={<Requests />} />
             <Route path="realisations" element={<Projects />} />
             <Route path="realisations/:id" element={<ProjectEditor />} />
             <Route path="services" element={<ServicesAdmin />} />
             <Route path="services/:slug" element={<ServiceEditor />} />
+            <Route path="contenu" element={<ContentAdmin />} />
+            <Route path="avis" element={<ReviewsAdmin />} />
+            <Route path="boutique" element={<StoreAdmin />} />
+            <Route path="boutique/:id" element={<ProductEditor />} />
             <Route path="parametres" element={<Settings />} />
           </Routes>
           <div className="mt-12 flex flex-wrap gap-4 border-t border-slate-200 pt-4 text-sm lg:hidden">
