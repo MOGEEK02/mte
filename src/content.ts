@@ -19,12 +19,16 @@ export type Announcement = {
 export type HeroTexts = { eyebrow?: string; title?: string; text?: string; checks?: string[] };
 export type ReachTexts = { sectors?: string[]; areas?: string[] };
 export type AboutTexts = { title?: string; paragraphs?: string[] };
+/** Photo behind the home page title, chosen in /admin → Contenu (empty: the built-in one). */
+export type HeroImage = { url?: string; position?: HeroPosition; brightness?: number };
+export type HeroPosition = "center" | "top" | "bottom";
 export type SiteContent = {
   announcement?: Announcement;
   hero?: Partial<Record<Lang, HeroTexts>>;
   faq?: Partial<Record<Lang, FaqItem[]>>;
   reach?: Partial<Record<Lang, ReachTexts>>;
   about?: Partial<Record<Lang, AboutTexts>>;
+  hero_image?: HeroImage;
   store?: { open?: boolean };
 };
 
@@ -69,6 +73,24 @@ export function siteTexts(lang: Lang, c: SiteContent) {
 }
 
 export type SiteTexts = ReturnType<typeof siteTexts>;
+
+export const DEFAULT_HERO_IMAGE = "/images/web/hero.webp";
+/** Brightness of the photo under the title, in % (the title stays readable up to about 70). */
+export const DEFAULT_HERO_BRIGHTNESS = 45;
+export const HERO_BRIGHTNESS_RANGE = [15, 80] as const;
+
+/** The hero photo to show: the one chosen in /admin, or the built-in one. */
+export function heroImage(c: SiteContent) {
+  const h = c.hero_image ?? {};
+  const [min, max] = HERO_BRIGHTNESS_RANGE;
+  const brightness = typeof h.brightness === "number" ? Math.min(max, Math.max(min, Math.round(h.brightness))) : DEFAULT_HERO_BRIGHTNESS;
+  const position: HeroPosition = h.position === "top" || h.position === "bottom" ? h.position : "center";
+  return { url: h.url?.trim() || DEFAULT_HERO_IMAGE, position, brightness };
+}
+
+export function useHeroImage() {
+  return heroImage(contentStore.use());
+}
 
 export function useSiteTexts(): SiteTexts {
   return siteTexts(useLang(), contentStore.use());

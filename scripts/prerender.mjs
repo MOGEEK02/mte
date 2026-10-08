@@ -43,6 +43,11 @@ function page(p, data, { keepData = true } = {}) {
       keepData ? `<div id="root">${markup}</div>\n  <script>window.__MTE_DATA__=${json(data)}</script>` : `<div id="root">${markup}</div>`,
     );
   if (p.meta.path !== "/") html = html.replace(HERO_PRELOAD, "");
+  else {
+    // Home: preload the hero photo chosen in /admin (the built-in one otherwise).
+    const url = data.content?.hero_image?.url?.trim();
+    if (url) html = html.replace(HERO_PRELOAD, () => `\n  <link rel="preload" as="image" href="${url.replace(/"/g, "&quot;")}" fetchpriority="high">`);
+  }
   return html;
 }
 

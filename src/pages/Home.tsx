@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Check, CircuitBoard, Clock, Cpu, Factory, Mail, MapPin, Phone, Plus, Quote, Star, Zap } from "lucide-react";
 import { BRANDS, BUSINESS } from "../site";
 import { hoursFor, telHref, useContact, whatsappLink } from "../contact";
-import { useSiteTexts } from "../content";
+import { useHeroImage, useSiteTexts } from "../content";
 import { formatDate, portfolioStore, projectPath, projectText } from "../portfolio";
 import { useServices } from "../services";
 import { testimonialsStore } from "../testimonials";
@@ -27,16 +27,19 @@ function Hero() {
   const lang = useLang();
   const { nav } = useT();
   const t = useSiteTexts().hero;
+  const photo = useHeroImage();
   const contact = useContact();
   return (
     <section className="relative isolate overflow-hidden bg-navy-950">
+      {/* Photo chosen in /admin → Contenu, darkened so the title stays readable. */}
       <img
-        src="/images/web/hero.webp"
+        src={photo.url}
         alt=""
         width={1920}
         height={768}
         fetchPriority="high"
-        className="absolute inset-0 -z-10 size-full object-cover opacity-45"
+        className="absolute inset-0 -z-10 size-full object-cover"
+        style={{ objectPosition: photo.position, opacity: photo.brightness / 100 }}
       />
       <div className="absolute inset-0 -z-10 bg-gradient-to-r from-navy-950 via-navy-950/85 to-navy-950/30 rtl:bg-gradient-to-l" />
       <div className="container-page pt-32 pb-20 sm:pt-40 sm:pb-28 lg:pt-44 lg:pb-32">

@@ -1,8 +1,21 @@
-import { useEffect, useMemo, useState } from "react";
-import { ArrowDown, ArrowUp, Megaphone, Plus, RotateCcw, Trash2 } from "lucide-react";
-import { defaultAbout, siteTexts, type Announcement, type FaqItem, type SiteContent } from "../content";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ArrowDown, ArrowUp, ImageUp, Megaphone, Plus, RotateCcw, Trash2 } from "lucide-react";
+import {
+  DEFAULT_HERO_BRIGHTNESS,
+  DEFAULT_HERO_IMAGE,
+  defaultAbout,
+  HERO_BRIGHTNESS_RANGE,
+  heroImage,
+  siteTexts,
+  type Announcement,
+  type FaqItem,
+  type HeroImage,
+  type HeroPosition,
+  type SiteContent,
+} from "../content";
 import { DICT, type Lang } from "../i18n";
-import { errorMessage, isMissingSetup, supabase } from "./supabase";
+import { BUCKET, errorMessage, isMissingSetup, storagePath, supabase } from "./supabase";
+import { compressImage } from "./image";
 import { Button, Card, Field, inputClass, LangTabs, langProps, Loading, Notice, PageHeader, SaveBar, Toggle, useFlash, useUnsavedWarning } from "./ui";
 import { AiAssist } from "./AiAssist";
 
@@ -16,6 +29,7 @@ type Draft = {
   faq: Record<Lang, FaqItem[]>;
   reach: Record<Lang, { sectors: string; areas: string }>;
   about: Record<Lang, { title: string; paragraphs: string }>;
+  heroImage: { url: string; position: HeroPosition; brightness: number };
 };
 
 const NO_BANNER: Announcement = { enabled: false, tone: "info", link: "", until: "", text: {} };
@@ -33,6 +47,7 @@ function toDraft(c: SiteContent): Draft {
     faq: perLang((l) => texts[l].faq.map((f) => ({ ...f }))),
     reach: perLang((l) => ({ sectors: texts[l].sectors.join("\n"), areas: texts[l].areas.join("\n") })),
     about: perLang((l) => ({ title: texts[l].about.title, paragraphs: texts[l].about.paragraphs.join("\n\n") })),
+    heroImage: { ...heroImage(c), url: c.hero_image?.url?.trim() ?? "" },
   };
 }
 
@@ -82,7 +97,13 @@ function fromDraft(d: Draft): Required<Omit<SiteContent, "store">> {
     until: a.until,
     text: Object.fromEntries(LANGS.map((l) => [l, a.text[l]?.trim() ?? ""]).filter(([, v]) => v)),
   };
-  return { announcement, hero, faq, reach, about };
+  const h = d.heroImage;
+  const hero_image: HeroImage = {
+    ...(h.url.trim() && h.url.trim() !== DEFAULT_HERO_IMAGE ? { url: h.url.trim() } : {}),
+    ...(h.position !== "center" ? { position: h.position } : {}),
+    ...(h.brightness !== DEFAULT_HERO_BRIGHTNESS ? { brightness: h.brightness } : {}),
+  };
+  return { announcement, hero, faq, reach, about, hero_image };
 }
 
 export default function ContentAdmin() {
@@ -92,6 +113,9 @@ export default function ContentAdmin() {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [lang, setLang] = useState<Lang>("fr");
+  const [uploading, setUploading] = useState(false);
+  const [savedHeroUrl, setSavedHeroUrl] = useState("");
+  const photoInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     supabase
@@ -103,6 +127,7 @@ export default function ContentAdmin() {
         const d = toDraft(content);
         setDraft(d);
         setSaved(JSON.stringify(fromDraft(d)));
+        setSavedHeroUrl(d.heroImage.url);
       });
   }, []);
 
@@ -154,12 +179,39 @@ export default function ContentAdmin() {
     const { error } = await supabase.from("site_content").upsert(rows);
     setBusy(false);
     if (error) return flash(errorMessage(error), "error");
+    // The previous uploaded hero photo is no longer used: free the space.
+    const old = savedHeroUrl !== draft.heroImage.url ? storagePath(savedHeroUrl) : null;
+    if (old) await supabase.storage.from(BUCKET).remove([old]);
+    setSavedHeroUrl(draft.heroImage.url);
     setSaved(JSON.stringify(result));
     flash("Textes enregistrés : visibles tout de suite par les visiteurs");
   };
 
+  /** New hero photo: compressed (1920 px, WebP), uploaded, shown in the preview; saved with the texts. */
+  const uploadHero = async (file: File | undefined) => {
+    if (!file) return;
+    setUploading(true);
+    try {
+      const blob = await compressImage(file, 1920);
+      const path = `site/hero-${Date.now()}.${blob.type === "image/webp" ? "webp" : "jpg"}`;
+      const { error } = await supabase.storage.from(BUCKET).upload(path, blob, { contentType: blob.type, cacheControl: "31536000" });
+      if (error) throw error;
+      // A photo uploaded a moment ago but never saved is replaced: remove it.
+      const unsaved = draft.heroImage.url !== savedHeroUrl ? storagePath(draft.heroImage.url) : null;
+      if (unsaved) await supabase.storage.from(BUCKET).remove([unsaved]);
+      set((d) => void (d.heroImage.url = supabase.storage.from(BUCKET).getPublicUrl(path).data.publicUrl));
+    } catch (e) {
+      flash(errorMessage(e as { message?: string; code?: string }) || "Image illisible", "error");
+    } finally {
+      setUploading(false);
+      if (photoInput.current) photoInput.current.value = "";
+    }
+  };
+
   const a = draft.announcement;
   const hero = draft.hero[lang];
+  const photo = draft.heroImage;
+  const shown = heroImage({ hero_image: photo });
   const lp = langProps(lang);
   const t = DICT[lang];
 
@@ -224,6 +276,69 @@ export default function ContentAdmin() {
             <span className="line-clamp-1">{a.text.fr || a.text.en || a.text.ar}</span>
           </div>
         )}
+      </Card>
+
+      <Card
+        className="mt-6"
+        title="Photo du haut de la page"
+        description="La grande photo derrière le titre de la page d’accueil. Une photo large (paysage) de votre travail : armoire, atelier, machine."
+        actions={
+          photo.url ? (
+            <Button size="sm" variant="ghost" onClick={() => set((d) => void (d.heroImage.url = ""))} title="Revenir à la photo d’origine">
+              <RotateCcw className="size-3.5" /> Photo d’origine
+            </Button>
+          ) : null
+        }
+      >
+        <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
+          {/* Preview: the photo as visitors see it, with the title on it. */}
+          <div className="relative isolate aspect-[16/7] overflow-hidden rounded-lg bg-navy-950">
+            <img
+              src={shown.url}
+              alt=""
+              className="absolute inset-0 -z-10 size-full object-cover"
+              style={{ objectPosition: shown.position, opacity: shown.brightness / 100 }}
+            />
+            <div className="absolute inset-0 -z-10 bg-gradient-to-r from-navy-950 via-navy-950/85 to-navy-950/30" />
+            <div className="flex h-full flex-col justify-center p-5">
+              <p className="text-[10px] font-semibold tracking-widest text-brand uppercase">{draft.hero.fr.eyebrow || DICT.fr.hero.eyebrow}</p>
+              <p className="mt-1.5 max-w-[70%] text-lg leading-tight font-bold text-white sm:text-xl">{draft.hero.fr.title || DICT.fr.hero.title}</p>
+            </div>
+          </div>
+          <div className="space-y-5">
+            <div>
+              <Button onClick={() => photoInput.current?.click()} loading={uploading}>
+                <ImageUp className="size-4" /> Changer la photo
+              </Button>
+              <input ref={photoInput} type="file" accept="image/*" hidden onChange={(e) => uploadHero(e.target.files?.[0])} />
+              <p className="mt-2 text-xs text-slate-500">Réduite automatiquement (≈ 300 Ko). Enregistrez ensuite pour la mettre en ligne.</p>
+            </div>
+            <Field label="Cadrage" htmlFor="h-position" hint="La partie de la photo gardée sur les écrans étroits (téléphone).">
+              <select
+                id="h-position"
+                className={inputClass}
+                value={photo.position}
+                onChange={(e) => set((d) => void (d.heroImage.position = e.target.value as HeroPosition))}
+              >
+                <option value="center">Centre</option>
+                <option value="top">Haut</option>
+                <option value="bottom">Bas</option>
+              </select>
+            </Field>
+            <Field label={`Luminosité de la photo : ${photo.brightness} %`} htmlFor="h-brightness" hint="Plus bas = titre plus lisible. Conseillé : 35 à 55 %.">
+              <input
+                id="h-brightness"
+                type="range"
+                min={HERO_BRIGHTNESS_RANGE[0]}
+                max={HERO_BRIGHTNESS_RANGE[1]}
+                step={5}
+                className="w-full accent-navy-900"
+                value={photo.brightness}
+                onChange={(e) => set((d) => void (d.heroImage.brightness = Number(e.target.value)))}
+              />
+            </Field>
+          </div>
+        </div>
       </Card>
 
       <div className="sticky top-0 z-30 -mx-4 mt-8 flex flex-wrap items-center justify-between gap-3 border-y border-slate-200 bg-slate-50/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10">
