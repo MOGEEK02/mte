@@ -4,6 +4,7 @@ import { SOCIAL_KEYS, telHref, useContact, whatsappLink, type SocialKey } from "
 import { useServices } from "../services";
 import { LANG_LABELS, LANGS, localePath, useLang, useT } from "../i18n";
 import { BrandIcon, type Brand } from "./BrandIcon";
+import { CITIES, cityPath, LOCAL_SERVICES, servicePath } from "../local-seo";
 
 const BRAND: Record<SocialKey, Brand> = {
   facebook: "Facebook",
@@ -13,6 +14,8 @@ const BRAND: Record<SocialKey, Brand> = {
   tiktok: "TikTok",
   github: "GitHub",
 };
+
+const AREA_TITLE = { fr: "Automatisme industriel –", en: "Industrial automation –", ar: "الأتمتة الصناعية –" };
 
 export function Footer() {
   const lang = useLang();
@@ -102,6 +105,28 @@ export function Footer() {
               </a>
             </li>
           </ul>
+        </div>
+      </div>
+
+      {/* Local pages: "Programmation automate à Blida"… (also helps search engines find them). */}
+      <div className="border-t border-white/10">
+        <div className="container-page grid gap-6 py-8 text-sm sm:grid-cols-3">
+          {CITIES.map((c) => (
+            <div key={c.slug}>
+              <Link to={to(cityPath(c))} className="font-semibold text-slate-200 hover:text-white">
+                {AREA_TITLE[lang]} {c.inCity[lang].replace(/^(à|in|في) /, "")}
+              </Link>
+              <ul className="mt-2 space-y-1.5 text-slate-400">
+                {LOCAL_SERVICES.map((s) => (
+                  <li key={s.slug}>
+                    <Link to={to(servicePath(s, c))} className="hover:text-white">
+                      {s.keyword[lang]} {c.inCity[lang]}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
       </div>
 

@@ -53,6 +53,13 @@ function write(url, html) {
   return path.relative(dist, file);
 }
 
+// The sitemap (api/_local-pages.js) must list exactly the local pages of the site.
+const { LOCAL_PATHS } = await import(pathToFileURL(path.join(root, "api", "_local-pages.js")).href);
+const sitePaths = server.localPaths();
+if (JSON.stringify([...LOCAL_PATHS].sort()) !== JSON.stringify([...sitePaths].sort())) {
+  throw new Error(`api/_local-pages.js and src/local-seo.ts differ:\n  sitemap: ${LOCAL_PATHS.join(" ")}\n  site:    ${sitePaths.join(" ")}`);
+}
+
 const data = await server.loadData();
 console.log(
   `prerender: ${data.services.length} services, ${data.portfolio.length} projects, ${data.testimonials.length} reviews, ${data.products.length} products`,

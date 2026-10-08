@@ -11,6 +11,7 @@ import { BrandIcon } from "../ui/BrandIcon";
 import { CardMedia } from "../ui/CardMedia";
 import { QuoteForm } from "../ui/QuoteForm";
 import { Seo } from "../ui/Seo";
+import { CITIES, cityPath } from "../local-seo";
 
 function SectionTitle({ eyebrow, title, text, light }: { eyebrow: string; title: string; text?: string; light?: boolean }) {
   return (
@@ -119,6 +120,7 @@ function Services() {
 
 /** Where and for whom: helps local searches ("automatisme Blida", "réparation variateur Oran"…). */
 function Reach() {
+  const lang = useLang();
   const t = useT().reach;
   const { sectors, areas } = useSiteTexts();
   return (
@@ -146,11 +148,23 @@ function Reach() {
               {t.areasTitle}
             </h3>
             <ul className="mt-4 flex flex-wrap gap-2">
-              {areas.map((a, i) => (
-                <li key={i} className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-sm text-slate-700">
-                  {a}
-                </li>
-              ))}
+              {areas.map((a, i) => {
+                const city = CITIES.find((c) => [c.name.fr, c.name.en, c.name.ar].includes(a.trim()));
+                return city ? (
+                  <li key={i}>
+                    <Link
+                      to={localePath(lang, cityPath(city))}
+                      className="block rounded-full border border-navy-700/30 bg-white px-3 py-1 text-sm font-medium text-navy-800 hover:border-navy-700 hover:text-navy-900"
+                    >
+                      {a}
+                    </Link>
+                  </li>
+                ) : (
+                  <li key={i} className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-sm text-slate-700">
+                    {a}
+                  </li>
+                );
+              })}
             </ul>
             <p className="mt-3 text-sm text-slate-500">{t.everywhere}</p>
           </div>

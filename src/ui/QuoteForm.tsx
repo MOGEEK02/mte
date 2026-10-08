@@ -37,7 +37,7 @@ const label = "block text-sm font-medium text-slate-700";
 type Status = "idle" | "sending" | "sent" | "error";
 
 /** Quote request, saved and e-mailed to MTE by /api/quote. WhatsApp stays available as a direct alternative. */
-export function QuoteForm() {
+export function QuoteForm({ context }: { context?: string } = {}) {
   const lang = useLang();
   const t = useT().form;
   const empty: Fields = { name: "", company: "", phone: "", email: "", equipment: t.types[0], model: "", message: "", onSite: false };
@@ -56,7 +56,7 @@ export function QuoteForm() {
       const res = await fetch("/api/quote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...f, service: lang === "en" ? "Site (English)" : "", website: trap, elapsed: Date.now() - shownAt.current }),
+        body: JSON.stringify({ ...f, service: context ?? (lang === "en" ? "Site (English)" : ""), website: trap, elapsed: Date.now() - shownAt.current }),
       });
       setStatus(res.ok ? "sent" : "error");
       if (res.ok) track("quote");

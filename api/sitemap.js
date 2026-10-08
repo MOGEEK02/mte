@@ -1,6 +1,8 @@
 // GET /sitemap.xml — every public page in French, English and Arabic, with hreflang alternates
 // (xhtml:link) and project images, always up to date with the database.
 
+import { LOCAL_PATHS, localPriority } from './_local-pages.js';
+
 const BASE_URL = 'https://moutie.vercel.app';
 const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
 const supabaseKey = process.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY || process.env.VITE_SUPABASE_ANON_KEY || '';
@@ -8,6 +10,9 @@ const supabaseKey = process.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY || process
 const LANGS = ['fr', 'en', 'ar'];
 const HREFLANG = { fr: ['fr-DZ', 'fr'], en: ['en'], ar: ['ar-DZ', 'ar'] };
 const urlFor = (lang, path) => `${BASE_URL}${lang === 'fr' ? path : path === '/' ? `/${lang}` : `/${lang}${path}`}`;
+
+/** Last change of the local pages' text (src/local-seo.ts). */
+const LOCAL_LASTMOD = '2026-10-08';
 
 function escapeXml(str) {
   return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
@@ -88,6 +93,7 @@ export default async function handler(request, response) {
   const urls = [
     entries('/', { lastmod: newest, priority: '1.0', changefreq: 'weekly' }),
     entries('/portfolio', { lastmod: newest, priority: '0.9', changefreq: 'weekly' }),
+    ...LOCAL_PATHS.map((path) => entries(path, { lastmod: LOCAL_LASTMOD, priority: localPriority(path), changefreq: 'monthly' })),
     ...(store ? [entries('/store', { lastmod: store, priority: '0.7', changefreq: 'weekly' })] : []),
     ...items.map((p) => {
       const titles = Object.fromEntries(LANGS.map((l) => [l, (l === 'fr' ? p.title : p[`title_${l}`] || '').trim()]));

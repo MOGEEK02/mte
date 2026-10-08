@@ -24,6 +24,8 @@ import {
   type PageMeta,
 } from "./seo";
 import { BUSINESS, SITE_URL } from "./site";
+import { localDescription, localPages, localTitle } from "./local-seo";
+import { localJsonLd, localMeta } from "./seo";
 
 /**
  * Server entry used by scripts/prerender.mjs at build time: renders each public page to HTML
@@ -95,6 +97,11 @@ export function pages(data: SiteData): Page[] {
     for (const item of data.portfolio) {
       out.push({ url: `${prefix}${projectPath(item)}`, lang, meta: projectMeta(item, lang), jsonLd: [business, ...projectJsonLd(lang, item)] });
     }
+    // Local pages: one per service and city.
+    for (const p of localPages()) {
+      const image = p.service ? data.services.find((s) => s.slug === p.service!.key)?.image : null;
+      out.push({ url: `${prefix}${p.path}`, lang, meta: localMeta(lang, p, image ? `${SITE_URL}${image}` : null), jsonLd: [business, ...localJsonLd(lang, p)] });
+    }
   }
   return out;
 }
@@ -123,6 +130,8 @@ export function render(url: string, data: SiteData) {
 }
 
 export { headHtml, DICT };
+
+export const localPaths = () => localPages().map((p) => p.path);
 
 // ---------------------------------------------------------------------------
 // llms.txt: a plain summary of the business for AI assistants (llmstxt.org)
@@ -168,6 +177,10 @@ export function llmsTxt(data: SiteData, full = false) {
     "",
     `- Industries: ${texts.sectors.join("; ")}.`,
     `- Wilayas: ${texts.areas.join(", ")}, and anywhere else in Algeria on request.`,
+    "",
+    "## Local pages (service and city)",
+    "",
+    ...localPages().map((p) => `- [${localTitle(p, "fr").replace(/ \| MTE$/, "")}](${urlFor("fr", p.path)}): ${localDescription(p, "fr")}`),
     "",
     "## Frequently asked questions",
     "",

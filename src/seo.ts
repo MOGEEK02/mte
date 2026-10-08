@@ -5,6 +5,7 @@ import type { FaqItem } from "./content";
 import { productText, type Product } from "./products";
 import type { Service } from "./services";
 import { coverImage, projectLangs, projectPath, projectText, splitDescription, type PortfolioItem } from "./portfolio";
+import { cityPath, LOCAL_SERVICES, localDescription, localFaq, localHeading, localTitle, servicePath, type LocalPageRef } from "./local-seo";
 
 /** What a page tells search engines. Shared by <Seo> (browser) and the pre-renderer (HTML). */
 export type PageMeta = {
@@ -328,6 +329,67 @@ export function storeJsonLd(lang: Lang, products: Product[]) {
     breadcrumb(lang, [
       { name: HOME[lang], path: "/" },
       { name: t.store.eyebrow, path: "/store" },
+    ]),
+  ];
+}
+
+// ---------------------------------------------------------------------------
+// Local pages: "Programmation automate à Blida", "Automatisme industriel à Alger"…
+// ---------------------------------------------------------------------------
+
+export function localMeta(lang: Lang, page: LocalPageRef, image?: string | null): PageMeta {
+  return { lang, path: page.path, title: localTitle(page, lang), description: localDescription(page, lang), image: image ?? null };
+}
+
+export function localJsonLd(lang: Lang, page: LocalPageRef) {
+  const { city, service } = page;
+  const url = urlFor(lang, page.path);
+  const place = {
+    "@type": "City",
+    name: city.name[lang],
+    geo: { "@type": "GeoCoordinates", latitude: city.geo.latitude, longitude: city.geo.longitude },
+    containedInPlace: { "@type": "AdministrativeArea", name: `Wilaya ${city.wilaya} – ${city.name.fr}`, containedInPlace: { "@type": "Country", name: "DZ" } },
+  };
+  const main = service
+    ? {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "@id": `${url}#service`,
+        name: localHeading(page, lang),
+        serviceType: service.keyword[lang],
+        description: localDescription(page, lang),
+        url,
+        inLanguage: DICT[lang].locale,
+        provider: { "@id": BUSINESS_ID },
+        areaServed: place,
+        availableChannel: { "@type": "ServiceChannel", serviceUrl: url, servicePhone: { "@id": BUSINESS_ID } },
+      }
+    : {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        name: localTitle(page, lang),
+        description: localDescription(page, lang),
+        url,
+        inLanguage: DICT[lang].locale,
+        about: { "@id": BUSINESS_ID },
+        spatialCoverage: place,
+        mainEntity: {
+          "@type": "ItemList",
+          itemListElement: LOCAL_SERVICES.map((s, i) => ({
+            "@type": "ListItem",
+            position: i + 1,
+            name: `${s.keyword[lang]} ${city.inCity[lang]}`,
+            url: urlFor(lang, servicePath(s, city)),
+          })),
+        },
+      };
+  return [
+    main,
+    faqJsonLd(lang, localFaq(page, lang)),
+    breadcrumb(lang, [
+      { name: HOME[lang], path: "/" },
+      { name: city.name[lang], path: cityPath(city) },
+      ...(service ? [{ name: service.keyword[lang], path: page.path }] : []),
     ]),
   ];
 }

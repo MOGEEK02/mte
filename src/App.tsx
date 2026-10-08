@@ -7,6 +7,11 @@ import Portfolio from "./pages/Portfolio";
 import PortfolioPost from "./pages/PortfolioPost";
 import Store from "./pages/Store";
 import NotFound from "./pages/NotFound";
+import LocalPage from "./pages/LocalPage";
+import { localPages } from "./local-seo";
+
+// "/programmation-automate-blida", "/automatisme-alger"…: one page per service and city.
+const LOCAL = localPages();
 
 // Loaded only when /admin is opened, so visitors never download it.
 const AdminApp = lazy(() => import("./admin/AdminApp"));
@@ -29,6 +34,9 @@ export function AppRoutes() {
           <Route path="portfolio" element={<Portfolio />} />
           <Route path="portfolio/:id" element={<PortfolioPost />} />
           <Route path="store" element={<Store />} />
+          {LOCAL.map((p) => (
+            <Route key={p.path} path={p.path.slice(1)} element={<LocalPage page={p} />} />
+          ))}
           <Route path="*" element={<NotFound />} />
         </Route>
       ))}
@@ -37,6 +45,9 @@ export function AppRoutes() {
         <Route path="/portfolio" element={<Portfolio />} />
         <Route path="/portfolio/:id" element={<PortfolioPost />} />
         <Route path="/store" element={<Store />} />
+        {LOCAL.map((p) => (
+          <Route key={p.path} path={p.path} element={<LocalPage page={p} />} />
+        ))}
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
