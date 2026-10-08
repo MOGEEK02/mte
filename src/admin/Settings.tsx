@@ -9,8 +9,6 @@ type Form = Omit<ContactRow, "social" | "whatsapp_button"> & {
   hours_en: string;
   hours_ar: string;
   notify: string[];
-  cvFr: string;
-  cvEn: string;
   social: Social;
   whatsappButton: boolean;
 };
@@ -31,7 +29,6 @@ export default function Settings() {
   const flash = useFlash();
   const [form, setForm] = useState<Form | null>(null);
   const [saved, setSaved] = useState("");
-  const [cvId, setCvId] = useState<number | null>(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [newEmail, setNewEmail] = useState("");
@@ -42,8 +39,7 @@ export default function Settings() {
     Promise.all([
       supabase.from("site_settings").select("*").eq("id", 1).maybeSingle(),
       supabase.from("admin_settings").select("notify_emails").eq("id", 1).maybeSingle(),
-      supabase.from("resume_links").select("id, url_fr, url_en").order("id").limit(1).maybeSingle(),
-    ]).then(([site, admin, cv]) => {
+    ]).then(([site, admin]) => {
       const err = site.error ?? admin.error;
       if (err) return setError(errorMessage(err));
       // Start from what the site shows today when a field was never set.
@@ -58,13 +54,10 @@ export default function Settings() {
         hours_en: site.data?.hours_en ?? shown.hoursEn,
         hours_ar: site.data?.hours_ar ?? shown.hoursAr,
         notify: admin.data?.notify_emails ?? [],
-        cvFr: cv.data?.url_fr ?? "",
-        cvEn: cv.data?.url_en ?? "",
         social: { ...shown.social },
         whatsappButton: shown.whatsappButton,
       };
       setHasSocial(Boolean(site.data && "social" in site.data));
-      setCvId(cv.data?.id ?? null);
       setForm(f);
       setSaved(JSON.stringify(f));
     });
@@ -110,10 +103,8 @@ export default function Settings() {
       updated_at: now,
     });
     const admin = await supabase.from("admin_settings").upsert({ id: 1, notify_emails: form.notify, updated_at: now });
-    const cvRow = { url_fr: form.cvFr.trim() || null, url_en: form.cvEn.trim() || null, updated_at: now };
-    const cv = cvId ? await supabase.from("resume_links").update(cvRow).eq("id", cvId) : await supabase.from("resume_links").insert(cvRow);
     setBusy(false);
-    const err = site.error ?? admin.error ?? cv.error;
+    const err = site.error ?? admin.error;
     if (err) return flash(errorMessage(err), "error");
     setSaved(JSON.stringify(form));
     flash("Paramètres enregistrés");
@@ -225,19 +216,6 @@ export default function Settings() {
             (moutie225@gmail.com) arrivent. Pour recevoir aussi sur une autre boîte, activez le transfert dans Gmail
             (Paramètres → Transfert et POP/IMAP), ou vérifiez votre domaine dans Resend.
           </p>
-        </div>
-      </section>
-
-      <section className="mt-6 rounded-xl border border-slate-200 bg-white p-5 sm:p-6">
-        <h2 className="font-semibold text-navy-900">CV (section À propos)</h2>
-        <p className="mt-1 text-xs text-slate-500">Liens vers vos CV (Google Drive, PDF…). Vide : le bouton n’est pas affiché.</p>
-        <div className="mt-5 grid gap-5 sm:grid-cols-2">
-          <Field label="CV en français" htmlFor="c-cvfr">
-            <input id="c-cvfr" type="url" className={inputClass} value={form.cvFr} onChange={(e) => set("cvFr", e.target.value)} placeholder="https://…" />
-          </Field>
-          <Field label="CV en anglais" htmlFor="c-cven">
-            <input id="c-cven" type="url" className={inputClass} value={form.cvEn} onChange={(e) => set("cvEn", e.target.value)} placeholder="https://…" />
-          </Field>
         </div>
       </section>
 

@@ -4,7 +4,7 @@ import { StaticRouter } from "react-router";
 import { HelmetProvider } from "react-helmet-async";
 import { AppRoutes } from "./App";
 import { DICT, LANGS, type Lang } from "./i18n";
-import { contactStore, cvStore, DEFAULT_CONTACT, fetchContact, fetchCv, type Contact, type CvLinks } from "./contact";
+import { contactStore, DEFAULT_CONTACT, fetchContact, type Contact } from "./contact";
 import { buildInfo, contentStore, fetchContent, siteTexts, storeOpen, type SiteContent } from "./content";
 import { fetchProducts, formatPrice, productsStore, productText, type Product } from "./products";
 import { fetchTestimonials, testimonialsStore, type Testimonial } from "./testimonials";
@@ -36,7 +36,6 @@ import { localJsonLd, localMeta } from "./seo";
 export type SiteData = {
   services: Service[];
   contact: Contact;
-  cv: CvLinks;
   portfolio: PortfolioItem[];
   content: SiteContent;
   testimonials: Testimonial[];
@@ -46,10 +45,9 @@ export type SiteData = {
 };
 
 export async function loadData(): Promise<SiteData> {
-  const [services, contact, cv, portfolio, content, testimonials, products] = await Promise.all([
+  const [services, contact, portfolio, content, testimonials, products] = await Promise.all([
     fetchServices(),
     fetchContact(),
-    fetchCv(),
     fetchPortfolio(),
     fetchContent(),
     fetchTestimonials(),
@@ -58,7 +56,6 @@ export async function loadData(): Promise<SiteData> {
   return {
     services: services ?? DEFAULT_SERVICES,
     contact: contact ?? DEFAULT_CONTACT,
-    cv: cv ?? { fr: "", en: "" },
     portfolio,
     content: content ?? {},
     testimonials,
@@ -114,7 +111,6 @@ export function notFoundPage(): Page {
 export function render(url: string, data: SiteData) {
   servicesStore.prime(data.services);
   contactStore.prime(data.contact);
-  cvStore.prime(data.cv);
   portfolioStore.prime(data.portfolio);
   contentStore.prime(data.content);
   testimonialsStore.prime(data.testimonials);
@@ -159,7 +155,7 @@ export function llmsTxt(data: SiteData, full = false) {
     "",
     `> ${en.seo.homeDescription}`,
     "",
-    `MTE (${BUSINESS.name}) is an industrial automation and electronics company founded in ${BUSINESS.foundingDate} by ${BUSINESS.founder}, an automation and electronics engineer. It is based in Ain Dhab, Médéa (wilaya 26), Algeria, and works on site across Algeria. Languages: French, Arabic, English.`,
+    `MTE (${BUSINESS.name}) is an industrial automation and electronics company founded in ${BUSINESS.foundingDate} and run by engineers in automation and industrial electronics. It is based in Ain Dhab, Médéa (wilaya 26), Algeria, and works on site across Algeria. Languages: French, Arabic, English.`,
     "",
     `- Website (French): ${SITE_URL}/`,
     `- Website (English): ${SITE_URL}/en`,

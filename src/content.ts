@@ -41,10 +41,10 @@ const lines = (l?: string[]) => {
   return kept?.length ? kept : undefined;
 };
 
-/** The built-in About paragraphs; the first one names the founder. */
+/** The built-in About paragraphs: MTE and its engineers (no personal name on the site). */
 export function defaultAbout(lang: Lang) {
   const t = DICT[lang].about;
-  return [`${t.p1a}Fekhar Moutie${t.p1b}`, t.p2, t.p3];
+  return [t.p1, t.p2, t.p3, t.p4];
 }
 
 /** Page texts in one language: what was changed in /admin, otherwise the built-in text. */

@@ -118,13 +118,3 @@ export function useContact(): Contact {
 export function hoursFor(contact: Contact, lang: Lang) {
   return lang === "en" ? contact.hoursEn : lang === "ar" ? contact.hoursAr : contact.hours;
 }
-
-// CV links shown in the About section ("resume_links" table).
-export type CvLinks = { fr: string; en: string };
-
-export async function fetchCv(): Promise<CvLinks | undefined> {
-  const [row] = await select<{ url_fr: string | null; url_en: string | null }>("resume_links", { select: "url_fr,url_en", limit: "1" });
-  return row ? { fr: row.url_fr || "", en: row.url_en || "" } : undefined;
-}
-
-export const cvStore = createStore<CvLinks>({ key: "cv", fallback: { fr: "", en: "" }, load: fetchCv });

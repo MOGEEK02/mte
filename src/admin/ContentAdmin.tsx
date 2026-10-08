@@ -330,7 +330,7 @@ export default function ContentAdmin() {
         </div>
       </Card>
 
-      <Card className="mt-6" title="À propos" description="Le titre et les paragraphes à côté de votre photo. « Fekhar Moutie » est mis en gras automatiquement." actions={resetButton("about")}>
+      <Card className="mt-6" title="À propos" description="Le titre et les paragraphes de la section « À propos » : présentation de MTE et de son équipe d’ingénieurs." actions={resetButton("about")}>
         <div className="space-y-5">
           <Field label="Titre" htmlFor="a-title" action={<AiAssist value={draft.about[lang].title} onApply={(v) => set((d) => void (d.about[lang].title = v))} lang={lang} field="title" source={lang === "fr" ? undefined : draft.about.fr.title} />}>
             <input id="a-title" {...lp} className={inputClass} value={draft.about[lang].title} onChange={(e) => set((d) => void (d.about[lang].title = e.target.value))} placeholder={t.about.title} />

@@ -7,7 +7,6 @@ export const SITE_URL = "https://moutie.vercel.app";
 
 export const BUSINESS = {
   name: "MTE Industrial Electronics",
-  founder: "Fekhar Moutie",
   foundingDate: "2020",
   logo: `${SITE_URL}/images/logo.png`,
   image: `${SITE_URL}/images/web/og-default.png`,

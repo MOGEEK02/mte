@@ -56,7 +56,7 @@ export const DEFAULT_SERVICES: Service[] = [
   },
   {
     slug: "electrical-study",
-    image: "/images/web/fondateur-site.webp",
+    image: "/images/web/etudes.webp",
     fr: {
       title: "Études électriques",
       summary:
@@ -158,6 +158,9 @@ export type ServiceRow = {
   published: boolean;
 };
 
+/** Pictures removed from the site, replaced if a row still points to them. */
+const RETIRED_IMAGES: Record<string, string> = { "/images/web/fondateur-site.webp": "/images/web/etudes.webp" };
+
 export function fromRow(r: ServiceRow): Service {
   const builtIn = DEFAULT_SERVICES.find((s) => s.slug === r.slug);
   const fr = { title: r.title, summary: r.summary, tagline: r.tagline ?? "" };
@@ -169,7 +172,7 @@ export function fromRow(r: ServiceRow): Service {
   });
   return {
     slug: r.slug,
-    image: r.image || builtIn?.image || "/images/web/automates.webp",
+    image: (r.image && RETIRED_IMAGES[r.image]) || r.image || builtIn?.image || "/images/web/automates.webp",
     fr,
     en: translated("en"),
     ar: translated("ar"),

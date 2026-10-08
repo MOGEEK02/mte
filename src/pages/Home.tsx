@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Check, Clock, Factory, FileText, Mail, MapPin, Phone, Plus, Quote, Star } from "lucide-react";
-import { BRANDS } from "../site";
-import { cvStore, hoursFor, telHref, useContact, whatsappLink } from "../contact";
+import { ArrowRight, Check, CircuitBoard, Clock, Cpu, Factory, Mail, MapPin, Phone, Plus, Quote, Star, Zap } from "lucide-react";
+import { BRANDS, BUSINESS } from "../site";
+import { hoursFor, telHref, useContact, whatsappLink } from "../contact";
 import { useSiteTexts } from "../content";
 import { formatDate, portfolioStore, projectPath, projectText } from "../portfolio";
 import { useServices } from "../services";
@@ -194,43 +194,64 @@ function Method() {
   );
 }
 
-/** The founder's name stands out wherever it appears in the About text. */
-function withFounder(paragraph: string) {
-  const name = "Fekhar Moutie";
-  const i = paragraph.indexOf(name);
-  if (i < 0) return paragraph;
-  return (
-    <>
-      {paragraph.slice(0, i)}
-      <strong className="font-semibold text-navy-900">{name}</strong>
-      {paragraph.slice(i + name.length)}
-    </>
-  );
-}
+/** Icons of the four fields shown in the About card, in the order of the texts. */
+const FACT_ICONS = [Cpu, CircuitBoard, Zap, MapPin];
 
+/** MTE and its engineers: what the team brings together, a few facts, the story. */
 function About() {
   const lang = useLang();
-  const t = useT().about;
+  const { about: t, nav } = useT();
   const texts = useSiteTexts().about;
-  const cv = cvStore.use();
+  const projects = portfolioStore.use();
+  const stats = [
+    { value: BUSINESS.foundingDate, label: t.stats.founded },
+    { value: t.stats.diagnosisValue, unit: t.stats.diagnosisUnit, label: t.stats.diagnosis },
+    ...(projects?.length ? [{ value: String(projects.length), label: t.stats.projects }] : []),
+  ];
   return (
     <section id="a-propos" className="bg-slate-50 py-20 sm:py-24">
       <div className="container-page grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-        <div className="mx-auto w-full max-w-md lg:max-w-none">
-          <img
-            src="/images/web/fondateur.webp"
-            alt={t.photoAlt}
-            width={900}
-            height={1200}
-            loading="lazy"
-            className="aspect-[4/5] w-full rounded-xl object-cover shadow-lg"
-          />
+        <div
+          className="order-last rounded-xl bg-navy-950 p-7 shadow-lg sm:p-9 lg:order-first"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgb(255 255 255 / 0.04) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 0.04) 1px, transparent 1px)",
+            backgroundSize: "28px 28px",
+          }}
+        >
+          <p className="eyebrow text-brand">{t.cardEyebrow}</p>
+          <ul className="mt-7 grid gap-6 sm:grid-cols-2">
+            {t.facts.map((f, i) => {
+              const Icon = FACT_ICONS[i] ?? Cpu;
+              return (
+                <li key={f.title}>
+                  <span className="flex size-11 items-center justify-center rounded-lg bg-brand/15 text-brand">
+                    <Icon className="size-5" />
+                  </span>
+                  <h3 className="mt-4 font-semibold text-white">{f.title}</h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-slate-300">{f.text}</p>
+                </li>
+              );
+            })}
+          </ul>
+          <dl className="mt-9 grid grid-cols-3 gap-4 border-t border-white/10 pt-6">
+            {stats.map((s) => (
+              <div key={s.label} className="flex flex-col-reverse">
+                <dt className="mt-1 text-xs text-slate-400">{s.label}</dt>
+                <dd className="font-display text-xl font-semibold whitespace-nowrap text-white sm:text-3xl">
+                  {/* Numbers stay left to right, also in Arabic ("24–48", not "48–24"). */}
+                  <span dir="ltr">{s.value}</span>
+                  {"unit" in s && s.unit && <span className="ms-1 text-sm font-medium text-slate-300 sm:text-base">{s.unit}</span>}
+                </dd>
+              </div>
+            ))}
+          </dl>
         </div>
         <div>
           <SectionTitle eyebrow={t.eyebrow} title={texts.title} />
           <div className="mt-5 space-y-4 text-base leading-relaxed text-slate-600">
             {texts.paragraphs.map((p, i) => (
-              <p key={i}>{withFounder(p)}</p>
+              <p key={i}>{p}</p>
             ))}
           </div>
           <div className="mt-8 flex flex-wrap gap-3">
@@ -238,18 +259,9 @@ function About() {
               {t.work}
               <ArrowRight className="size-4 rtl:-scale-x-100" />
             </Link>
-            {cv.fr && (
-              <a href={cv.fr} target="_blank" rel="noopener noreferrer" className="btn-outline">
-                <FileText className="size-4" />
-                {t.cvFr}
-              </a>
-            )}
-            {cv.en && (
-              <a href={cv.en} target="_blank" rel="noopener noreferrer" className="btn-outline">
-                <FileText className="size-4" />
-                {t.cvEn}
-              </a>
-            )}
+            <Link to={localePath(lang, "/#contact")} className="btn-outline">
+              {nav.quote}
+            </Link>
           </div>
         </div>
       </div>

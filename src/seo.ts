@@ -100,16 +100,10 @@ export function projectMeta(item: PortfolioItem, lang: Lang): PageMeta {
 // ---------------------------------------------------------------------------
 
 const BUSINESS_ID = `${SITE_URL}/#business`;
-const FOUNDER_ID = `${SITE_URL}/#founder`;
 const WEBSITE_ID = `${SITE_URL}/#website`;
 
 const COUNTRY: Record<Lang, string> = { fr: "Algérie", en: "Algeria", ar: "الجزائر" };
 const HOME: Record<Lang, string> = { fr: "Accueil", en: "Home", ar: "الرئيسية" };
-const JOB: Record<Lang, string> = {
-  fr: "Ingénieur en automatisme et électronique",
-  en: "Automation and electronics engineer",
-  ar: "مهندس في الأتمتة والإلكترونيات",
-};
 
 /** `areas`: the wilayas shown on the page (edited in /admin → Contenu). */
 export function businessJsonLd(lang: Lang, contact: Contact, services: Service[], areas: string[] = DICT[lang].reach.areas) {
@@ -131,7 +125,6 @@ export function businessJsonLd(lang: Lang, contact: Contact, services: Service[]
         telephone: phone,
         email: contact.email,
         foundingDate: BUSINESS.foundingDate,
-        founder: { "@id": FOUNDER_ID },
         address: {
           "@type": "PostalAddress",
           streetAddress: BUSINESS.street,
@@ -173,14 +166,6 @@ export function businessJsonLd(lang: Lang, contact: Contact, services: Service[]
           },
         })),
         sameAs: social,
-      },
-      {
-        "@type": "Person",
-        "@id": FOUNDER_ID,
-        name: BUSINESS.founder,
-        jobTitle: JOB[lang],
-        worksFor: { "@id": BUSINESS_ID },
-        sameAs: [contact.social.linkedin, contact.social.github].filter(Boolean),
       },
       {
         "@type": "WebSite",
@@ -256,7 +241,7 @@ export function projectJsonLd(lang: Lang, item: PortfolioItem) {
       dateModified: (item as { updated_at?: string }).updated_at ?? item.created_at,
       inLanguage: text.translated ? t.locale : DICT.fr.locale,
       url: canonicalFor(meta),
-      author: { "@id": FOUNDER_ID, "@type": "Person", name: BUSINESS.founder },
+      author: { "@id": BUSINESS_ID, "@type": "Organization", name: BUSINESS.name },
       publisher: { "@id": BUSINESS_ID, "@type": "Organization", name: BUSINESS.name, logo: BUSINESS.logo },
       about: splitDescription(text.description).tags.map((tag) => tag.slice(1)),
       locationCreated: { "@type": "Country", name: COUNTRY[lang] },

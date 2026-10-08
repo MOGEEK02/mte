@@ -133,7 +133,7 @@ export function Footer() {
       <div className="border-t border-white/10">
         <div className={`container-page flex flex-col gap-2 pt-5 text-xs text-slate-500 sm:flex-row sm:justify-between sm:pb-5 ${contact.whatsappButton ? "pb-24" : "pb-5"}`}>
           <p>
-            <span dir="ltr">© {new Date().getFullYear()} MTE Industrial Electronics — Fekhar Moutie.</span> {t.footer.rights}
+            <span dir="ltr">© {new Date().getFullYear()} MTE Industrial Electronics.</span> {t.footer.rights}
           </p>
           <p>{t.footer.place}</p>
         </div>
