@@ -1,14 +1,16 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, CheckCircle2, CircleAlert, ExternalLink, Eye, FolderKanban, Inbox, MessageCircle } from "lucide-react";
+import { findLocalPage, localHeading } from "../local-seo";
 import { setTrackingOff, trackingOff } from "../track";
 import { RebuildButton } from "./RebuildButton";
 import { aiErrorText, askAi } from "./ai";
 import { errorMessage, isMissingSetup, supabase } from "./supabase";
 import { Card, formatDateTime, Loading, Notice, PageHeader, Toggle } from "./ui";
+import { countryName, DEVICES, sourceName } from "./visitor-labels";
+import { TopList, VisitorDetails, type Count, type VisitorStats } from "./Visitors";
 
-type Count = { key: string; count: number };
-type Stats = {
+type Stats = VisitorStats & {
   from: string;
   daily: { day: string; views: number; visits: number; contacts: number }[];
   totals: { views: number; visits: number; whatsapp: number; call: number; email: number; quote: number };
@@ -55,31 +57,12 @@ const STATUS_LABEL: Record<string, { label: string; badge: string }> = {
   archive: { label: "Archivé", badge: "bg-slate-200 text-slate-600" },
 };
 
-const SOURCES: [RegExp, string][] = [
-  [/^google\./, "Google"],
-  [/^bing\.com$/, "Bing"],
-  [/^(facebook\.com|fb\.com|fb\.me)$/, "Facebook"],
-  [/^instagram\.com$/, "Instagram"],
-  [/^linkedin\.com|^lnkd\.in$/, "LinkedIn"],
-  [/^(youtube\.com|youtu\.be)$/, "YouTube"],
-  [/^tiktok\.com$/, "TikTok"],
-  [/^(t\.co|x\.com|twitter\.com)$/, "X (Twitter)"],
-  [/^(chatgpt\.com|chat\.openai\.com)$/, "ChatGPT"],
-  [/^perplexity\.ai$/, "Perplexity"],
-  [/^duckduckgo\.com$/, "DuckDuckGo"],
-  [/^yandex\./, "Yandex"],
-];
-const sourceName = (host: string) => (host ? (SOURCES.find(([re]) => re.test(host))?.[1] ?? host) : "Accès direct / applications");
-const DEVICES: Record<string, string> = { mobile: "Téléphone", desktop: "Ordinateur", tablet: "Tablette" };
 const LANGS: Record<string, string> = { fr: "Français", en: "Anglais", ar: "Arabe" };
-const regionNames = (() => {
-  try {
-    return new Intl.DisplayNames(["fr"], { type: "region" });
-  } catch {
-    return null;
-  }
-})();
-const countryName = (code: string) => (code ? (regionNames?.of(code) ?? code) : "Inconnu");
+/** "/programmation-automate-blida" → "Programmation automate à Blida". */
+const localName = (path: string) => {
+  const page = findLocalPage(path);
+  return page ? localHeading(page, "fr") : null;
+};
 
 const shortDay = (iso: string) => new Date(`${iso}T12:00:00`).toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
 
@@ -141,31 +124,6 @@ function DailyChart({ daily }: { daily: Stats["daily"] }) {
         </tbody>
       </table>
     </div>
-  );
-}
-
-function TopList({ title, rows, label, empty = "Pas encore de données." }: { title: string; rows: Count[]; label: (key: string) => ReactNode; empty?: string }) {
-  const total = rows.reduce((s, r) => s + r.count, 0);
-  return (
-    <Card title={title}>
-      {rows.length === 0 ? (
-        <p className="text-sm text-slate-500">{empty}</p>
-      ) : (
-        <ul className="space-y-2.5">
-          {rows.map((r) => (
-            <li key={r.key} className="text-sm">
-              <div className="flex items-baseline justify-between gap-3">
-                <span className="min-w-0 truncate text-slate-700">{label(r.key)}</span>
-                <span className="shrink-0 font-semibold text-navy-900 tabular-nums">{r.count}</span>
-              </div>
-              <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-slate-100">
-                <div className="h-full rounded-full bg-navy-700" style={{ width: `${Math.max(3, (r.count / total) * 100)}%` }} />
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
-    </Card>
   );
 }
 
@@ -274,7 +232,7 @@ export default function Dashboard() {
             ? "Boutique"
             : base.startsWith("/portfolio/")
               ? (titles.get(decodeURIComponent(base.slice(11))) ?? base.slice(11))
-              : base;
+              : (localName(base) ?? base);
     return (
       <>
         {name}
@@ -353,8 +311,8 @@ export default function Dashboard() {
         >
           {statsError === "setup" ? (
             <Notice>
-              Pour activer les statistiques, exécutez la section 12 de <code>supabase/admin.sql</code> dans Supabase → SQL Editor. Les visites
-              sont ensuite comptées automatiquement.
+              Pour activer les statistiques, exécutez la section 12 de <code>supabase/admin.sql</code> puis <code>supabase/visiteurs.sql</code>{" "}
+              dans Supabase → SQL Editor. Les visites sont ensuite comptées automatiquement.
             </Notice>
           ) : statsError ? (
             <Notice tone="error">{statsError}</Notice>
@@ -378,6 +336,8 @@ export default function Dashboard() {
           {stats.contactPages.length > 0 && <TopList title="Pages d’où l’on vous contacte" rows={stats.contactPages} label={pageName} />}
         </div>
       )}
+
+      {stats && <VisitorDetails stats={stats} pageName={pageName} />}
 
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Card
