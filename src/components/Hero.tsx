@@ -2,6 +2,7 @@ import { Check } from "lucide-react";
 import { useLang } from "../i18n/LanguageProvider";
 import { SITE } from "../config";
 import { WhatsappIcon } from "./icons";
+import { trackWhatsApp } from "../utils/track";
 
 export default function Hero() {
   const { t } = useLang();
@@ -18,7 +19,7 @@ export default function Hero() {
 
       <div className="container-mte relative z-10 pt-32 pb-16 w-full">
         <div className="max-w-3xl">
-          <span className="inline-block border-l-2 border-brand pl-3 text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] text-safety">
+          <span className="inline-block border-s-2 border-brand ps-3 text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] text-safety">
             {t.hero.badge}
           </span>
 
@@ -32,7 +33,7 @@ export default function Hero() {
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
-            <a href={SITE.whatsapp} target="_blank" rel="noopener noreferrer" className="btn-wa">
+            <a href={SITE.whatsapp} target="_blank" rel="noopener noreferrer" onClick={() => trackWhatsApp("hero")} className="btn-wa">
               <WhatsappIcon size={18} />
               {t.hero.ctaPrimary}
             </a>

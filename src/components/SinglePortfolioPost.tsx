@@ -34,7 +34,7 @@ function getYouTubeId(url: string): string | null {
 
 export default function SinglePortfolioPost() {
   const { id } = useParams();
-  const { lang, t } = useLang();
+  const { lang, t, dir } = useLang();
   const [item, setItem] = useState<PortfolioItem | null>(null);
   const [loading, setLoading] = useState(true);
   
@@ -119,6 +119,7 @@ export default function SinglePortfolioPost() {
     <div className="min-h-screen bg-slate-50 flex flex-col">
       {/* Dynamic SEO Meta Tags for Search Engines */}
       <Helmet>
+        <html dir={dir} />
         <title>{item.title} | MTE</title>
         <meta name="description" content={item.description.substring(0, 160)} />
         <link rel="canonical" href={canonicalUrl} />

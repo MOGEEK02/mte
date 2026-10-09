@@ -11,7 +11,7 @@ const root = resolve(__dirname, "..");
 const distDir = resolve(root, "dist");
 const ssrEntry = resolve(root, "dist-ssr", "entry-server.js");
 
-const LOCALES = ["fr", "en"];
+const LOCALES = ["fr", "en", "ar"];
 
 const { render, SERVICE_SLUGS } = await import(pathToFileURL(ssrEntry).href);
 

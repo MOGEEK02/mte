@@ -6,11 +6,12 @@ import ServicesOverview from "./ServicesOverview";
 import QuoteForm from "./QuoteForm";
 import { useLang } from "../i18n/LanguageProvider";
 import { isLocale } from "../i18n";
-import { SITE } from "../config";
+import { SITE, OG_IMAGE } from "../config";
+import { hreflangLinks } from "./seoHelpers";
 
 export default function ServicesIndex() {
   const { lang: langParam } = useParams();
-  const { lang, t } = useLang();
+  const { lang, t, dir } = useLang();
   if (!isLocale(langParam)) return <Navigate to="/fr" replace />;
 
   const url = `${SITE.baseUrl}/${lang}/services`;
@@ -28,17 +29,16 @@ export default function ServicesIndex() {
   return (
     <div className="min-h-screen bg-white">
       <Helmet>
-        <html lang={lang} />
+        <html lang={lang} dir={dir} />
         <title>{t.services.indexMetaTitle}</title>
         <meta name="description" content={t.services.indexMetaDescription} />
         <link rel="canonical" href={url} />
-        <link rel="alternate" hrefLang="fr" href={`${SITE.baseUrl}/fr/services`} />
-        <link rel="alternate" hrefLang="en" href={`${SITE.baseUrl}/en/services`} />
-        <link rel="alternate" hrefLang="x-default" href={`${SITE.baseUrl}/fr/services`} />
+        {hreflangLinks("/services")}
         <meta property="og:type" content="website" />
         <meta property="og:url" content={url} />
         <meta property="og:title" content={t.services.indexMetaTitle} />
         <meta property="og:description" content={t.services.indexMetaDescription} />
+        <meta property="og:image" content={OG_IMAGE} />
         <script type="application/ld+json">{JSON.stringify(itemListLd)}</script>
       </Helmet>
 

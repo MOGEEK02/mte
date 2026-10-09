@@ -4,6 +4,7 @@ import { Menu, X, Phone } from "lucide-react";
 import { useLang } from "../i18n/LanguageProvider";
 import { SITE } from "../config";
 import { WhatsappIcon } from "./icons";
+import { trackWhatsApp } from "../utils/track";
 import LanguageSwitcher from "./LanguageSwitcher";
 
 type Variant = "home" | "inner";
@@ -67,7 +68,7 @@ export default function Header({ variant = "home" }: { variant?: Variant }) {
             <Phone size={16} className="text-brand" />
             {SITE.phoneDisplay}
           </a>
-          <a href={SITE.whatsapp} target="_blank" rel="noopener noreferrer" className="btn-wa !px-4 !py-2.5">
+          <a href={SITE.whatsapp} target="_blank" rel="noopener noreferrer" onClick={() => trackWhatsApp("header")} className="btn-wa !px-4 !py-2.5">
             <WhatsappIcon size={16} />
             WhatsApp
           </a>
@@ -80,6 +81,7 @@ export default function Header({ variant = "home" }: { variant?: Variant }) {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="WhatsApp"
+            onClick={() => trackWhatsApp("header-mobile")}
             className="flex h-9 w-9 items-center justify-center rounded-md bg-wa text-white"
           >
             <WhatsappIcon size={18} />

@@ -3,6 +3,7 @@ import { Phone, Send } from "lucide-react";
 import { useLang } from "../i18n/LanguageProvider";
 import { SITE } from "../config";
 import { WhatsappIcon } from "./icons";
+import { trackEvent, trackWhatsApp } from "../utils/track";
 
 const waNumber = SITE.phone.replace(/[^0-9]/g, "");
 
@@ -31,6 +32,7 @@ export default function QuoteForm() {
       `${t.quote.message}: ${form.message}`,
     ];
     const url = `https://wa.me/${waNumber}?text=${encodeURIComponent(lines.join("\n"))}`;
+    trackEvent("quote_submit", { equipment: form.equipment });
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
@@ -49,7 +51,7 @@ export default function QuoteForm() {
           <p className="mt-4 text-white/75 leading-relaxed max-w-md">{t.quote.subtitle}</p>
 
           <div className="mt-8 space-y-3">
-            <a href={SITE.whatsapp} target="_blank" rel="noopener noreferrer" className="btn-wa w-full sm:w-auto">
+            <a href={SITE.whatsapp} target="_blank" rel="noopener noreferrer" onClick={() => trackWhatsApp("quote")} className="btn-wa w-full sm:w-auto">
               <WhatsappIcon size={18} />
               {t.contact.whatsappLabel} · {SITE.phoneDisplay}
             </a>

@@ -10,7 +10,10 @@ import { useLocation } from "react-router-dom";
 import {
   DEFAULT_LOCALE,
   dictionaries,
+  dirForLocale,
+  isLocale,
   localeFromPath,
+  LOCALES,
   type Dictionary,
   type Locale,
 } from "./index";
@@ -21,7 +24,8 @@ interface LanguageContextValue {
   lang: Locale;
   other: Locale;
   t: Dictionary;
-  /** Path on the home page for the other language ("/fr" ⇄ "/en"). */
+  dir: "rtl" | "ltr";
+  /** Path on the home page for the other language. */
   switchPath: string;
   /** Set the language on language-neutral routes (e.g. /portfolio). */
   setLang: (lang: Locale) => void;
@@ -33,16 +37,17 @@ function readStored(): Locale {
   if (typeof window === "undefined") return DEFAULT_LOCALE;
   try {
     const v = window.localStorage.getItem(STORAGE_KEY);
-    return v === "fr" || v === "en" ? v : DEFAULT_LOCALE;
+    return isLocale(v ?? undefined) ? (v as Locale) : DEFAULT_LOCALE;
   } catch {
     return DEFAULT_LOCALE;
   }
 }
 
 /**
- * Derives the active locale from the URL ("/fr", "/en") when present,
+ * Derives the active locale from the URL ("/fr", "/en", "/ar") when present,
  * otherwise falls back to the last stored choice (used on the
- * language-neutral /portfolio routes). Keeps localStorage in sync.
+ * language-neutral /portfolio routes). Keeps localStorage, <html lang> and
+ * <html dir> in sync.
  */
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const { pathname } = useLocation();
@@ -50,6 +55,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [stored, setStored] = useState<Locale>(readStored);
 
   const lang: Locale = fromPath ?? stored;
+  const dir = dirForLocale(lang);
 
   useEffect(() => {
     if (fromPath && fromPath !== stored) {
@@ -62,8 +68,16 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     }
   }, [fromPath, stored]);
 
+  // Keep the document direction/lang correct across SPA navigation.
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      document.documentElement.lang = lang;
+      document.documentElement.dir = dir;
+    }
+  }, [lang, dir]);
+
   const value = useMemo<LanguageContextValue>(() => {
-    const other: Locale = lang === "fr" ? "en" : "fr";
+    const other: Locale = LOCALES.find((l) => l !== lang) ?? DEFAULT_LOCALE;
     const setLang = (next: Locale) => {
       setStored(next);
       try {
@@ -76,6 +90,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       lang,
       other,
       t: dictionaries[lang],
+      dir: dirForLocale(lang),
       switchPath: `/${other}`,
       setLang,
     };

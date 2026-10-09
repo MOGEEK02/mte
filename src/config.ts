@@ -35,3 +35,6 @@ export const SAME_AS = [
   SITE.social.facebook,
   SITE.social.github,
 ];
+
+/** Branded 1200×630 share image for Facebook / WhatsApp / Twitter previews. */
+export const OG_IMAGE = `${SITE.baseUrl}/images/og.jpg`;

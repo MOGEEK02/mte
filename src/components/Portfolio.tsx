@@ -6,7 +6,7 @@ import Header from "./Header";
 import Footer from "./footer";
 import { supabase } from "../utils/supabase";
 import { useLang } from "../i18n/LanguageProvider";
-import { SITE } from "../config";
+import { SITE, OG_IMAGE } from "../config";
 import {
   getOptimizedImageUrl,
   isImageMedia,
@@ -236,7 +236,7 @@ const PublicationCard = ({ item }: { item: PortfolioItem }) => {
 /* ─────────────────── Page ──────────────────── */
 
 export default function Portfolio() {
-  const { t } = useLang();
+  const { t, dir } = useLang();
   const [items, setItems] = useState<PortfolioItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -258,12 +258,14 @@ export default function Portfolio() {
   return (
     <div className="min-h-screen bg-white">
       <Helmet>
+        <html dir={dir} />
         <title>{t.portfolio.metaTitle}</title>
         <meta name="description" content={t.portfolio.metaDescription} />
         <link rel="canonical" href={`${SITE.baseUrl}/portfolio`} />
         <meta property="og:title" content={t.portfolio.metaTitle} />
         <meta property="og:description" content={t.portfolio.metaDescription} />
         <meta property="og:url" content={`${SITE.baseUrl}/portfolio`} />
+        <meta property="og:image" content={OG_IMAGE} />
       </Helmet>
 
       <Header variant="inner" />

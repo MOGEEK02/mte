@@ -6,13 +6,14 @@ import Footer from "./footer";
 import CompanyLogosShowcase from "./company";
 import { useLang } from "../i18n/LanguageProvider";
 import { findService, isLocale } from "../i18n";
-import { SITE } from "../config";
+import { SITE, OG_IMAGE } from "../config";
 import { serviceIcon } from "./serviceIcons";
+import { hreflangLinks } from "./seoHelpers";
 import { WhatsappIcon } from "./icons";
 
 export default function ServiceDetail() {
   const { lang: langParam, slug } = useParams();
-  const { lang, t } = useLang();
+  const { lang, t, dir } = useLang();
 
   if (!isLocale(langParam)) return <Navigate to="/fr" replace />;
   const service = findService(t, slug);
@@ -45,18 +46,16 @@ export default function ServiceDetail() {
   return (
     <div className="min-h-screen bg-white">
       <Helmet>
-        <html lang={lang} />
-        <title>{`${service.title} | MTE Algérie`}</title>
+        <html lang={lang} dir={dir} />
+        <title>{`${service.title} | MTE`}</title>
         <meta name="description" content={service.intro} />
         <link rel="canonical" href={url} />
-        <link rel="alternate" hrefLang="fr" href={`${SITE.baseUrl}/fr/services/${service.slug}`} />
-        <link rel="alternate" hrefLang="en" href={`${SITE.baseUrl}/en/services/${service.slug}`} />
-        <link rel="alternate" hrefLang="x-default" href={`${SITE.baseUrl}/fr/services/${service.slug}`} />
+        {hreflangLinks(`/services/${service.slug}`)}
         <meta property="og:type" content="website" />
         <meta property="og:url" content={url} />
         <meta property="og:title" content={`${service.title} | MTE`} />
         <meta property="og:description" content={service.intro} />
-        <meta property="og:image" content={`${SITE.baseUrl}/images/logo.png`} />
+        <meta property="og:image" content={OG_IMAGE} />
         <script type="application/ld+json">{JSON.stringify(serviceLd)}</script>
         <script type="application/ld+json">{JSON.stringify(breadcrumbLd)}</script>
       </Helmet>

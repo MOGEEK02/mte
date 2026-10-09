@@ -28,18 +28,22 @@ const SERVICE_SLUGS = [
   'groupe-electrogene',
 ];
 
+const LOCALES = ['fr', 'en', 'ar'];
+
 function altLinks(path) {
-  return `      <xhtml:link rel="alternate" hreflang="fr" href="${BASE_URL}/fr${path}"/>
-      <xhtml:link rel="alternate" hreflang="en" href="${BASE_URL}/en${path}"/>
-      <xhtml:link rel="alternate" hreflang="x-default" href="${BASE_URL}/fr${path}"/>`;
+  const lines = LOCALES.map(
+    (l) => `      <xhtml:link rel="alternate" hreflang="${l}" href="${BASE_URL}/${l}${path}"/>`
+  );
+  lines.push(`      <xhtml:link rel="alternate" hreflang="x-default" href="${BASE_URL}/fr${path}"/>`);
+  return lines.join('\n');
 }
 
-// Localized services index + per-service detail pages, both languages, with hreflang.
+// Localized services index + per-service detail pages, all languages, with hreflang.
 function servicesUrlsXml(today) {
   const paths = ['/services', ...SERVICE_SLUGS.map((s) => `/services/${s}`)];
   const out = [];
   for (const path of paths) {
-    for (const locale of ['fr', 'en']) {
+    for (const locale of LOCALES) {
       out.push(`  <url>
     <loc>${BASE_URL}/${locale}${path}</loc>
     <lastmod>${today}</lastmod>
@@ -54,23 +58,15 @@ ${altLinks(path)}
 
 // Localized home pages with reciprocal hreflang alternates.
 function homeUrlsXml(today) {
-  const alts = `      <xhtml:link rel="alternate" hreflang="fr" href="${BASE_URL}/fr"/>
-      <xhtml:link rel="alternate" hreflang="en" href="${BASE_URL}/en"/>
-      <xhtml:link rel="alternate" hreflang="x-default" href="${BASE_URL}/fr"/>`;
-  return `  <url>
-    <loc>${BASE_URL}/fr</loc>
+  return LOCALES.map(
+    (locale) => `  <url>
+    <loc>${BASE_URL}/${locale}</loc>
     <lastmod>${today}</lastmod>
-${alts}
+${altLinks('')}
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>${BASE_URL}/en</loc>
-    <lastmod>${today}</lastmod>
-${alts}
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>`;
+  </url>`
+  ).join('\n');
 }
 
 function buildStaticFallbackXml() {

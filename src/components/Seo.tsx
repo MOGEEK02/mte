@@ -1,17 +1,24 @@
 import { Helmet } from "@dr.pogodin/react-helmet";
 import { useLang } from "../i18n/LanguageProvider";
-import { SITE, SAME_AS } from "../config";
+import { SITE, SAME_AS, OG_IMAGE } from "../config";
+import { hreflangLinks } from "./seoHelpers";
+
+const OG_LOCALE: Record<string, string> = {
+  fr: "fr_DZ",
+  en: "en_US",
+  ar: "ar_DZ",
+};
 
 /**
  * Per-language <head> for the home page: title, description, canonical,
- * reciprocal hreflang (fr ⇄ en, x-default → fr), Open Graph / Twitter,
+ * reciprocal hreflang (fr / en / ar, x-default → fr), Open Graph / Twitter,
  * and localized JSON-LD (LocalBusiness + FAQPage + WebSite).
  */
 export default function Seo() {
-  const { lang, t } = useLang();
+  const { lang, t, dir } = useLang();
   const url = `${SITE.baseUrl}/${lang}`;
-  const ogLocale = lang === "fr" ? "fr_DZ" : "en_US";
-  const ogImage = `${SITE.baseUrl}/images/logo.png`;
+  const ogLocale = OG_LOCALE[lang] ?? "fr_DZ";
+  const ogImage = OG_IMAGE;
 
   const localBusiness = {
     "@context": "https://schema.org",
@@ -90,16 +97,14 @@ export default function Seo() {
 
   return (
     <Helmet>
-      <html lang={lang} />
+      <html lang={lang} dir={dir} />
       <title>{t.meta.title}</title>
       <meta name="description" content={t.meta.description} />
       <meta name="keywords" content={t.meta.keywords} />
       <meta name="author" content={SITE.founder} />
 
       <link rel="canonical" href={url} />
-      <link rel="alternate" hrefLang="fr" href={`${SITE.baseUrl}/fr`} />
-      <link rel="alternate" hrefLang="en" href={`${SITE.baseUrl}/en`} />
-      <link rel="alternate" hrefLang="x-default" href={`${SITE.baseUrl}/fr`} />
+      {hreflangLinks("")}
 
       <meta property="og:type" content="website" />
       <meta property="og:url" content={url} />

@@ -2,6 +2,7 @@ import { Phone, MapPin } from "lucide-react";
 import { useLang } from "../i18n/LanguageProvider";
 import { SITE } from "../config";
 import { WhatsappIcon } from "./icons";
+import { trackWhatsApp } from "../utils/track";
 
 export default function Contact() {
   const { t } = useLang();
@@ -53,6 +54,9 @@ export default function Contact() {
               {...(c.external
                 ? { target: "_blank", rel: "noopener noreferrer" }
                 : {})}
+              onClick={() => {
+                if (c.href.includes("wa.me")) trackWhatsApp("contact");
+              }}
               className="group flex flex-col items-center rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-brand/30"
             >
               <span
