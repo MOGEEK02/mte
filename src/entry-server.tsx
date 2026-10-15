@@ -25,7 +25,8 @@ import {
 } from "./seo";
 import { BUSINESS, SITE_URL } from "./site";
 import { localDescription, localPages, localTitle } from "./local-seo";
-import { localJsonLd, localMeta } from "./seo";
+import { localJsonLd, localMeta, toolMeta, toolJsonLd, toolsMeta, toolsJsonLd } from "./seo";
+import { TOOLS, toolPath } from "./tools";
 
 /**
  * Server entry used by scripts/prerender.mjs at build time: renders each public page to HTML
@@ -94,6 +95,12 @@ export function pages(data: SiteData): Page[] {
     for (const item of data.portfolio) {
       out.push({ url: `${prefix}${projectPath(item)}`, lang, meta: projectMeta(item, lang), jsonLd: [business, ...projectJsonLd(lang, item)] });
     }
+    // Tools: free electrical calculators (/outils).
+    out.push({ url: `${prefix}/outils`, lang, meta: toolsMeta(lang), jsonLd: [business, ...toolsJsonLd(lang)] });
+    for (const tool of TOOLS) {
+      out.push({ url: `${prefix}${toolPath(tool)}`, lang, meta: toolMeta(lang, tool), jsonLd: [business, ...toolJsonLd(lang, tool)] });
+    }
+
     // Local pages: one per service and city.
     for (const p of localPages()) {
       const image = p.service ? data.services.find((s) => s.slug === p.service!.key)?.image : null;

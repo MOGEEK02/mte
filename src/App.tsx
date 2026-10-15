@@ -6,9 +6,12 @@ import Home from "./pages/Home";
 import Portfolio from "./pages/Portfolio";
 import PortfolioPost from "./pages/PortfolioPost";
 import Store from "./pages/Store";
+import Tools from "./pages/Tools";
+import ToolPage from "./pages/ToolPage";
 import NotFound from "./pages/NotFound";
 import LocalPage from "./pages/LocalPage";
 import { localPages } from "./local-seo";
+import { TOOLS, toolPath } from "./tools";
 
 // "/programmation-automate-blida", "/automatisme-alger"…: one page per service and city.
 const LOCAL = localPages();
@@ -34,6 +37,10 @@ export function AppRoutes() {
           <Route path="portfolio" element={<Portfolio />} />
           <Route path="portfolio/:id" element={<PortfolioPost />} />
           <Route path="store" element={<Store />} />
+          <Route path="outils" element={<Tools />} />
+          {TOOLS.map((tool) => (
+            <Route key={tool.slug} path={toolPath(tool).slice(1)} element={<ToolPage tool={tool} />} />
+          ))}
           {LOCAL.map((p) => (
             <Route key={p.path} path={p.path.slice(1)} element={<LocalPage page={p} />} />
           ))}
@@ -45,6 +52,10 @@ export function AppRoutes() {
         <Route path="/portfolio" element={<Portfolio />} />
         <Route path="/portfolio/:id" element={<PortfolioPost />} />
         <Route path="/store" element={<Store />} />
+        <Route path="/outils" element={<Tools />} />
+        {TOOLS.map((tool) => (
+          <Route key={tool.slug} path={toolPath(tool)} element={<ToolPage tool={tool} />} />
+        ))}
         {LOCAL.map((p) => (
           <Route key={p.path} path={p.path} element={<LocalPage page={p} />} />
         ))}
