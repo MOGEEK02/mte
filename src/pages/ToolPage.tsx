@@ -18,9 +18,9 @@ const UI = {
   other: { fr: "Autres outils", en: "Other tools", ar: "أدوات أخرى" },
   ctaTitle: { fr: "Besoin d’un professionnel ?", en: "Need a professional?", ar: "تحتاج إلى محترف؟" },
   ctaText: {
-    fr: "MTE réalise études électriques, dépannage d’armoires et réparation de variateurs et de cartes, partout en Algérie.",
-    en: "MTE provides electrical design, control-panel troubleshooting and repair of drives and boards, across Algeria.",
-    ar: "تنجز MTE الدراسات الكهربائية وتصليح الخزائن وإصلاح مغيرات السرعة والبطاقات في كامل الجزائر.",
+    fr: "MTE : automatisme industriel, dépannage d’armoires, réparation électronique industrielle et études électriques — partout en Algérie.",
+    en: "MTE: industrial automation, control-panel troubleshooting, industrial electronics repair and electrical design — across Algeria.",
+    ar: "MTE: الأتمتة الصناعية، تصليح الخزائن، إصلاح الإلكترونيك الصناعي والدراسات الكهربائية — في كامل الجزائر.",
   },
   disclaimer: {
     fr: "Résultat indicatif : vérifiez toujours selon les normes et le mode de pose de votre installation.",
