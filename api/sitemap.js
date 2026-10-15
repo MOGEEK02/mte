@@ -14,6 +14,11 @@ const urlFor = (lang, path) => `${BASE_URL}${lang === 'fr' ? path : path === '/'
 /** Last change of the local pages' text (src/local-seo.ts). */
 const LOCAL_LASTMOD = '2026-10-08';
 
+/** Free calculators (src/tools.ts). Keep the slugs in sync. */
+const TOOL_SLUGS = ['loi-ohm', 'courant-moteur', 'section-cable', 'chute-tension', 'conversion-kw-cv', 'compensation-cos-phi'];
+const TOOLS_PATHS = ['/outils', ...TOOL_SLUGS.map((s) => `/outils/${s}`)];
+const TOOLS_LASTMOD = '2026-10-15';
+
 function escapeXml(str) {
   return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
 }
@@ -94,6 +99,7 @@ export default async function handler(request, response) {
     entries('/', { lastmod: newest, priority: '1.0', changefreq: 'weekly' }),
     entries('/portfolio', { lastmod: newest, priority: '0.9', changefreq: 'weekly' }),
     ...LOCAL_PATHS.map((path) => entries(path, { lastmod: LOCAL_LASTMOD, priority: localPriority(path), changefreq: 'monthly' })),
+    ...TOOLS_PATHS.map((path) => entries(path, { lastmod: TOOLS_LASTMOD, priority: path === '/outils' ? '0.7' : '0.6', changefreq: 'yearly' })),
     ...(store ? [entries('/store', { lastmod: store, priority: '0.7', changefreq: 'weekly' })] : []),
     ...items.map((p) => {
       const titles = Object.fromEntries(LANGS.map((l) => [l, (l === 'fr' ? p.title : p[`title_${l}`] || '').trim()]));

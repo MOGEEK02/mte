@@ -6,6 +6,7 @@ import { productText, type Product } from "./products";
 import type { Service } from "./services";
 import { coverImage, projectLangs, projectPath, projectText, splitDescription, type PortfolioItem } from "./portfolio";
 import { cityPath, LOCAL_SERVICES, localDescription, localFaq, localHeading, localTitle, servicePath, type LocalPageRef } from "./local-seo";
+import { TOOLS, TOOLS_HUB, TOOLS_PATH, toolPath, type Tool } from "./tools";
 
 /** What a page tells search engines. Shared by <Seo> (browser) and the pre-renderer (HTML). */
 export type PageMeta = {
@@ -375,6 +376,68 @@ export function localJsonLd(lang: Lang, page: LocalPageRef) {
       { name: HOME[lang], path: "/" },
       { name: city.name[lang], path: cityPath(city) },
       ...(service ? [{ name: service.keyword[lang], path: page.path }] : []),
+    ]),
+  ];
+}
+
+// ---------------------------------------------------------------------------
+// Tools (/outils): free electrical calculators
+// ---------------------------------------------------------------------------
+
+const TOOLS_LABEL: Record<Lang, string> = { fr: "Outils", en: "Tools", ar: "أدوات" };
+
+export function toolsMeta(lang: Lang): PageMeta {
+  return { lang, path: TOOLS_PATH, title: TOOLS_HUB.title[lang], description: TOOLS_HUB.description[lang] };
+}
+
+export function toolsJsonLd(lang: Lang) {
+  return [
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      name: TOOLS_HUB.h1[lang],
+      description: TOOLS_HUB.description[lang],
+      url: urlFor(lang, TOOLS_PATH),
+      inLanguage: DICT[lang].locale,
+      isPartOf: { "@id": WEBSITE_ID },
+      about: { "@id": BUSINESS_ID },
+      mainEntity: {
+        "@type": "ItemList",
+        itemListElement: TOOLS.map((tool, i) => ({ "@type": "ListItem", position: i + 1, name: tool.title[lang], url: urlFor(lang, toolPath(tool)) })),
+      },
+    },
+    breadcrumb(lang, [
+      { name: HOME[lang], path: "/" },
+      { name: TOOLS_HUB.h1[lang], path: TOOLS_PATH },
+    ]),
+  ];
+}
+
+export function toolMeta(lang: Lang, tool: Tool): PageMeta {
+  return { lang, path: toolPath(tool), title: `${tool.keyword[lang]} | MTE`, description: tool.description[lang] };
+}
+
+export function toolJsonLd(lang: Lang, tool: Tool) {
+  const url = urlFor(lang, toolPath(tool));
+  return [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: tool.title[lang],
+      url,
+      applicationCategory: "EngineeringApplication",
+      operatingSystem: "Web",
+      browserRequirements: "JavaScript",
+      inLanguage: DICT[lang].locale,
+      description: tool.description[lang],
+      isPartOf: { "@id": WEBSITE_ID },
+      publisher: { "@id": BUSINESS_ID },
+      offers: { "@type": "Offer", price: 0, priceCurrency: "DZD" },
+    },
+    breadcrumb(lang, [
+      { name: HOME[lang], path: "/" },
+      { name: TOOLS_LABEL[lang], path: TOOLS_PATH },
+      { name: tool.keyword[lang], path: toolPath(tool) },
     ]),
   ];
 }
