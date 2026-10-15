@@ -52,7 +52,7 @@ function toDraft(c: SiteContent): Draft {
 }
 
 /** Keeps only what differs from the built-in texts, so later improvements of those still apply. */
-function fromDraft(d: Draft): Required<Omit<SiteContent, "store">> {
+function fromDraft(d: Draft): Required<Omit<SiteContent, "store" | "tools">> {
   const hero: SiteContent["hero"] = {};
   const faq: SiteContent["faq"] = {};
   const reach: SiteContent["reach"] = {};

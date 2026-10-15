@@ -2,7 +2,8 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { localePath, useLang, type Lang } from "../i18n";
 import { Seo } from "../ui/Seo";
-import { TOOLS, TOOLS_HUB, toolPath } from "../tools";
+import { contentStore } from "../content";
+import { orderedTools, TOOLS_HUB, toolPath, toolTagline, toolTitle } from "../tools";
 import { toolIcon } from "../ui/toolIcons";
 import { toolsMeta } from "../seo";
 
@@ -16,6 +17,7 @@ const USE: L = {
 export default function Tools() {
   const lang = useLang();
   const to = (p: string) => localePath(lang, p);
+  const tools = orderedTools(contentStore.use().tools);
 
   return (
     <>
@@ -33,7 +35,7 @@ export default function Tools() {
         <div className="container-page">
           <p className="mb-8 text-sm text-slate-500">{USE[lang]}</p>
           <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {TOOLS.map((tool) => {
+            {tools.map((tool) => {
               const Icon = toolIcon(tool.icon);
               return (
                 <li key={tool.slug}>
@@ -44,8 +46,8 @@ export default function Tools() {
                     <span className="flex size-11 items-center justify-center rounded-lg bg-navy-950 text-brand transition-colors group-hover:bg-brand group-hover:text-navy-950">
                       <Icon className="size-5" />
                     </span>
-                    <h2 className="mt-4 text-lg font-semibold text-navy-900 group-hover:text-navy-700">{tool.title[lang]}</h2>
-                    <p className="mt-1.5 text-sm leading-relaxed text-slate-600">{tool.tagline[lang]}</p>
+                    <h2 className="mt-4 text-lg font-semibold text-navy-900 group-hover:text-navy-700">{toolTitle(tool, lang, contentStore.use().tools)}</h2>
+                    <p className="mt-1.5 text-sm leading-relaxed text-slate-600">{toolTagline(tool, lang, contentStore.use().tools)}</p>
                     <span className="mt-auto inline-flex items-center gap-1.5 pt-4 text-sm font-semibold text-navy-900">
                       {TOOLS_HUB.eyebrow[lang]}
                       <ArrowRight className="size-4 transition group-hover:translate-x-0.5 rtl:-scale-x-100 rtl:group-hover:-translate-x-0.5" />

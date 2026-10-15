@@ -26,7 +26,7 @@ import {
 import { BUSINESS, SITE_URL } from "./site";
 import { localDescription, localPages, localTitle } from "./local-seo";
 import { localJsonLd, localMeta, toolMeta, toolJsonLd, toolsMeta, toolsJsonLd } from "./seo";
-import { TOOLS, toolPath } from "./tools";
+import { isToolHidden, TOOLS, toolPath } from "./tools";
 
 /**
  * Server entry used by scripts/prerender.mjs at build time: renders each public page to HTML
@@ -95,10 +95,12 @@ export function pages(data: SiteData): Page[] {
     for (const item of data.portfolio) {
       out.push({ url: `${prefix}${projectPath(item)}`, lang, meta: projectMeta(item, lang), jsonLd: [business, ...projectJsonLd(lang, item)] });
     }
-    // Tools: free electrical calculators (/outils).
+    // Tools: free electrical calculators (/outils). All pages are pre-rendered so no URL ever
+    // 404s; hidden ones (set in /admin → Outils) are marked noindex and dropped from the hub.
     out.push({ url: `${prefix}/outils`, lang, meta: toolsMeta(lang), jsonLd: [business, ...toolsJsonLd(lang)] });
     for (const tool of TOOLS) {
-      out.push({ url: `${prefix}${toolPath(tool)}`, lang, meta: toolMeta(lang, tool), jsonLd: [business, ...toolJsonLd(lang, tool)] });
+      const hidden = isToolHidden(tool.slug, data.content?.tools);
+      out.push({ url: `${prefix}${toolPath(tool)}`, lang, meta: toolMeta(lang, tool, hidden), jsonLd: [business, ...toolJsonLd(lang, tool)] });
     }
 
     // Local pages: one per service and city.

@@ -3,6 +3,7 @@ import { Link, NavLink, Route, Routes, useLocation } from "react-router-dom";
 import type { Session } from "@supabase/supabase-js";
 import {
   BookOpen,
+  Calculator,
   ExternalLink,
   FileText,
   FolderKanban,
@@ -32,6 +33,7 @@ import Projects from "./Projects";
 import ProjectEditor from "./ProjectEditor";
 import ServicesAdmin from "./ServicesAdmin";
 import ServiceEditor from "./ServiceEditor";
+import ToolsAdmin from "./ToolsAdmin";
 import Settings from "./Settings";
 
 function Shell({ children }: { children: React.ReactNode }) {
@@ -131,6 +133,7 @@ const NAV: NavItem[] = [
   { to: "/admin/gestion/catalog", end: false, label: "Catalogue", icon: BookOpen, match: (p) => p.startsWith("/admin/gestion/catalog") },
   { to: "/admin/realisations", end: false, label: "Réalisations", icon: FolderKanban },
   { to: "/admin/services", end: false, label: "Services", icon: Wrench },
+  { to: "/admin/outils", end: false, label: "Outils", icon: Calculator },
   { to: "/admin/contenu", end: false, label: "Textes du site", icon: FileText },
   { to: "/admin/avis", end: false, label: "Avis clients", icon: MessageSquareQuote },
   { to: "/admin/boutique", end: false, label: "Boutique", icon: ShoppingBag },
@@ -216,6 +219,7 @@ function Layout({ email }: { email: string }) {
             <Route path="realisations/:id" element={<ProjectEditor />} />
             <Route path="services" element={<ServicesAdmin />} />
             <Route path="services/:slug" element={<ServiceEditor />} />
+            <Route path="outils" element={<ToolsAdmin />} />
             <Route path="contenu" element={<ContentAdmin />} />
             <Route path="avis" element={<ReviewsAdmin />} />
             <Route path="boutique" element={<StoreAdmin />} />

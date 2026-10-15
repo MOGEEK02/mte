@@ -204,6 +204,36 @@ export const TOOLS_PATH = "/outils";
 export const toolPath = (t: Tool) => `${TOOLS_PATH}/${t.slug}`;
 export const findTool = (slug: string | undefined) => TOOLS.find((t) => t.slug === slug) ?? null;
 
+/* ───────────── Admin-managed config (site_content → "tools") ───────────── */
+
+export type ToolTextOverride = { title?: string; tagline?: string; intro?: string };
+/** Edited in /admin → Outils; what is not set keeps the built-in text/order. */
+export type ToolsConfig = {
+  order?: string[];
+  hidden?: string[];
+  text?: Partial<Record<string, Partial<Record<Lang, ToolTextOverride>>>>;
+};
+
+/** Tools in the admin order; hidden ones are dropped unless includeHidden. */
+export function orderedTools(cfg?: ToolsConfig, includeHidden = false): Tool[] {
+  const hidden = new Set(cfg?.hidden ?? []);
+  const bySlug = new Map(TOOLS.map((t) => [t.slug, t]));
+  const out: Tool[] = [];
+  for (const slug of cfg?.order ?? []) {
+    const t = bySlug.get(slug);
+    if (t) { out.push(t); bySlug.delete(slug); }
+  }
+  for (const t of TOOLS) if (bySlug.has(t.slug)) out.push(t);
+  return includeHidden ? out : out.filter((t) => !hidden.has(t.slug));
+}
+
+export const isToolHidden = (slug: string, cfg?: ToolsConfig) => Boolean(cfg?.hidden?.includes(slug));
+
+const ov = (cfg: ToolsConfig | undefined, slug: string, lang: Lang) => cfg?.text?.[slug]?.[lang];
+export const toolTitle = (t: Tool, lang: Lang, cfg?: ToolsConfig) => ov(cfg, t.slug, lang)?.title?.trim() || t.title[lang];
+export const toolTagline = (t: Tool, lang: Lang, cfg?: ToolsConfig) => ov(cfg, t.slug, lang)?.tagline?.trim() || t.tagline[lang];
+export const toolIntro = (t: Tool, lang: Lang, cfg?: ToolsConfig) => ov(cfg, t.slug, lang)?.intro?.trim() || t.intro[lang];
+
 export const TOOLS_HUB: {
   eyebrow: L;
   h1: L;

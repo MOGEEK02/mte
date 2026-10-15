@@ -4,9 +4,10 @@ import { telHref, useContact, whatsappLink } from "../contact";
 import { localePath, useLang, type Lang } from "../i18n";
 import { BrandIcon } from "../ui/BrandIcon";
 import { Seo } from "../ui/Seo";
+import { contentStore } from "../content";
 import { CALCULATORS } from "../ui/calculators";
 import { toolIcon } from "../ui/toolIcons";
-import { TOOLS, TOOLS_HUB, TOOLS_PATH, toolPath, type Tool } from "../tools";
+import { isToolHidden, orderedTools, TOOLS_HUB, TOOLS_PATH, toolIntro, toolPath, toolTitle, type Tool } from "../tools";
 import { toolMeta } from "../seo";
 
 type L<T = string> = Record<Lang, T>;
@@ -33,13 +34,14 @@ export default function ToolPage({ tool }: { tool: Tool }) {
   const lang = useLang();
   const contact = useContact();
   const to = (p: string) => localePath(lang, p);
+  const cfg = contentStore.use().tools;
   const Calc = CALCULATORS[tool.slug];
   const Icon = toolIcon(tool.icon);
-  const others = TOOLS.filter((x) => x.slug !== tool.slug);
+  const others = orderedTools(cfg).filter((x) => x.slug !== tool.slug);
 
   return (
     <>
-      <Seo {...toolMeta(lang, tool)} />
+      <Seo {...toolMeta(lang, tool, isToolHidden(tool.slug, cfg))} />
 
       {/* Hero */}
       <section className="bg-navy-950 pt-32 pb-12 sm:pt-36 sm:pb-14">
@@ -50,7 +52,7 @@ export default function ToolPage({ tool }: { tool: Tool }) {
               <li aria-hidden="true"><ChevronRight className="size-3.5 rtl:-scale-x-100" /></li>
               <li><Link to={to(TOOLS_PATH)} className="hover:text-white">{UI.tools[lang]}</Link></li>
               <li aria-hidden="true"><ChevronRight className="size-3.5 rtl:-scale-x-100" /></li>
-              <li className="text-slate-200">{tool.title[lang]}</li>
+              <li className="text-slate-200">{toolTitle(tool, lang, cfg)}</li>
             </ol>
           </nav>
           <div className="mt-6 flex items-start gap-4">
@@ -59,7 +61,7 @@ export default function ToolPage({ tool }: { tool: Tool }) {
             </span>
             <div>
               <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">{tool.keyword[lang]}</h1>
-              <p className="mt-3 max-w-2xl text-base leading-relaxed text-slate-300">{tool.intro[lang]}</p>
+              <p className="mt-3 max-w-2xl text-base leading-relaxed text-slate-300">{toolIntro(tool, lang, cfg)}</p>
             </div>
           </div>
         </div>
@@ -124,7 +126,7 @@ export default function ToolPage({ tool }: { tool: Tool }) {
                     <li key={o.slug}>
                       <Link to={to(toolPath(o))} className="group flex items-center gap-2.5 rounded-lg px-2 py-2 text-navy-800 hover:bg-slate-50">
                         <OIcon className="size-4 text-brand-600" />
-                        <span className="group-hover:text-navy-900">{o.title[lang]}</span>
+                        <span className="group-hover:text-navy-900">{toolTitle(o, lang, cfg)}</span>
                         <ArrowRight className="ms-auto size-3.5 text-slate-300 rtl:-scale-x-100" />
                       </Link>
                     </li>

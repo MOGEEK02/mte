@@ -413,8 +413,8 @@ export function toolsJsonLd(lang: Lang) {
   ];
 }
 
-export function toolMeta(lang: Lang, tool: Tool): PageMeta {
-  return { lang, path: toolPath(tool), title: `${tool.keyword[lang]} | MTE`, description: tool.description[lang] };
+export function toolMeta(lang: Lang, tool: Tool, hidden = false): PageMeta {
+  return { lang, path: toolPath(tool), title: `${tool.keyword[lang]} | MTE`, description: tool.description[lang], noindex: hidden };
 }
 
 export function toolJsonLd(lang: Lang, tool: Tool) {

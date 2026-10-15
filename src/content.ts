@@ -1,6 +1,7 @@
 import { select } from "./db";
 import { DICT, useLang, type Lang } from "./i18n";
 import { createStore } from "./store";
+import type { ToolsConfig } from "./tools";
 
 /**
  * Texts edited in /admin → Contenu ("site_content" table, one row per block). Each block holds
@@ -30,6 +31,8 @@ export type SiteContent = {
   about?: Partial<Record<Lang, AboutTexts>>;
   hero_image?: HeroImage;
   store?: { open?: boolean };
+  /** Calculators shown at /outils: order, hidden ones and text overrides (edited in /admin → Outils). */
+  tools?: ToolsConfig;
 };
 
 export async function fetchContent(): Promise<SiteContent | undefined> {
