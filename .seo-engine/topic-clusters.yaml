@@ -1,0 +1,40 @@
+# Pillar → cluster model. A "pillar" is a big commercial page; "clusters" are blog posts that
+# answer one question each and link UP to the pillar. Focus order: PLC → HMI → electronics repair.
+
+pillars:
+  - id: plc-programming
+    priority: 1
+    pillar_page: "/ (programmation automate) + local pages /programmation-automate-{city}"
+    intent: commercial
+    clusters:
+      - fr: "Programme d'automate perdu : comment le récupérer ou le réécrire"
+      - fr: "Migrer un Siemens S7-300 vers S7-1200 / S7-1500 : étapes et pièges"
+      - fr: "TIA Portal ou Step 7 : quelle version pour votre machine"
+      - fr: "Programmer un automate Schneider (Modicon / Zelio) : guide pratique"
+      - fr: "Profinet vs Modbus : relier automate, variateur et IHM"
+      - fr: "Combien coûte la programmation d'un automate en Algérie"
+
+  - id: hmi-programming
+    priority: 2
+    pillar_page: "/ (IHM / SCADA)"
+    intent: commercial
+    clusters:
+      - fr: "IHM ou SCADA : lequel choisir pour votre atelier"
+      - fr: "Concevoir un écran IHM clair : pages, alarmes, recettes"
+      - fr: "Remplacer un écran IHM en panne : compatibilité et sauvegarde"
+      - fr: "Relier un écran IHM à un automate Siemens ou Schneider"
+
+  - id: electronics-repair
+    priority: 3
+    pillar_page: "/ (réparation variateur / carte électronique) + /reparation-variateur-{city}"
+    intent: commercial
+    clusters:
+      - fr: "Réparer ou remplacer un variateur de vitesse ? Comment décider"
+      - fr: "Codes défaut variateur (Altivar, Sinamics, Danfoss) : que signifient-ils"
+      - fr: "Réparation de carte électronique sans schéma (rétro-ingénierie)"
+      - fr: "Pourquoi un variateur tombe en panne — et comment l'éviter"
+
+rules:
+  - Each cluster links to its pillar page, one relevant /outils calculator, and a WhatsApp/quote CTA.
+  - Write FR first; translate to AR, then EN, once the FR version is validated.
+  - Avoid cannibalisation with the local pages (/{service}-{city}) — blogs answer questions, local pages sell a service in a city.

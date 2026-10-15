@@ -1,0 +1,16 @@
+# Existing indexable pages. Blog posts must SUPPORT these (link up), not duplicate them.
+pages:
+  home: "/ — automation & industrial electronics (money page)"
+  services: "service cards on the home page (admin-managed)"
+  local: "/{service}-{city} and /automatisme-{city} — Blida, Alger, Médéa (FR/EN/AR)"
+  portfolio: "/portfolio + /portfolio/{slug}"
+  tools: "/outils + 6 calculators (good internal-link targets)"
+  store: "/store (coming soon)"
+
+blog:
+  status: not_built_yet
+  planned_route: "/blog and /blog/{slug} (FR, with /en and /ar) — same SSG pre-render + hreflang pattern as the rest of the site"
+  note: "Build the /blog section before publishing anything from content-queue.yaml."
+
+cannibalisation_guard:
+  - "Do not write a blog post that competes with a local page (e.g. 'réparation variateur à Blida'). Blogs answer questions; local pages sell in a city."

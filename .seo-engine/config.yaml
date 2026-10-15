@@ -1,0 +1,32 @@
+# .seo-engine/config.yaml — SEO content engine for the MTE website.
+# Set up from the "SEO Engine Setup" prompt (gist by twf-nikhila), focused per the owner.
+version: 1
+
+project:
+  name: MTE Industrial Electronics
+  url: https://moutie.vercel.app
+  repo: https://github.com/MOGEEK02/mte
+  stack: Vite + React + TypeScript (SSG pre-render), Supabase, Vercel
+  blog_status: not_built_yet   # the site has no /blog section yet — build it before publishing drafts.
+
+languages: [fr, en, ar]        # fr = primary (Algeria), ar = important, en = secondary
+primary_market: "Algeria — workshop in Ain Dhab, Médéa (wilaya 26); on-site across Algeria"
+
+# Priority order set by the owner (2026-10-16):
+focus:
+  1_plc_programming: "Programmation d'automates (PLC)"
+  2_hmi_programming: "Programmation IHM / SCADA (écrans opérateur)"
+  3_electronics_repair: "Réparation électronique industrielle (variateurs, cartes, alimentations)"
+
+brand_terms: [MTE, "MTE Industrial Electronics", "MTE Algérie", "MTE Médéa"]
+
+audience:
+  - Responsables et techniciens de maintenance en usine (Algérie)
+  - Ingénieurs ayant un besoin de programmation PLC/IHM ou de rétrofit
+  - Ateliers / OEM ayant besoin d'une réparation de carte au niveau composant
+
+# Engine rules (from the gist):
+serp_research: manual          # NEVER use built-in web search for keyword/SERP research.
+                               # Paste real Google results + "People also ask" into seo-keywords.csv.
+publish: human-review          # NEVER auto-publish. Drafts are written for review.
+no_fabrication: true           # Only reference capabilities listed in features.yaml.

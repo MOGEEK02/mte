@@ -1,0 +1,36 @@
+# Prioritised draft queue. Status flow: idea -> drafting -> human-review -> published.
+# NEVER auto-publish. The first drafts lead with PLC/HMI programming.
+
+queue:
+  - id: perte-programme-automate
+    pillar: plc-programming
+    priority: 1
+    lang: fr
+    working_title: "Programme d'automate perdu : comment le récupérer ou le réécrire"
+    angle: "Reassure a maintenance team whose PLC program is lost; concrete steps; MTE recovers/rewrites + backs up. Links to the PLC service + WhatsApp."
+    internal_links: ["pillar: programmation automate", "/outils", "WhatsApp CTA"]
+    status: idea
+
+  - id: migration-s7-300-1200
+    pillar: plc-programming
+    priority: 2
+    lang: fr
+    working_title: "Migrer un Siemens S7-300 vers S7-1200/1500 : guide et pièges"
+    angle: "Why/when to migrate, what breaks, how MTE does it with minimal downtime."
+    status: idea
+
+  - id: ihm-vs-scada
+    pillar: hmi-programming
+    priority: 3
+    lang: fr
+    working_title: "IHM ou SCADA : lequel choisir pour votre atelier"
+    angle: "Plain-language comparison; when each makes sense; MTE develops both."
+    status: idea
+
+  - id: reparer-ou-remplacer-variateur
+    pillar: electronics-repair
+    priority: 4
+    lang: fr
+    working_title: "Réparer ou remplacer un variateur de vitesse ? Comment décider"
+    angle: "Decision guide (cost, power, availability); MTE repairs 0.37-500 kW. Links to /outils motor-current calculator."
+    status: idea

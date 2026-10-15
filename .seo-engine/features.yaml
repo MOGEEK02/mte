@@ -1,0 +1,48 @@
+# Real MTE capabilities only. Articles must NEVER reference a feature not listed here.
+# Source: the live site (services, local pages). Everything below is marked verified.
+
+plc_programming:
+  status: verified
+  priority: 1
+  summary: "New PLC programs, modification, migration, backup & recovery."
+  brands: ["Siemens S7-200/300/1200/1500", "Siemens LOGO!", "Schneider Modicon", "Schneider Zelio", "Omron", "Fatek", "Delta", "Xinje", "Mitsubishi"]
+  tools: ["TIA Portal", "Step 7"]
+  networks: ["Profinet", "Modbus"]
+  notes: "Recover or rewrite a lost program; hand back a documented backup."
+
+hmi_programming:
+  status: verified
+  priority: 2
+  summary: "Operator-panel (HMI/IHM) screens and SCADA supervision: control pages, alarms, recipes, production monitoring."
+  notes: "Communication with PLCs and drives; HMI panel repair/replacement available."
+
+control_panel:
+  status: verified
+  summary: "Control-panel (armoire) troubleshooting, wiring changes, retrofit, E-stop/safety compliance."
+
+electrical_design:
+  status: verified
+  summary: "Electrical studies: diagrams, power balance, cable & protection sizing, control-panel design, retrofit."
+
+vfd_repair:
+  status: verified
+  priority: 3
+  summary: "Variable speed drive repair 0.37 kW to 500 kW+ (IGBT modules, capacitors, control boards); set-up & commissioning."
+  brands: ["ABB", "Schneider Altivar", "Siemens Sinamics", "Danfoss", "LS", "INVT", "Delta"]
+
+electronic_board_repair:
+  status: verified
+  priority: 3
+  summary: "Component-level repair of control & power boards; reverse engineering when no schematic; EEPROM reprogramming; conformal coating."
+
+power_sensors_repair:
+  status: verified
+  summary: "Switching power supplies, UPS, stabilisers, chargers; sensors and 4-20 mA transmitters, PT100 probes."
+
+service_model:
+  status: verified
+  summary: "On-site across Algeria from a workshop in Ain Dhab, Médéa. Diagnosis in 24-48h, free quote before any work. FR / AR / EN."
+
+tools_on_site:
+  status: verified
+  summary: "Free calculators at /outils (Ohm's law, motor current, cable size, voltage drop, kW↔CV, power-factor) — use for internal links from articles."

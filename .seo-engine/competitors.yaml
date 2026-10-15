@@ -1,0 +1,9 @@
+# UNVERIFIED until the owner supplies real competitors. NEVER guess or fabricate competitor data.
+status: unverified
+# Ask the owner for 2-3 real competitors (Algerian automation / electronics-repair firms or
+# relevant pages that rank for the target keywords), then fill:
+competitors: []
+  # - name: ""
+  #   url: ""
+  #   ranks_for: []     # keywords where they appear
+  #   notes: ""
