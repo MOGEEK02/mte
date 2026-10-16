@@ -1,47 +1,86 @@
-# Prioritised draft queue. Status flow: idea -> drafting -> human-review -> published.
-# NEVER auto-publish. The first drafts lead with PLC/HMI programming.
+# Complete content backlog. Status: idea -> drafting -> human-review -> published. NEVER auto-publish.
+# Focus order: PLC programming -> HMI/SCADA -> electronics repair.
 
-queue:
-  - id: perte-programme-automate
+published:
+  - id: programme-automate-perdu
     pillar: plc-programming
-    priority: 1
-    lang: fr
-    working_title: "Programme d'automate perdu : comment le récupérer ou le réécrire"
-    angle: "Reassure a maintenance team whose PLC program is lost; concrete steps; MTE recovers/rewrites + backs up. Links to the PLC service + WhatsApp."
-    internal_links: ["pillar: programmation automate", "/outils", "WhatsApp CTA"]
-    status: published      # live (FR/EN/AR) at /blog/programme-automate-perdu; source in src/blog.ts
     live_url: /blog/programme-automate-perdu
-
-  - id: migration-s7-300-1200
-    pillar: plc-programming
-    priority: 2
-    lang: fr
-    working_title: "Migrer un Siemens S7-300 vers S7-1200/1500 : guide et pièges"
-    angle: "Why/when to migrate, what breaks, how MTE does it with minimal downtime."
-    status: idea
-
-  - id: ihm-vs-scada
+  - id: ihm-ou-scada
     pillar: hmi-programming
-    priority: 3
-    lang: fr
-    working_title: "IHM ou SCADA : lequel choisir pour votre atelier"
-    angle: "Plain-language comparison; when each makes sense; MTE develops both."
-    status: published
     live_url: /blog/ihm-ou-scada
-
-  - id: retrofit-machine
+  - id: retrofit-machine-industrielle
     pillar: plc-programming
-    priority: 3
-    lang: fr
-    working_title: "Rétrofit d'une machine industrielle : moderniser sans tout remplacer"
-    angle: "Modernise the control side (PLC/HMI/drives/panel), keep the mechanics; cheaper than new. Links to the lost-program article."
-    status: published
     live_url: /blog/retrofit-machine-industrielle
 
+queue:
+  # ── PLC programming (priority 1) ──
+  - id: migration-s7-300-1200
+    pillar: plc-programming
+    priority: 1
+    working_title: "Migrer un Siemens S7-300 vers S7-1200/1500 : guide et pièges"
+    angle: "Why/when to migrate, what breaks (I/O, blocks, comms), how MTE does it with minimal downtime."
+    status: idea
+  - id: tia-portal-ou-step7
+    pillar: plc-programming
+    priority: 2
+    template: comparison
+    working_title: "TIA Portal ou Step 7 : quelle version pour votre machine"
+    status: idea
+  - id: programmer-automate-schneider
+    pillar: plc-programming
+    priority: 2
+    working_title: "Programmer un automate Schneider (Modicon / Zelio) : guide pratique"
+    status: idea
+  - id: profinet-vs-modbus
+    pillar: plc-programming
+    priority: 3
+    template: comparison
+    working_title: "Profinet ou Modbus : relier automate, variateur et IHM"
+    status: idea
+  - id: prix-programmation-automate
+    pillar: plc-programming
+    priority: 3
+    working_title: "Combien coûte la programmation d'un automate en Algérie"
+    angle: "Honest 'it depends' with the factors (machine, état du programme, déplacement); free quote."
+    status: idea
+
+  # ── HMI / SCADA (priority 2) ──
+  - id: concevoir-ecran-ihm
+    pillar: hmi-programming
+    priority: 2
+    working_title: "Concevoir un écran IHM clair : pages, alarmes, recettes"
+    status: idea
+  - id: remplacer-ecran-ihm
+    pillar: hmi-programming
+    priority: 2
+    working_title: "Remplacer un écran IHM en panne : compatibilité et sauvegarde"
+    status: idea
+  - id: relier-ihm-automate
+    pillar: hmi-programming
+    priority: 3
+    working_title: "Relier un écran IHM à un automate Siemens ou Schneider"
+    status: idea
+
+  # ── Electronics repair (priority 3) ──
   - id: reparer-ou-remplacer-variateur
     pillar: electronics-repair
-    priority: 4
-    lang: fr
+    priority: 3
+    template: comparison
     working_title: "Réparer ou remplacer un variateur de vitesse ? Comment décider"
-    angle: "Decision guide (cost, power, availability); MTE repairs 0.37-500 kW. Links to /outils motor-current calculator."
+    angle: "Decision guide (coût, puissance, disponibilité); MTE repairs 0.37-500 kW. Links to /outils motor-current."
+    status: idea
+  - id: codes-defaut-variateur
+    pillar: electronics-repair
+    priority: 4
+    working_title: "Codes défaut variateur (Altivar, Sinamics, Danfoss) : que signifient-ils"
+    status: idea
+  - id: reparation-carte-sans-schema
+    pillar: electronics-repair
+    priority: 4
+    working_title: "Réparation de carte électronique sans schéma (rétro-ingénierie)"
+    status: idea
+  - id: pourquoi-variateur-tombe-en-panne
+    pillar: electronics-repair
+    priority: 5
+    working_title: "Pourquoi un variateur tombe en panne — et comment l'éviter"
     status: idea

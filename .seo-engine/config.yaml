@@ -25,8 +25,23 @@ audience:
   - Ingénieurs ayant un besoin de programmation PLC/IHM ou de rétrofit
   - Ateliers / OEM ayant besoin d'une réparation de carte au niveau composant
 
+# Goals / how success is measured:
+goals:
+  primary: "Qualified leads via WhatsApp and the quote form, for PLC/HMI programming first."
+  secondary: "Organic ranking for PLC/HMI programming and electronics-repair terms in Algeria (FR, then AR)."
+  track:
+    - "Vercel Web Analytics events: whatsapp_click, quote_submit (already wired on the site)."
+    - "Google Search Console: impressions/clicks/positions for the target keywords."
+  review_cadence: "Monthly — check Search Console, add real SERP data to seo-keywords.csv, pick the next queue item."
+
 # Engine rules (from the gist):
 serp_research: manual          # NEVER use built-in web search for keyword/SERP research.
                                # Paste real Google results + "People also ask" into seo-keywords.csv.
 publish: human-review          # NEVER auto-publish. Drafts are written for review.
 no_fabrication: true           # Only reference capabilities listed in features.yaml.
+
+# Still needed from the owner to fully tune the engine:
+owner_inputs_pending:
+  - "2-3 real competitors (Algerian automation / electronics-repair firms) -> competitors.yaml"
+  - "Real Google data (top results + 'People also ask') for a few keywords -> seo-keywords.csv"
+  - "Google Business Profile / review link -> add to brand signals"

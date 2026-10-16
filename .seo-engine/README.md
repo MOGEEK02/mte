@@ -3,15 +3,21 @@
 Set up from the "SEO Engine Setup" prompt (gist by twf-nikhila), focused on the owner's priorities:
 **1) PLC programming → 2) HMI/SCADA programming → 3) industrial electronics repair.**
 
+## Status
+`/blog` is **live** (FR/EN/AR). Published articles: **3** — `programme-automate-perdu` (PLC),
+`ihm-ou-scada` (HMI), `retrofit-machine-industrielle`. Full backlog in `content-queue.yaml`.
+The blog is editable from **/admin → Blog**. Engine rules and workflows live in the repo's `CLAUDE.md`.
+
 ## Files
-- `config.yaml` — project, languages, focus order, brand terms, engine rules.
+- `config.yaml` — project, languages, focus order, brand terms, **goals/metrics**, engine rules, pending owner inputs.
 - `features.yaml` — **real** MTE capabilities (the only things articles may reference).
 - `topic-clusters.yaml` — pillar → cluster content plan.
-- `content-queue.yaml` — prioritised draft queue (PLC/HMI first).
+- `content-queue.yaml` — published list + full prioritised backlog.
 - `seo-keywords.csv` — candidate keywords (volume/difficulty **unverified** — fill from real Google data).
 - `competitors.yaml` — **unverified** until you provide real competitors.
 - `content-map.yaml` — existing pages (avoid cannibalisation).
-- `templates/` — blog structure, frontmatter, tone.
+- `templates/` — blog-structure, comparison, audit, frontmatter, tone.
+- `drafts/` — Markdown drafts (source of the first article).
 
 ## Rules (short)
 - Only use features from `features.yaml`. **No fabrication.**
