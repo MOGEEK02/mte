@@ -26,7 +26,17 @@ queue:
     lang: fr
     working_title: "IHM ou SCADA : lequel choisir pour votre atelier"
     angle: "Plain-language comparison; when each makes sense; MTE develops both."
-    status: idea
+    status: published
+    live_url: /blog/ihm-ou-scada
+
+  - id: retrofit-machine
+    pillar: plc-programming
+    priority: 3
+    lang: fr
+    working_title: "Rétrofit d'une machine industrielle : moderniser sans tout remplacer"
+    angle: "Modernise the control side (PLC/HMI/drives/panel), keep the mechanics; cheaper than new. Links to the lost-program article."
+    status: published
+    live_url: /blog/retrofit-machine-industrielle
 
   - id: reparer-ou-remplacer-variateur
     pillar: electronics-repair

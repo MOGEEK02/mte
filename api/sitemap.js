@@ -20,7 +20,7 @@ const TOOLS_PATHS = ['/outils', ...TOOL_SLUGS.map((s) => `/outils/${s}`)];
 const TOOLS_LASTMOD = '2026-10-15';
 
 /** Blog posts (src/blog.ts → DEFAULT_POSTS). Keep the slugs in sync. */
-const BLOG_SLUGS = ['programme-automate-perdu'];
+const BLOG_SLUGS = ['programme-automate-perdu', 'ihm-ou-scada', 'retrofit-machine-industrielle'];
 const BLOG_PATHS = ['/blog', ...BLOG_SLUGS.map((s) => `/blog/${s}`)];
 const BLOG_LASTMOD = '2026-10-16';
 
