@@ -7,6 +7,7 @@ import type { Service } from "./services";
 import { coverImage, projectLangs, projectPath, projectText, splitDescription, type PortfolioItem } from "./portfolio";
 import { cityPath, LOCAL_SERVICES, localDescription, localFaq, localHeading, localTitle, servicePath, type LocalPageRef } from "./local-seo";
 import { TOOLS, TOOLS_HUB, TOOLS_PATH, toolPath, type Tool } from "./tools";
+import { BLOG_HUB, BLOG_PATH, orderedPosts, postPath, type Post } from "./blog";
 
 /** What a page tells search engines. Shared by <Seo> (browser) and the pre-renderer (HTML). */
 export type PageMeta = {
@@ -438,6 +439,63 @@ export function toolJsonLd(lang: Lang, tool: Tool) {
       { name: HOME[lang], path: "/" },
       { name: TOOLS_LABEL[lang], path: TOOLS_PATH },
       { name: tool.keyword[lang], path: toolPath(tool) },
+    ]),
+  ];
+}
+
+// ---------------------------------------------------------------------------
+// Blog (/blog): articles
+// ---------------------------------------------------------------------------
+
+const BLOG_LABEL: Record<Lang, string> = { fr: "Blog", en: "Blog", ar: "المدونة" };
+
+export function blogsMeta(lang: Lang): PageMeta {
+  return { lang, path: BLOG_PATH, title: BLOG_HUB.title[lang], description: BLOG_HUB.description[lang] };
+}
+
+export function blogsJsonLd(lang: Lang) {
+  return [
+    {
+      "@context": "https://schema.org",
+      "@type": "Blog",
+      name: BLOG_HUB.h1[lang],
+      description: BLOG_HUB.description[lang],
+      url: urlFor(lang, BLOG_PATH),
+      inLanguage: DICT[lang].locale,
+      isPartOf: { "@id": WEBSITE_ID },
+      publisher: { "@id": BUSINESS_ID },
+      blogPost: orderedPosts().map((p) => ({ "@type": "BlogPosting", headline: p.title[lang], url: urlFor(lang, postPath(p)), datePublished: p.date })),
+    },
+    breadcrumb(lang, [
+      { name: HOME[lang], path: "/" },
+      { name: BLOG_LABEL[lang], path: BLOG_PATH },
+    ]),
+  ];
+}
+
+export function blogMeta(lang: Lang, post: Post, hidden = false): PageMeta {
+  return { lang, path: postPath(post), title: `${post.title[lang]} | MTE`, description: post.description[lang], type: "article", noindex: hidden };
+}
+
+export function blogJsonLd(lang: Lang, post: Post) {
+  const url = urlFor(lang, postPath(post));
+  return [
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: post.title[lang],
+      description: post.description[lang],
+      datePublished: post.date,
+      dateModified: post.date,
+      inLanguage: DICT[lang].locale,
+      url,
+      author: { "@id": BUSINESS_ID, "@type": "Organization", name: BUSINESS.name },
+      publisher: { "@id": BUSINESS_ID, "@type": "Organization", name: BUSINESS.name, logo: BUSINESS.logo },
+    },
+    breadcrumb(lang, [
+      { name: HOME[lang], path: "/" },
+      { name: BLOG_LABEL[lang], path: BLOG_PATH },
+      { name: post.title[lang], path: postPath(post) },
     ]),
   ];
 }

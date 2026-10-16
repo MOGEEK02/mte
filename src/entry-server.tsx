@@ -25,8 +25,9 @@ import {
 } from "./seo";
 import { BUSINESS, SITE_URL } from "./site";
 import { localDescription, localPages, localTitle } from "./local-seo";
-import { localJsonLd, localMeta, toolMeta, toolJsonLd, toolsMeta, toolsJsonLd } from "./seo";
+import { localJsonLd, localMeta, toolMeta, toolJsonLd, toolsMeta, toolsJsonLd, blogMeta, blogJsonLd, blogsMeta, blogsJsonLd } from "./seo";
 import { isToolHidden, TOOLS, toolPath } from "./tools";
+import { DEFAULT_POSTS, isPostHidden, postPath } from "./blog";
 
 /**
  * Server entry used by scripts/prerender.mjs at build time: renders each public page to HTML
@@ -101,6 +102,13 @@ export function pages(data: SiteData): Page[] {
     for (const tool of TOOLS) {
       const hidden = isToolHidden(tool.slug, data.content?.tools);
       out.push({ url: `${prefix}${toolPath(tool)}`, lang, meta: toolMeta(lang, tool, hidden), jsonLd: [business, ...toolJsonLd(lang, tool)] });
+    }
+
+    // Blog: hub + one page per article (hidden ones are noindex but still pre-rendered).
+    out.push({ url: `${prefix}/blog`, lang, meta: blogsMeta(lang), jsonLd: [business, ...blogsJsonLd(lang)] });
+    for (const post of DEFAULT_POSTS) {
+      const hidden = isPostHidden(post.slug, data.content?.blog);
+      out.push({ url: `${prefix}${postPath(post)}`, lang, meta: blogMeta(lang, post, hidden), jsonLd: [business, ...blogJsonLd(lang, post)] });
     }
 
     // Local pages: one per service and city.

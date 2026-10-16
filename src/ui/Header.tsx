@@ -38,6 +38,7 @@ export function Header() {
     { to: to("/#a-propos"), label: t.nav.about },
     { to: to("/portfolio"), label: t.nav.work },
     { to: to("/outils"), label: t.nav.tools },
+    { to: to("/blog"), label: t.nav.blog },
     { to: to("/store"), label: t.nav.store },
     { to: to("/#faq"), label: t.nav.faq },
   ];

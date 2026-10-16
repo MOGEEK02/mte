@@ -19,6 +19,11 @@ const TOOL_SLUGS = ['loi-ohm', 'courant-moteur', 'section-cable', 'chute-tension
 const TOOLS_PATHS = ['/outils', ...TOOL_SLUGS.map((s) => `/outils/${s}`)];
 const TOOLS_LASTMOD = '2026-10-15';
 
+/** Blog posts (src/blog.ts → DEFAULT_POSTS). Keep the slugs in sync. */
+const BLOG_SLUGS = ['programme-automate-perdu'];
+const BLOG_PATHS = ['/blog', ...BLOG_SLUGS.map((s) => `/blog/${s}`)];
+const BLOG_LASTMOD = '2026-10-16';
+
 function escapeXml(str) {
   return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
 }
@@ -100,6 +105,7 @@ export default async function handler(request, response) {
     entries('/portfolio', { lastmod: newest, priority: '0.9', changefreq: 'weekly' }),
     ...LOCAL_PATHS.map((path) => entries(path, { lastmod: LOCAL_LASTMOD, priority: localPriority(path), changefreq: 'monthly' })),
     ...TOOLS_PATHS.map((path) => entries(path, { lastmod: TOOLS_LASTMOD, priority: path === '/outils' ? '0.7' : '0.6', changefreq: 'yearly' })),
+    ...BLOG_PATHS.map((path) => entries(path, { lastmod: BLOG_LASTMOD, priority: path === '/blog' ? '0.7' : '0.6', changefreq: 'monthly' })),
     ...(store ? [entries('/store', { lastmod: store, priority: '0.7', changefreq: 'weekly' })] : []),
     ...items.map((p) => {
       const titles = Object.fromEntries(LANGS.map((l) => [l, (l === 'fr' ? p.title : p[`title_${l}`] || '').trim()]));

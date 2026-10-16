@@ -2,6 +2,7 @@ import { select } from "./db";
 import { DICT, useLang, type Lang } from "./i18n";
 import { createStore } from "./store";
 import type { ToolsConfig } from "./tools";
+import type { BlogConfig } from "./blog";
 
 /**
  * Texts edited in /admin → Contenu ("site_content" table, one row per block). Each block holds
@@ -33,6 +34,8 @@ export type SiteContent = {
   store?: { open?: boolean };
   /** Calculators shown at /outils: order, hidden ones and text overrides (edited in /admin → Outils). */
   tools?: ToolsConfig;
+  /** Blog posts: order, hidden ones and text overrides (edited in /admin → Blog). */
+  blog?: BlogConfig;
 };
 
 export async function fetchContent(): Promise<SiteContent | undefined> {

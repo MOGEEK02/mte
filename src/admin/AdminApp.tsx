@@ -4,6 +4,7 @@ import type { Session } from "@supabase/supabase-js";
 import {
   BookOpen,
   Calculator,
+  Newspaper,
   ExternalLink,
   FileText,
   FolderKanban,
@@ -34,6 +35,7 @@ import ProjectEditor from "./ProjectEditor";
 import ServicesAdmin from "./ServicesAdmin";
 import ServiceEditor from "./ServiceEditor";
 import ToolsAdmin from "./ToolsAdmin";
+import BlogAdmin from "./BlogAdmin";
 import Settings from "./Settings";
 
 function Shell({ children }: { children: React.ReactNode }) {
@@ -134,6 +136,7 @@ const NAV: NavItem[] = [
   { to: "/admin/realisations", end: false, label: "Réalisations", icon: FolderKanban },
   { to: "/admin/services", end: false, label: "Services", icon: Wrench },
   { to: "/admin/outils", end: false, label: "Outils", icon: Calculator },
+  { to: "/admin/blog", end: false, label: "Blog", icon: Newspaper },
   { to: "/admin/contenu", end: false, label: "Textes du site", icon: FileText },
   { to: "/admin/avis", end: false, label: "Avis clients", icon: MessageSquareQuote },
   { to: "/admin/boutique", end: false, label: "Boutique", icon: ShoppingBag },
@@ -220,6 +223,7 @@ function Layout({ email }: { email: string }) {
             <Route path="services" element={<ServicesAdmin />} />
             <Route path="services/:slug" element={<ServiceEditor />} />
             <Route path="outils" element={<ToolsAdmin />} />
+            <Route path="blog" element={<BlogAdmin />} />
             <Route path="contenu" element={<ContentAdmin />} />
             <Route path="avis" element={<ReviewsAdmin />} />
             <Route path="boutique" element={<StoreAdmin />} />

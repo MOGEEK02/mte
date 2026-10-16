@@ -9,7 +9,8 @@ queue:
     working_title: "Programme d'automate perdu : comment le récupérer ou le réécrire"
     angle: "Reassure a maintenance team whose PLC program is lost; concrete steps; MTE recovers/rewrites + backs up. Links to the PLC service + WhatsApp."
     internal_links: ["pillar: programmation automate", "/outils", "WhatsApp CTA"]
-    status: idea
+    status: published      # live (FR/EN/AR) at /blog/programme-automate-perdu; source in src/blog.ts
+    live_url: /blog/programme-automate-perdu
 
   - id: migration-s7-300-1200
     pillar: plc-programming
