@@ -19,10 +19,29 @@ const TOOL_SLUGS = ['loi-ohm', 'courant-moteur', 'section-cable', 'chute-tension
 const TOOLS_PATHS = ['/outils', ...TOOL_SLUGS.map((s) => `/outils/${s}`)];
 const TOOLS_LASTMOD = '2026-10-15';
 
-/** Blog posts (src/blog.ts → DEFAULT_POSTS). Keep the slugs in sync. */
+/** Built-in blog posts (src/blog.ts → DEFAULT_POSTS). Keep the slugs in sync. */
 const BLOG_SLUGS = ['programme-automate-perdu', 'ihm-ou-scada', 'retrofit-machine-industrielle'];
-const BLOG_PATHS = ['/blog', ...BLOG_SLUGS.map((s) => `/blog/${s}`)];
 const BLOG_LASTMOD = '2026-10-16';
+
+/** Blog paths: hub + built-in posts + owner-created ones, minus any hidden in /admin → Blog. */
+async function blogPaths() {
+  let cfg = null;
+  if (supabaseUrl && supabaseKey) {
+    try {
+      const res = await fetch(`${supabaseUrl}/rest/v1/site_content?select=value&key=eq.blog`, {
+        headers: { apikey: supabaseKey },
+        signal: AbortSignal.timeout(5000),
+      });
+      if (res.ok) cfg = (await res.json())[0]?.value ?? null;
+    } catch (err) {
+      console.error('sitemap: blog config unavailable', err);
+    }
+  }
+  const hidden = new Set(cfg?.hidden ?? []);
+  const custom = (cfg?.posts ?? []).map((p) => (p.slug || '').trim()).filter((s) => /^[a-z0-9-]+$/.test(s));
+  const slugs = [...BLOG_SLUGS, ...custom].filter((s) => !hidden.has(s));
+  return ['/blog', ...slugs.map((s) => `/blog/${s}`)];
+}
 
 function escapeXml(str) {
   return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
@@ -99,13 +118,14 @@ export default async function handler(request, response) {
   }
   const newest = items[0]?.updated_at?.slice(0, 10) || items[0]?.created_at?.slice(0, 10) || today;
   const store = await storeLastmod().catch(() => null);
+  const blog = await blogPaths().catch(() => ['/blog', ...BLOG_SLUGS.map((s) => `/blog/${s}`)]);
 
   const urls = [
     entries('/', { lastmod: newest, priority: '1.0', changefreq: 'weekly' }),
     entries('/portfolio', { lastmod: newest, priority: '0.9', changefreq: 'weekly' }),
     ...LOCAL_PATHS.map((path) => entries(path, { lastmod: LOCAL_LASTMOD, priority: localPriority(path), changefreq: 'monthly' })),
     ...TOOLS_PATHS.map((path) => entries(path, { lastmod: TOOLS_LASTMOD, priority: path === '/outils' ? '0.7' : '0.6', changefreq: 'yearly' })),
-    ...BLOG_PATHS.map((path) => entries(path, { lastmod: BLOG_LASTMOD, priority: path === '/blog' ? '0.7' : '0.6', changefreq: 'monthly' })),
+    ...blog.map((path) => entries(path, { lastmod: BLOG_LASTMOD, priority: path === '/blog' ? '0.7' : '0.6', changefreq: 'monthly' })),
     ...(store ? [entries('/store', { lastmod: store, priority: '0.7', changefreq: 'weekly' })] : []),
     ...items.map((p) => {
       const titles = Object.fromEntries(LANGS.map((l) => [l, (l === 'fr' ? p.title : p[`title_${l}`] || '').trim()]));

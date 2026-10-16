@@ -1,13 +1,15 @@
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import { ArrowRight, ChevronRight, Phone } from "lucide-react";
 import { telHref, useContact, whatsappLink } from "../contact";
 import { localePath, useLang, type Lang } from "../i18n";
 import { contentStore } from "../content";
-import { BLOG_HUB, BLOG_PATH, isPostHidden, orderedPosts, postBody, postDescription, postPath, postTitle, type Post } from "../blog";
+import { allPosts, findPost, isPostHidden, postPath, BLOG_HUB, BLOG_PATH } from "../blog";
 import { renderMarkdown } from "../ui/markdown";
 import { BrandIcon } from "../ui/BrandIcon";
 import { Seo } from "../ui/Seo";
 import { blogMeta } from "../seo";
+import NotFound from "./NotFound";
 
 type L<T = string> = Record<Lang, T>;
 const UI = {
@@ -25,15 +27,32 @@ const PROSE =
   "[&_h2]:mt-8 [&_h2]:text-xl [&_h2]:font-bold [&_h2]:text-navy-900 [&_h3]:mt-6 [&_h3]:font-semibold [&_h3]:text-navy-900 " +
   "[&_p]:mt-4 [&_p]:leading-relaxed [&_p]:text-slate-700 [&_ul]:mt-4 [&_ul]:list-disc [&_ul]:ps-6 [&_ul]:space-y-1.5 " +
   "[&_ol]:mt-4 [&_ol]:list-decimal [&_ol]:ps-6 [&_ol]:space-y-1.5 [&_li]:text-slate-700 [&_li]:leading-relaxed " +
+  "[&_img]:mt-6 [&_img]:rounded-xl [&_img]:border [&_img]:border-slate-200 [&_img]:w-full [&_img]:h-auto " +
   "[&_a]:font-medium [&_a]:text-navy-700 [&_a]:underline [&_a]:underline-offset-2 hover:[&_a]:text-navy-900 [&_strong]:text-navy-900 [&_strong]:font-semibold";
 
-export default function BlogPost({ post }: { post: Post }) {
+export default function BlogPost() {
   const lang = useLang();
   const contact = useContact();
+  const { slug } = useParams();
   const to = (p: string) => localePath(lang, p);
-  const cfg = contentStore.use().blog;
-  const others = orderedPosts(cfg).filter((p) => p.slug !== post.slug).slice(0, 3);
-  const html = renderMarkdown(postBody(post, lang, cfg));
+  const content = contentStore.use();
+  const cfg = content.blog;
+  const post = findPost(slug, cfg);
+
+  // An owner-created article added since the last site build may not be in this browser's content
+  // yet: give the content a moment to load before showing a 404 (built-in posts resolve instantly).
+  const [waited, setWaited] = useState(false);
+  useEffect(() => {
+    const id = setTimeout(() => setWaited(true), 1500);
+    return () => clearTimeout(id);
+  }, []);
+  if (!post) {
+    const stillLoading = typeof window !== "undefined" && !waited && Object.keys(content).length === 0;
+    return stillLoading ? <div className="min-h-screen bg-navy-950" /> : <NotFound />;
+  }
+
+  const others = allPosts(cfg).filter((p) => p.slug !== post.slug).slice(0, 3);
+  const html = renderMarkdown(post.body[lang]);
   const fmt = (iso: string) => new Date(iso).toLocaleDateString(lang === "fr" ? "fr-FR" : lang === "ar" ? "ar-DZ" : "en-GB", { day: "numeric", month: "long", year: "numeric" });
 
   return (
@@ -50,14 +69,17 @@ export default function BlogPost({ post }: { post: Post }) {
             </ol>
           </nav>
           <p className="mt-6 text-sm text-slate-400">{BLOG_HUB.published[lang]} {fmt(post.date)}</p>
-          <h1 className="mt-2 max-w-3xl text-3xl font-bold tracking-tight text-white sm:text-4xl">{postTitle(post, lang, cfg)}</h1>
-          <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-300">{postDescription(post, lang, cfg)}</p>
+          <h1 className="mt-2 max-w-3xl text-3xl font-bold tracking-tight text-white sm:text-4xl">{post.title[lang]}</h1>
+          <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-300">{post.description[lang]}</p>
         </div>
       </section>
 
       <section className="py-14 sm:py-16">
         <div className="container-page grid gap-10 lg:grid-cols-[1fr_320px] lg:items-start">
-          <article className={`max-w-2xl ${PROSE}`} dangerouslySetInnerHTML={{ __html: html }} />
+          <article className={`max-w-2xl ${PROSE}`}>
+            {post.cover && <img src={post.cover} alt="" className="mb-8 w-full rounded-2xl border border-slate-200 object-cover" />}
+            <div dangerouslySetInnerHTML={{ __html: html }} />
+          </article>
 
           <aside className="lg:sticky lg:top-24 rounded-2xl bg-navy-950 p-6 text-white">
             <h2 className="text-lg font-bold">{UI.ctaTitle[lang]}</h2>
@@ -85,7 +107,7 @@ export default function BlogPost({ post }: { post: Post }) {
                 <li key={o.slug}>
                   <Link to={to(postPath(o))} className="group block rounded-xl border border-slate-200 bg-white p-5 shadow-xs transition hover:shadow-md">
                     <p className="text-xs text-slate-500">{fmt(o.date)}</p>
-                    <h3 className="mt-1.5 line-clamp-2 font-semibold text-navy-900 group-hover:text-navy-700">{postTitle(o, lang, cfg)}</h3>
+                    <h3 className="mt-1.5 line-clamp-2 font-semibold text-navy-900 group-hover:text-navy-700">{o.title[lang]}</h3>
                     <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-navy-900">
                       {BLOG_HUB.readMore[lang]}
                       <ArrowRight className="size-3.5 rtl:-scale-x-100" />

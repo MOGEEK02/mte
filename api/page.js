@@ -1,9 +1,9 @@
-// Project pages that are not pre-rendered files (pre-rendered pages are served as static files
-// and never reach this function): /portfolio/:key, /en/portfolio/:key, /ar/portfolio/:key.
+// Project and blog pages that are not pre-rendered files (pre-rendered pages are served as static
+// files and never reach this function): /portfolio/:key and /blog/:key (+ /en, /ar).
 // - an old numeric link (/portfolio/18) is redirected permanently to the project's address
 //   (/portfolio/plc-programming-industrial-vacuum-system);
-// - a project added since the last deployment gets the app shell with its title, description,
-//   preview image and languages already in the HTML; an unknown address gets a 404.
+// - a project or article added since the last deployment gets the app shell with its title,
+//   description, preview image and languages already in the HTML; an unknown address gets a 404.
 
 const BASE_URL = 'https://moutie.vercel.app';
 const DEFAULT_IMAGE = `${BASE_URL}/images/web/og-default.png`;
@@ -102,6 +102,48 @@ async function fetchProject(key) {
   return item ?? null;
 }
 
+async function fetchBlogConfig() {
+  const res = await fetch(`${supabaseUrl}/rest/v1/site_content?select=value&key=eq.blog`, {
+    headers: { apikey: supabaseKey },
+    signal: AbortSignal.timeout(5000),
+  });
+  if (!res.ok) throw new Error(`blog ${res.status}`);
+  const [row] = await res.json();
+  return row?.value ?? null;
+}
+
+// Owner-created blog articles (built-in ones are pre-rendered static files and never reach here).
+async function blogPage(key, lang) {
+  const t = TEXT[lang];
+  const path = `/blog/${key}`;
+  const notFound = { status: 404, html: tags({ lang, title: t.notFound, description: t.notFoundText, path, noindex: true }) };
+  if (!/^[a-z0-9-]+$/.test(key)) return notFound;
+  if (!supabaseUrl || !supabaseKey) return null;
+
+  const cfg = await fetchBlogConfig();
+  const post = (cfg?.posts || []).find((p) => (p.slug || '').trim() === key);
+  if (!post) return notFound;
+
+  const field = (obj, l) => (obj?.[l] || '').trim() || (obj?.fr || '').trim();
+  const available = LANGS.filter((l) => l === 'fr' || field(post.title, l));
+  const title = field(post.title, lang) || key;
+  const description = summary(field(post.description, lang) || field(post.body, lang)) || title;
+  const hidden = (cfg?.hidden || []).includes(key);
+  return {
+    status: 200,
+    html: tags({
+      lang,
+      title: `${title} | MTE`,
+      description,
+      path,
+      image: (post.cover || '').trim() || undefined,
+      type: 'article',
+      noindex: hidden,
+      available,
+    }),
+  };
+}
+
 async function projectPage(key, lang) {
   const t = TEXT[lang];
   const path = `/portfolio/${key}`;
@@ -137,7 +179,7 @@ export default async function handler(req, res) {
   const key = typeof req.query.id === 'string' ? req.query.id : '';
   let page = null;
   try {
-    page = await projectPage(key, lang);
+    page = req.query.type === 'blog' ? await blogPage(key, lang) : await projectPage(key, lang);
   } catch (err) {
     console.error('page: lookup failed', err);
   }

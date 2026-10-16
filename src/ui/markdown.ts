@@ -10,6 +10,8 @@ function escapeHtml(s: string): string {
 
 function inline(s: string): string {
   let t = escapeHtml(s);
+  // Images first (![alt](url)), so the leading "!" isn't consumed by the link rule below.
+  t = t.replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, (_m, alt, url) => `<img src="${url}" alt="${alt}" loading="lazy" />`);
   t = t.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_m, text, url) => `<a href="${url}">${text}</a>`);
   t = t.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
   t = t.replace(/(^|[^*])\*([^*\n]+)\*/g, "$1<em>$2</em>");

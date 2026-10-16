@@ -23,7 +23,7 @@ export type Post = {
 };
 
 export const BLOG_PATH = "/blog";
-export const postPath = (p: Post) => `${BLOG_PATH}/${p.slug}`;
+export const postPath = (p: { slug: string }) => `${BLOG_PATH}/${p.slug}`;
 
 export const BLOG_HUB: { eyebrow: L; h1: L; title: L; description: L; intro: L; readMore: L; backToBlog: L; published: L } = {
   eyebrow: { fr: "Blog", en: "Blog", ar: "المدونة" },
@@ -456,32 +456,114 @@ No: if the program is lost or unreadable, we rewrite it from how the machine wor
   },
 ];
 
-/* ───────────── Admin-managed config (site_content → "blog") ───────────── */
+/* ───────────── Admin-managed content (site_content → "blog") ─────────────
+ * The owner manages the blog from /admin → Blog: show/hide and reorder every article,
+ * edit the three built-in ones' text + cover image, and create, edit or delete their own
+ * articles (with a cover image). Everything is stored as JSON in the existing site_content
+ * table and images in the existing "portfolio" storage bucket — no database migration needed.
+ */
 
+const LANGS: Lang[] = ["fr", "en", "ar"];
+
+/** A text override (per language) for one of the three built-in articles. */
 export type PostOverride = { title?: string; description?: string; body?: string };
-export type BlogConfig = {
-  order?: string[];
-  hidden?: string[];
-  text?: Partial<Record<string, Partial<Record<Lang, PostOverride>>>>;
+
+/** An article created by the owner in /admin (stored in full). French is the base; EN/AR optional. */
+export type CustomPost = {
+  slug: string;
+  /** ISO date (publication). */
+  date: string;
+  pillar?: string;
+  /** Cover image URL (uploaded in /admin). */
+  cover?: string;
+  title: Partial<L>;
+  description: Partial<L>;
+  /** Article body in Markdown, per language. */
+  body: Partial<L>;
 };
 
-export function orderedPosts(cfg?: BlogConfig, includeHidden = false): Post[] {
-  const hidden = new Set(cfg?.hidden ?? []);
-  const bySlug = new Map(DEFAULT_POSTS.map((p) => [p.slug, p]));
-  const out: Post[] = [];
-  for (const slug of cfg?.order ?? []) {
-    const p = bySlug.get(slug);
-    if (p) { out.push(p); bySlug.delete(slug); }
+export type BlogConfig = {
+  /** Display order (slugs), applied first; the rest fall back to newest-first by date. */
+  order?: string[];
+  /** Slugs hidden from the blog (still reachable by direct URL, but noindex). */
+  hidden?: string[];
+  /** Text overrides for the built-in articles, by slug then language. */
+  text?: Partial<Record<string, Partial<Record<Lang, PostOverride>>>>;
+  /** Cover image overrides for the built-in articles, by slug. */
+  covers?: Record<string, string>;
+  /** Articles created by the owner. */
+  posts?: CustomPost[];
+};
+
+/** A fully-resolved article ready to display: overrides applied, every language filled (FR fallback). */
+export type ViewPost = {
+  slug: string;
+  date: string;
+  pillar?: string;
+  cover?: string;
+  /** True for an owner-created article (can be deleted; built-ins can only be hidden). */
+  custom: boolean;
+  title: L;
+  description: L;
+  body: L;
+};
+
+const fill = (m: Partial<L>): L => Object.fromEntries(LANGS.map((l) => [l, m[l]?.trim() || m.fr?.trim() || ""])) as L;
+
+function resolveDefault(p: Post, cfg?: BlogConfig): ViewPost {
+  const field = (base: L, key: keyof PostOverride): L =>
+    Object.fromEntries(LANGS.map((l) => [l, cfg?.text?.[p.slug]?.[l]?.[key]?.trim() || base[l]])) as L;
+  return {
+    slug: p.slug,
+    date: p.date,
+    pillar: p.pillar,
+    custom: false,
+    cover: cfg?.covers?.[p.slug]?.trim() || p.cover,
+    title: field(p.title, "title"),
+    description: field(p.description, "description"),
+    body: field(p.body, "body"),
+  };
+}
+
+function resolveCustom(p: CustomPost): ViewPost {
+  return {
+    slug: p.slug,
+    date: p.date,
+    pillar: p.pillar,
+    custom: true,
+    cover: p.cover?.trim() || undefined,
+    title: fill(p.title),
+    description: fill(p.description),
+    body: fill(p.body),
+  };
+}
+
+/** All articles (built-in + owner-created), resolved, ordered and (by default) with hidden ones removed. */
+export function allPosts(cfg?: BlogConfig, includeHidden = false): ViewPost[] {
+  const seen = new Set<string>();
+  const views: ViewPost[] = [];
+  for (const p of DEFAULT_POSTS) { views.push(resolveDefault(p, cfg)); seen.add(p.slug); }
+  for (const p of cfg?.posts ?? []) {
+    const slug = p.slug?.trim();
+    if (!slug || seen.has(slug)) continue; // a built-in slug always wins
+    seen.add(slug);
+    views.push(resolveCustom(p));
   }
-  for (const p of DEFAULT_POSTS) if (bySlug.has(p.slug)) out.push(p);
-  const kept = includeHidden ? out : out.filter((p) => !hidden.has(p.slug));
-  return kept.sort((a, b) => (a.date < b.date ? 1 : -1));
+  const hidden = new Set(cfg?.hidden ?? []);
+  const order = cfg?.order ?? [];
+  const rank = (slug: string) => { const i = order.indexOf(slug); return i === -1 ? Infinity : i; };
+  const kept = includeHidden ? views : views.filter((v) => !hidden.has(v.slug));
+  return kept.sort((a, b) => {
+    const ra = rank(a.slug), rb = rank(b.slug);
+    if (ra !== rb) return ra - rb;
+    return a.date < b.date ? 1 : -1;
+  });
 }
 
 export const isPostHidden = (slug: string, cfg?: BlogConfig) => Boolean(cfg?.hidden?.includes(slug));
-export const findPost = (slug: string | undefined) => DEFAULT_POSTS.find((p) => p.slug === slug) ?? null;
 
-const ov = (cfg: BlogConfig | undefined, slug: string, lang: Lang) => cfg?.text?.[slug]?.[lang];
-export const postTitle = (p: Post, lang: Lang, cfg?: BlogConfig) => ov(cfg, p.slug, lang)?.title?.trim() || p.title[lang];
-export const postDescription = (p: Post, lang: Lang, cfg?: BlogConfig) => ov(cfg, p.slug, lang)?.description?.trim() || p.description[lang];
-export const postBody = (p: Post, lang: Lang, cfg?: BlogConfig) => ov(cfg, p.slug, lang)?.body?.trim() || p.body[lang];
+/** One resolved article by slug (built-in or owner-created), including hidden ones. */
+export function findPost(slug: string | undefined, cfg?: BlogConfig): ViewPost | null {
+  if (!slug) return null;
+  return allPosts(cfg, true).find((p) => p.slug === slug) ?? null;
+}

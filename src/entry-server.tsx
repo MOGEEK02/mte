@@ -27,7 +27,7 @@ import { BUSINESS, SITE_URL } from "./site";
 import { localDescription, localPages, localTitle } from "./local-seo";
 import { localJsonLd, localMeta, toolMeta, toolJsonLd, toolsMeta, toolsJsonLd, blogMeta, blogJsonLd, blogsMeta, blogsJsonLd } from "./seo";
 import { isToolHidden, TOOLS, toolPath } from "./tools";
-import { DEFAULT_POSTS, isPostHidden, postPath } from "./blog";
+import { allPosts, isPostHidden, postPath } from "./blog";
 
 /**
  * Server entry used by scripts/prerender.mjs at build time: renders each public page to HTML
@@ -104,9 +104,10 @@ export function pages(data: SiteData): Page[] {
       out.push({ url: `${prefix}${toolPath(tool)}`, lang, meta: toolMeta(lang, tool, hidden), jsonLd: [business, ...toolJsonLd(lang, tool)] });
     }
 
-    // Blog: hub + one page per article (hidden ones are noindex but still pre-rendered).
-    out.push({ url: `${prefix}/blog`, lang, meta: blogsMeta(lang), jsonLd: [business, ...blogsJsonLd(lang)] });
-    for (const post of DEFAULT_POSTS) {
+    // Blog: hub + one page per article — built-in and owner-created (hidden ones are noindex
+    // but still pre-rendered, so a direct link always resolves).
+    out.push({ url: `${prefix}/blog`, lang, meta: blogsMeta(lang), jsonLd: [business, ...blogsJsonLd(lang, data.content?.blog)] });
+    for (const post of allPosts(data.content?.blog, true)) {
       const hidden = isPostHidden(post.slug, data.content?.blog);
       out.push({ url: `${prefix}${postPath(post)}`, lang, meta: blogMeta(lang, post, hidden), jsonLd: [business, ...blogJsonLd(lang, post)] });
     }

@@ -171,7 +171,7 @@ export function formatDateTime(iso: string) {
 
 // --- Pieces shared by the editing pages ---
 
-export function Card({ title, description, actions, children, className = "" }: { title: string; description?: ReactNode; actions?: ReactNode; children: ReactNode; className?: string }) {
+export function Card({ title, description, actions, children, className = "" }: { title: ReactNode; description?: ReactNode; actions?: ReactNode; children: ReactNode; className?: string }) {
   return (
     <section className={`rounded-xl border border-slate-200 bg-white p-5 sm:p-6 ${className}`}>
       <div className="flex flex-wrap items-start justify-between gap-3">

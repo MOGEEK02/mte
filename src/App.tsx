@@ -14,7 +14,6 @@ import NotFound from "./pages/NotFound";
 import LocalPage from "./pages/LocalPage";
 import { localPages } from "./local-seo";
 import { TOOLS, toolPath } from "./tools";
-import { DEFAULT_POSTS, postPath } from "./blog";
 
 // "/programmation-automate-blida", "/automatisme-alger"…: one page per service and city.
 const LOCAL = localPages();
@@ -45,9 +44,7 @@ export function AppRoutes() {
             <Route key={tool.slug} path={toolPath(tool).slice(1)} element={<ToolPage tool={tool} />} />
           ))}
           <Route path="blog" element={<Blog />} />
-          {DEFAULT_POSTS.map((post) => (
-            <Route key={post.slug} path={postPath(post).slice(1)} element={<BlogPost post={post} />} />
-          ))}
+          <Route path="blog/:slug" element={<BlogPost />} />
           {LOCAL.map((p) => (
             <Route key={p.path} path={p.path.slice(1)} element={<LocalPage page={p} />} />
           ))}
@@ -64,9 +61,7 @@ export function AppRoutes() {
           <Route key={tool.slug} path={toolPath(tool)} element={<ToolPage tool={tool} />} />
         ))}
         <Route path="/blog" element={<Blog />} />
-        {DEFAULT_POSTS.map((post) => (
-          <Route key={post.slug} path={postPath(post)} element={<BlogPost post={post} />} />
-        ))}
+        <Route path="/blog/:slug" element={<BlogPost />} />
         {LOCAL.map((p) => (
           <Route key={p.path} path={p.path} element={<LocalPage page={p} />} />
         ))}

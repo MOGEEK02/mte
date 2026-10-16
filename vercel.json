@@ -75,6 +75,9 @@
     { "source": "/admin/:path*", "destination": "/shell.html" },
     { "source": "/portfolio/:id", "destination": "/api/page?id=:id" },
     { "source": "/en/portfolio/:id", "destination": "/api/page?lang=en&id=:id" },
-    { "source": "/ar/portfolio/:id", "destination": "/api/page?lang=ar&id=:id" }
+    { "source": "/ar/portfolio/:id", "destination": "/api/page?lang=ar&id=:id" },
+    { "source": "/blog/:id", "destination": "/api/page?type=blog&id=:id" },
+    { "source": "/en/blog/:id", "destination": "/api/page?type=blog&lang=en&id=:id" },
+    { "source": "/ar/blog/:id", "destination": "/api/page?type=blog&lang=ar&id=:id" }
   ]
 }
